@@ -1,0 +1,8 @@
+# Placeholder control file for the asusware.arm app-folder mechanism.
+# Copy this tree to the USB root as /asusware.arm and ensure "Enabled: yes".
+Enabled: yes
+Package: franklin-boot
+Version: 0.1
+Architecture: arm
+Maintainer: franklin
+Description: Franklin boot hook

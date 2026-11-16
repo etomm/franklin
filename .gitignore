@@ -1,0 +1,16 @@
+# Gitignored / generated
+vendor/
+vendor/gnuton/
+release/
+build/
+dist/
+*.log
+*.tmp
+/tmp
+# OS
+.DS_Store
+Thumbs.db
+# Editor
+.vscode/
+.idea/
+*.swp

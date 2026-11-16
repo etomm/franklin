@@ -1,0 +1,12 @@
+# Pinned reference to upstream gnuton (asuswrt-merlin.ng)
+#
+# Franklin does not vendor the firmware source (it is huge and contains
+# filenames that are invalid on Windows, e.g. aux.c). Instead we pin a
+# commit here and fetch it on demand with tools/fetch-gnuton.sh (run in
+# WSL/Git Bash). Update this file deliberately after reviewing upstream
+# changes.
+UPSTREAM_URL=https://github.com/gnuton/asuswrt-merlin.ng.git
+UPSTREAM_COMMIT=281addbccde64f85a772134b5c0de214182b6a06
+UPSTREAM_BRANCH=master
+PINNED_DATE=2026-11-16
+NOTES=HEAD of qlikTERror/franklin fork at planning time; tracks gnuton master.

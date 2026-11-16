@@ -1,0 +1,31 @@
+#!/bin/sh
+# Franklin boot hook (runs via asusware.arm at boot).
+# Device-agnostic entry point; device-specific behaviour is sourced from
+# /jffs/franklin/device/profile.sh if present, else defaults to XT9.
+LOG=/tmp/franklin.log
+PLOG=/jffs/franklin.log
+
+log() { echo "[$(date)] $*" | tee -a "$LOG" "$PLOG" >/dev/null; }
+
+log "S99franklin-boot start"
+
+# Source device profile if available
+PROFILE=/jffs/franklin/device/profile.sh
+if [ -r "$PROFILE" ]; then
+  . "$PROFILE"
+else
+  . /opt/franklin/core/devices/xt9/profile.sh 2>/dev/null || true
+fi
+
+# Default switch sequence (verified on XT9). Override in profile.sh if needed.
+: "${FRANKLIN_SLEEP:=8}"
+sleep "$FRANKLIN_SLEEP"
+
+if [ "${FRANKLIN_APPLY_SWITCH:-1}" = "1" ]; then
+  /bin/ethswctl -c hw-switching -o enable >> "$PLOG" 2>&1
+  /bin/ethswctl -c softswitch -i eth0 -o enable >> "$PLOG" 2>&1
+  /bin/ethswctl -c softswitch -i eth1 -o enable >> "$PLOG" 2>&1
+  log "switch state: $(/bin/ethswctl -c hw-switching) $(/bin/ethswctl -c softswitch)"
+fi
+
+log "S99franklin-boot done"
