@@ -20,4 +20,4 @@
 See docs/xt9-notes.md and install/install-franklin.sh.
 
 ## Status
-Idea / research. See plans/franklin.md (in franklin.old) for the full design.
+Idea / research. See plans/franklin.md for the full design.
