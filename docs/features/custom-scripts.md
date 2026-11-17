@@ -3,9 +3,9 @@
 **Category:** Automation  
 **Modes:** all  
 **Status:** `tested`  
-**Kind:** gnuton-feature  
+**Kind:** franklin-feature  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** gnuton/Merlin (/jffs/scripts) — re-created by Franklin on stock
 
 ## Dependencies
 

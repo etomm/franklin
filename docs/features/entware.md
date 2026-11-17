@@ -3,7 +3,7 @@
 **Category:** Packages  
 **Modes:** all  
 **Status:** `planned`  
-**Kind:** provider  
+**Kind:** franklin-feature  
 **Required:** no  
 **Upstream:** third-party (Entware project) - NOT gnuton
 

@@ -3,9 +3,9 @@
 **Category:** Kernel  
 **Modes:** all  
 **Status:** `tested`  
-**Kind:** gnuton-feature  
+**Kind:** franklin-feature  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** ASUS GPL 4.19.183 (not gnuton)
 
 ## Dependencies
 

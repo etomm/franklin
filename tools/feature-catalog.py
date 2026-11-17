@@ -390,13 +390,18 @@ FEATURES = [
     dict(id="jffs", title="JFFS partition", cat="Storage",
          modes="all",
          status="stock",
-         what="Persistent writable storage for configs/scripts.",
-         gnuton="JFFS enabled; scripts/configs stored there.",
-         deps="Stock JFFS (present).",
-         franklin="Use `/jffs` for Franklin configs/logs (stock).",
-         tested="JFFS present and writable.",
-         risks="None.",
-         links=[]),
+         what="Persistent writable storage. Stock has JFFS; gnuton uses it for "
+              "`/jffs/configs`, `/jffs/scripts`, VPN Director rules, certs and the "
+              "Traffic Monitor DB.",
+         gnuton="gnuton/Merlin stores persistent configs in `/jffs` and runs its "
+                "`/jffs/scripts` hooks (a Merlin feature).",
+         deps="Stock JFFS (always present). Not a build dependency.",
+         franklin="Use `/jffs` for persistent configs/logs, like gnuton. But `/jffs/scripts` "
+                  "hooks are NOT honored on stock; the boot hook lives on USB and can "
+                  "sync/apply config to `/jffs` at boot.",
+         tested="JFFS present and writable; `/jffs/scripts` hooks did not run on stock.",
+         risks="JFFS is stock (nothing to build). Don't rely on `/jffs/scripts` for boot on stock.",
+         links=["docs/xt9-notes.md"]),
 
     dict(id="nvram-tools", title="NVRAM tools / config export", cat="System",
          modes="all",
@@ -512,7 +517,8 @@ FEATURES = [
          modes="all",
          status="tested",
          what="Run Franklin at boot from a USB `asusware.arm` app folder.",
-         gnuton="n/a (ns). Merlin uses `/jffs/scripts`.",
+         gnuton="n/a — gnuton/Merlin run `/jffs/scripts/*` hooks instead; stock ignores them, "
+                "so Franklin uses the USB `asusware.arm` app hook.",
          deps="USB with `asusware.arm/`, `S*` init scripts, `Enabled: yes` control file.",
          franklin="Primary boot hook on stock; verified.",
          tested="Verified: S99xt9-log ran at boot.",
@@ -531,11 +537,14 @@ FEATURES = [
          links=["docs/xt9-kernel-notes.md", "docs/kernel-feature-matrix.md"]),
 ]
 
-REQUIRED = {"boot-hook", "jffs"}
+REQUIRED = {"boot-hook"}
 
-# kind: gnuton-feature (default) | provider | stock | out-of-scope
+# kind: gnuton-feature (default) | franklin-feature | provider | stock | out-of-scope
 KIND = {
-    "entware": "provider",
+    "entware": "franklin-feature",
+    "boot-hook": "franklin-feature",
+    "custom-scripts": "franklin-feature",
+    "kernel-modules": "franklin-feature",
     "samba-ftp-webdav": "stock",
     "aimesh": "stock",
     "guest-network": "stock",
@@ -544,11 +553,14 @@ KIND = {
 }
 UPSTREAM = {
     "entware": "third-party (Entware project) - NOT gnuton",
+    "boot-hook": "n/a — Franklin-specific (stock has no script hooks; Merlin uses /jffs/scripts)",
+    "custom-scripts": "gnuton/Merlin (/jffs/scripts) — re-created by Franklin on stock",
+    "kernel-modules": "ASUS GPL 4.19.183 (not gnuton)",
 }
 
 # id -> list of feature ids it depends on (runtime and/or build)
 DEPS = {
-    "boot-hook": ["jffs"],
+    "boot-hook": [],
     "web-ui": ["boot-hook"],
     "networkmap": ["web-ui", "boot-hook"],
     "kernel-modules": ["boot-hook"],
@@ -597,6 +609,7 @@ DEPS = {
 
 # Optional human-readable build/install note per feature (separable).
 BUILD = {
+    "jffs": "Nothing to build (stock). Enable JFFS if needed; Franklin only writes configs/logs there.",
     "boot-hook": "Copy usb/asusware.arm to the USB root; boot hook runs S* scripts.",
     "web-ui": "Deploy gnuton httpd + /www + differing libs to USB; start on :8088 (see docs/xt9-kernel-notes.md).",
     "kernel-modules": "Run features/kernel-modules/build.sh (calls tools/build-kernel-modules.sh with the ASUS GPL + device config).",
@@ -720,6 +733,7 @@ def main():
         "features": [
             dict(id=f["id"], title=f["title"], category=f["cat"],
                  modes=f["modes"], status=f["status"],
+                 kind=KIND.get(f["id"], "gnuton-feature"),
                  required=(f["id"] in REQUIRED),
                  depends_on=DEPS.get(f["id"], []))
             for f in FEATURES
@@ -741,6 +755,13 @@ def main():
         fh.write("others as long as no remaining feature depends on it. A machine-readable\n")
         fh.write("catalog is in [`manifest.json`](manifest.json) and the planner is\n")
         fh.write("`tools/franklin-build.py`.\n\n")
+        fh.write("**Kind** tells you what a plan actually is: `gnuton-feature` (something\n")
+        fh.write("gnuton/Merlin does that Franklin re-creates), `franklin-feature`\n")
+        fh.write("(Franklin-specific, e.g. the USB boot hook or Entware), `stock` (already\n")
+        fh.write("in stock firmware), or `out-of-scope` (firmware-level only).\n\n")
+        fh.write("Dependency direction note: **JFFS is not a boot dependency.** The boot\n")
+        fh.write("hook lives on USB (stock ignores `/jffs/scripts`); the boot hook is what\n")
+        fh.write("applies/syncs Franklin config *into* `/jffs`, not the other way round.\n\n")
         fh.write("Status: `tested` = verified on the XT9; `stock` = handled by stock\n")
         fh.write("firmware; `modular`/`planned` = buildable/planned; `research` =\n")
         fh.write("needs investigation; `out-of-scope` = firmware-level only.\n\n")

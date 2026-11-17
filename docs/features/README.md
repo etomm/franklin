@@ -10,6 +10,15 @@ others as long as no remaining feature depends on it. A machine-readable
 catalog is in [`manifest.json`](manifest.json) and the planner is
 `tools/franklin-build.py`.
 
+**Kind** tells you what a plan actually is: `gnuton-feature` (something
+gnuton/Merlin does that Franklin re-creates), `franklin-feature`
+(Franklin-specific, e.g. the USB boot hook or Entware), `stock` (already
+in stock firmware), or `out-of-scope` (firmware-level only).
+
+Dependency direction note: **JFFS is not a boot dependency.** The boot
+hook lives on USB (stock ignores `/jffs/scripts`); the boot hook is what
+applies/syncs Franklin config *into* `/jffs`, not the other way round.
+
 Status: `tested` = verified on the XT9; `stock` = handled by stock
 firmware; `modular`/`planned` = buildable/planned; `research` =
 needs investigation; `out-of-scope` = firmware-level only.
@@ -43,12 +52,12 @@ needs investigation; `out-of-scope` = firmware-level only.
 | Samba / FTP / WebDAV (stock USB apps) | stock | Storage | all | `stock` | no | — | [samba-ftp-webdav](samba-ftp-webdav.md) |
 | AiDisk NFS | gnuton-feature | Storage | all | `planned` | no | [nfs](../features/nfs.md), [web-ui](../features/web-ui.md) | [aidisk-nfs](aidisk-nfs.md) |
 | amtm (terminal menu) | gnuton-feature | Tools | all | `planned` | no | [entware](../features/entware.md) | [amtm](amtm.md) |
-| Entware package ecosystem | provider | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
+| Entware package ecosystem | franklin-feature | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
 | ipset | gnuton-feature | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [ipset](ipset.md) |
 | TEE (packet duplication) | gnuton-feature | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [tee](tee.md) |
 | cron / scheduled tasks | gnuton-feature | Automation | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [cron](cron.md) |
-| Custom scripts | gnuton-feature | Automation | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [custom-scripts](custom-scripts.md) |
-| JFFS partition | stock | Storage | all | `stock` | **yes** | — | [jffs](jffs.md) |
+| Custom scripts | franklin-feature | Automation | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [custom-scripts](custom-scripts.md) |
+| JFFS partition | stock | Storage | all | `stock` | no | — | [jffs](jffs.md) |
 | NVRAM tools / config export | gnuton-feature | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [nvram-tools](nvram-tools.md) |
 | LED control | gnuton-feature | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [led-control](led-control.md) |
 | Disk monitoring (smartmontools) | gnuton-feature | Storage | all | `planned` | no | [entware](../features/entware.md) | [disk-monitoring](disk-monitoring.md) |
@@ -59,26 +68,26 @@ needs investigation; `out-of-scope` = firmware-level only.
 | AiMesh | stock | Wireless | Mesh (AiMesh router/node) | `stock` | no | — | [aimesh](aimesh.md) |
 | Guest network | stock | Wireless | Router / AP / Mesh | `stock` | no | — | [guest-network](guest-network.md) |
 | Network Map / client list | gnuton-feature | Monitoring | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [networkmap](networkmap.md) |
-| Boot hook (asusware.arm) | gnuton-feature | System | all | `tested` | **yes** | [jffs](../features/jffs.md) | [boot-hook](boot-hook.md) |
-| Kernel modules (build recipe) | gnuton-feature | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
+| Boot hook (asusware.arm) | franklin-feature | System | all | `tested` | **yes** | — | [boot-hook](boot-hook.md) |
+| Kernel modules (build recipe) | franklin-feature | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
 
 ## Build order (dependency-resolved)
 
 1. [aimesh](aimesh.md)
-2. [guest-network](guest-network.md)
-3. [jffs](jffs.md) (required)
-4. [boot-hook](boot-hook.md) (required)
-5. [cron](cron.md)
-6. [custom-scripts](custom-scripts.md)
-7. [ddns](ddns.md)
-8. [dnsmasq-custom](dnsmasq-custom.md)
-9. [dns-over-tls](dns-over-tls.md)
-10. [entware](entware.md)
-11. [amtm](amtm.md)
-12. [disk-monitoring](disk-monitoring.md)
-13. [firewall-custom](firewall-custom.md)
-14. [dns-director](dns-director.md)
-15. [ipsec-vpn](ipsec-vpn.md)
+2. [boot-hook](boot-hook.md) (required)
+3. [cron](cron.md)
+4. [custom-scripts](custom-scripts.md)
+5. [ddns](ddns.md)
+6. [dnsmasq-custom](dnsmasq-custom.md)
+7. [dns-over-tls](dns-over-tls.md)
+8. [entware](entware.md)
+9. [amtm](amtm.md)
+10. [disk-monitoring](disk-monitoring.md)
+11. [firewall-custom](firewall-custom.md)
+12. [dns-director](dns-director.md)
+13. [guest-network](guest-network.md)
+14. [ipsec-vpn](ipsec-vpn.md)
+15. [jffs](jffs.md)
 16. [kernel-modules](kernel-modules.md)
 17. [cake-qos](cake-qos.md)
 18. [ipset](ipset.md)
@@ -169,6 +178,5 @@ graph TD
   cron --> reboot-schedule
   web-ui --> networkmap
   boot-hook --> networkmap
-  jffs --> boot-hook
   boot-hook --> kernel-modules
 ```

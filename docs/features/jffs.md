@@ -4,7 +4,7 @@
 **Modes:** all  
 **Status:** `stock`  
 **Kind:** stock  
-**Required:** yes  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 
 ## Dependencies
@@ -13,32 +13,32 @@
 
 ## Build / install (separable)
 
-See Franklin approach above; deploy from USB/boot hook.
+Nothing to build (stock). Enable JFFS if needed; Franklin only writes configs/logs there.
 
 ## What it does
 
-Persistent writable storage for configs/scripts.
+Persistent writable storage. Stock has JFFS; gnuton uses it for `/jffs/configs`, `/jffs/scripts`, VPN Director rules, certs and the Traffic Monitor DB.
 
 ## How gnuton implements it
 
-JFFS enabled; scripts/configs stored there.
+gnuton/Merlin stores persistent configs in `/jffs` and runs its `/jffs/scripts` hooks (a Merlin feature).
 
 ## Requirements
 
-Stock JFFS (present).
+Stock JFFS (always present). Not a build dependency.
 
 ## Franklin approach
 
-Use `/jffs` for Franklin configs/logs (stock).
+Use `/jffs` for persistent configs/logs, like gnuton. But `/jffs/scripts` hooks are NOT honored on stock; the boot hook lives on USB and can sync/apply config to `/jffs` at boot.
 
 ## Tested / verified
 
-JFFS present and writable.
+JFFS present and writable; `/jffs/scripts` hooks did not run on stock.
 
 ## Risks / notes
 
-None.
+JFFS is stock (nothing to build). Don't rely on `/jffs/scripts` for boot on stock.
 
 ## Links / sources
 
-- (none yet)
+- `docs/xt9-notes.md`

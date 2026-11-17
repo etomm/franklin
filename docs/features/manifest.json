@@ -6,6 +6,7 @@
       "category": "UI",
       "modes": "all (AP / Router / Mesh)",
       "status": "tested",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -17,6 +18,7 @@
       "category": "VPN",
       "modes": "Router (needs WAN + routing)",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "firewall-custom",
@@ -29,6 +31,7 @@
       "category": "VPN",
       "modes": "Router (WAN + VPN client)",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "firewall-custom",
@@ -41,6 +44,7 @@
       "category": "VPN",
       "modes": "Router (WAN + VPN client)",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -52,6 +56,7 @@
       "category": "VPN",
       "modes": "Router",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook",
@@ -64,6 +69,7 @@
       "category": "VPN",
       "modes": "Router",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -75,6 +81,7 @@
       "category": "VPN",
       "modes": "Router",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook",
@@ -87,6 +94,7 @@
       "category": "VPN",
       "modes": "Router",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook",
@@ -99,6 +107,7 @@
       "category": "DNS",
       "modes": "Router (DHCP/DNS server)",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "firewall-custom",
@@ -112,6 +121,7 @@
       "category": "DNS",
       "modes": "Router / AP",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "dnsmasq-custom",
@@ -124,6 +134,7 @@
       "category": "DNS",
       "modes": "Router / AP",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -135,6 +146,7 @@
       "category": "Network",
       "modes": "Router",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -146,6 +158,7 @@
       "category": "Network",
       "modes": "Router",
       "status": "out-of-scope",
+      "kind": "out-of-scope",
       "required": false,
       "depends_on": []
     },
@@ -155,6 +168,7 @@
       "category": "QoS",
       "modes": "Router (WAN shaping)",
       "status": "tested",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "kernel-modules",
@@ -167,6 +181,7 @@
       "category": "QoS",
       "modes": "Router",
       "status": "research",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "kernel-modules",
@@ -180,6 +195,7 @@
       "category": "Monitoring",
       "modes": "Router (WAN stats); AP limited",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "web-ui"
@@ -191,6 +207,7 @@
       "category": "QoS",
       "modes": "Router",
       "status": "research",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "adaptive-qos",
@@ -203,6 +220,7 @@
       "category": "Monitoring",
       "modes": "all",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "web-ui"
@@ -214,6 +232,7 @@
       "category": "Wireless",
       "modes": "all (mesh/AP)",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "web-ui"
@@ -225,6 +244,7 @@
       "category": "Wireless",
       "modes": "all",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "web-ui"
@@ -236,6 +256,7 @@
       "category": "Diagnostics",
       "modes": "all",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "web-ui"
@@ -247,6 +268,7 @@
       "category": "Services",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -258,6 +280,7 @@
       "category": "Services",
       "modes": "Router",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook",
@@ -270,6 +293,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -281,6 +305,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "stock",
+      "kind": "stock",
       "required": false,
       "depends_on": []
     },
@@ -290,6 +315,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "nfs",
@@ -302,6 +328,7 @@
       "category": "Tools",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "entware"
@@ -313,6 +340,7 @@
       "category": "Packages",
       "modes": "all",
       "status": "planned",
+      "kind": "franklin-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -324,6 +352,7 @@
       "category": "Network",
       "modes": "all",
       "status": "tested",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "kernel-modules",
@@ -336,6 +365,7 @@
       "category": "Network",
       "modes": "all",
       "status": "tested",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "kernel-modules",
@@ -348,6 +378,7 @@
       "category": "Automation",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -359,6 +390,7 @@
       "category": "Automation",
       "modes": "all",
       "status": "tested",
+      "kind": "franklin-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -370,7 +402,8 @@
       "category": "Storage",
       "modes": "all",
       "status": "stock",
-      "required": true,
+      "kind": "stock",
+      "required": false,
       "depends_on": []
     },
     {
@@ -379,6 +412,7 @@
       "category": "System",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -390,6 +424,7 @@
       "category": "System",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -401,6 +436,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "entware"
@@ -412,6 +448,7 @@
       "category": "Monitoring",
       "modes": "all",
       "status": "stock+",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "web-ui"
@@ -423,6 +460,7 @@
       "category": "Network",
       "modes": "Router",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -434,6 +472,7 @@
       "category": "System",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -445,6 +484,7 @@
       "category": "Automation",
       "modes": "all",
       "status": "planned",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "cron"
@@ -456,6 +496,7 @@
       "category": "Wireless",
       "modes": "Mesh (AiMesh router/node)",
       "status": "stock",
+      "kind": "stock",
       "required": false,
       "depends_on": []
     },
@@ -465,6 +506,7 @@
       "category": "Wireless",
       "modes": "Router / AP / Mesh",
       "status": "stock",
+      "kind": "stock",
       "required": false,
       "depends_on": []
     },
@@ -474,6 +516,7 @@
       "category": "Monitoring",
       "modes": "all",
       "status": "tested",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "web-ui",
@@ -486,10 +529,9 @@
       "category": "System",
       "modes": "all",
       "status": "tested",
+      "kind": "franklin-feature",
       "required": true,
-      "depends_on": [
-        "jffs"
-      ]
+      "depends_on": []
     },
     {
       "id": "kernel-modules",
@@ -497,6 +539,7 @@
       "category": "Kernel",
       "modes": "all",
       "status": "tested",
+      "kind": "franklin-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -505,8 +548,6 @@
   ],
   "build_order": [
     "aimesh",
-    "guest-network",
-    "jffs",
     "boot-hook",
     "cron",
     "custom-scripts",
@@ -518,7 +559,9 @@
     "disk-monitoring",
     "firewall-custom",
     "dns-director",
+    "guest-network",
     "ipsec-vpn",
+    "jffs",
     "kernel-modules",
     "cake-qos",
     "ipset",
