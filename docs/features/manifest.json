@@ -602,8 +602,8 @@
       "kind": "workaround",
       "required": false,
       "depends_on": [
-        "web-ui",
-        "boot-hook"
+        "boot-hook",
+        "franklin-mount"
       ]
     },
     {
@@ -943,6 +943,7 @@
     "mac-filter",
     "media-server",
     "nat-acceleration",
+    "networkmap",
     "nfs",
     "ntp",
     "nvram-tools",
@@ -967,7 +968,6 @@
     "web-ui",
     "aidisk-nfs",
     "network-tools",
-    "networkmap",
     "qos-classification",
     "sysinfo",
     "temperature-monitoring",

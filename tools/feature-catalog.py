@@ -561,11 +561,19 @@ FEATURES = [
          modes="all",
          status="tested",
          what="Connected clients (wired/wireless), names, IPs, mesh topology.",
-         gnuton="`networkmap` daemon + httpd page `index.asp`/`device-map`.",
-         deps="networkmap daemon; correct shm size (gnuton expects 198168 vs stock 197916).",
-         franklin="Run gnuton networkmap (creates larger shm) or fix shm; gnuton UI reads it.",
-         tested="Fixed shm size mismatch; `nmp_cache.js` populated; gnuton UI lists clients.",
-         risks="Dual networkmap (watchdog) when swapping; shm size coupling.",
+         gnuton="`networkmap` daemon + httpd page `index.asp`/`device-map`; the daemon also "
+                "writes `/jffs/nmp_cl_json.js` with the client list.",
+         deps="gnuton `networkmap` binary; `franklin-mount` (to bind it over the stock path); "
+              "shm key 0x3e9 sized 198168 (gnuton) instead of 197916 (stock).",
+         franklin="Workaround: bind gnuton networkmap over `/usr/sbin/networkmap`, clear the "
+                  "stale shm segment, start the daemon (stock's service actions are no-ops) and "
+                  "verify the 198168 layout before restarting httpd.",
+         tested="Verified on the XT9: shm 0x3e9 = 198168, gnuton daemon running, "
+                "`/jffs/nmp_cl_json.js` rewritten with 14 KB of clients.",
+         risks="Stock allocates a smaller struct, so mixing binaries breaks the list; the old "
+               "shm segment must be removed or the daemon reuses the wrong size.",
+         evidence="workaround: stock's networkmap cannot produce the gnuton UI's layout, and "
+                  "gnuton's rc (which would) is not available on stock.",
          links=["docs/firmware-comparison.md"]),
 
     dict(id="boot-hook", title="Boot hook (asusware.arm)", cat="System",
@@ -1069,7 +1077,7 @@ DEPS = {
     # workarounds
     "kernel-modules": ["boot-hook"],
     "web-ui-overlay": ["web-ui", "boot-hook", "franklin-mount"],
-    "networkmap": ["web-ui", "boot-hook"],
+    "networkmap": ["boot-hook", "franklin-mount"],
     # gnuton features
     "web-ui": ["boot-hook"],
     "cake-qos": ["kernel-modules", "boot-hook"],

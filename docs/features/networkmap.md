@@ -9,8 +9,8 @@
 
 ## Dependencies
 
-- [web-ui](web-ui.md)
 - [boot-hook](boot-hook.md)
+- [franklin-mount](franklin-mount.md)
 
 ## Build / install (separable)
 
@@ -22,27 +22,27 @@ Connected clients (wired/wireless), names, IPs, mesh topology.
 
 ## How gnuton implements it
 
-`networkmap` daemon + httpd page `index.asp`/`device-map`.
+`networkmap` daemon + httpd page `index.asp`/`device-map`; the daemon also writes `/jffs/nmp_cl_json.js` with the client list.
 
 ## Requirements
 
-networkmap daemon; correct shm size (gnuton expects 198168 vs stock 197916).
+gnuton `networkmap` binary; `franklin-mount` (to bind it over the stock path); shm key 0x3e9 sized 198168 (gnuton) instead of 197916 (stock).
 
 ## Franklin approach
 
-Run gnuton networkmap (creates larger shm) or fix shm; gnuton UI reads it.
+Workaround: bind gnuton networkmap over `/usr/sbin/networkmap`, clear the stale shm segment, start the daemon (stock's service actions are no-ops) and verify the 198168 layout before restarting httpd.
 
 ## Tested / verified
 
-Fixed shm size mismatch; `nmp_cache.js` populated; gnuton UI lists clients.
+Verified on the XT9: shm 0x3e9 = 198168, gnuton daemon running, `/jffs/nmp_cl_json.js` rewritten with 14 KB of clients.
 
 ## Risks / notes
 
-Dual networkmap (watchdog) when swapping; shm size coupling.
+Stock allocates a smaller struct, so mixing binaries breaks the list; the old shm segment must be removed or the daemon reuses the wrong size.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+workaround: stock's networkmap cannot produce the gnuton UI's layout, and gnuton's rc (which would) is not available on stock.
 
 ## Links / sources
 

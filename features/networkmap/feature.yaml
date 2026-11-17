@@ -1,0 +1,20 @@
+id: networkmap
+title: Network map / client list (gnuton networkmap)
+kind: workaround
+required: false
+enabled_by_default: true
+requires: [boot-hook, franklin-mount]
+provides:
+  - gnuton networkmap daemon
+  - shm size 198168 (gnuton layout)
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+build: build.sh
+notes: >
+  The gnuton UI reads the client list from the networkmap shared memory and
+  expects the gnuton struct size (198168 bytes). Stock's networkmap allocates
+  197916, so the UI shows an empty list. This feature runs gnuton's networkmap
+  instead, by bind-mounting it over /usr/sbin/networkmap (same technique as the
+  httpd wrapper) and restarting the service.

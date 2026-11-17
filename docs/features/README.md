@@ -29,7 +29,7 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 
 | Feature | Category | Modes | Status | Required | Requires | Plan |
 |---|---|---|---|---|---|---|
-| Network Map / client list | Monitoring | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [networkmap](networkmap.md) |
+| Network Map / client list | Monitoring | all | `tested` | no | [boot-hook](../features/boot-hook.md), [franklin-mount](../features/franklin-mount.md) | [networkmap](networkmap.md) |
 | Boot hook (asusware.arm) | System | all | `tested` | **yes** | — | [boot-hook](boot-hook.md) |
 | Kernel modules (build recipe) | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
 | franklin-mount (mount(2) helper) — workaround | System | all | `tested` | no | — | [franklin-mount](franklin-mount.md) |
@@ -173,31 +173,31 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 33. mac-filter  (stock)
 34. media-server  (stock)
 35. nat-acceleration  (stock)
-36. nfs  (gnuton-feature)
-37. ntp  (gnuton-feature)
-38. nvram-tools  (gnuton-feature)
-39. openvpn-client  (gnuton-feature)
-40. openvpn-server  (gnuton-feature)
-41. overlayfs  (workaround)
-42. parental-controls  (stock)
-43. port-forwarding  (stock)
-44. reboot-schedule  (gnuton-feature)
-45. samba-ftp-webdav  (stock)
-46. snmp  (gnuton-feature)
-47. ssh-access  (stock)
-48. syslog  (stock)
-49. tee  (gnuton-feature)
-50. time-machine  (stock)
-51. tor  (gnuton-feature)
-52. traffic-analyzer  (proprietary)
-53. usb-modem  (stock)
-54. vlan-iptv  (gnuton-feature)
-55. vpn-director  (gnuton-feature)
-56. vpn-killswitch  (gnuton-feature)
-57. web-ui  (gnuton-feature)
-58. aidisk-nfs  (gnuton-feature)
-59. network-tools  (gnuton-feature)
-60. networkmap  (workaround)
+36. networkmap  (workaround)
+37. nfs  (gnuton-feature)
+38. ntp  (gnuton-feature)
+39. nvram-tools  (gnuton-feature)
+40. openvpn-client  (gnuton-feature)
+41. openvpn-server  (gnuton-feature)
+42. overlayfs  (workaround)
+43. parental-controls  (stock)
+44. port-forwarding  (stock)
+45. reboot-schedule  (gnuton-feature)
+46. samba-ftp-webdav  (stock)
+47. snmp  (gnuton-feature)
+48. ssh-access  (stock)
+49. syslog  (stock)
+50. tee  (gnuton-feature)
+51. time-machine  (stock)
+52. tor  (gnuton-feature)
+53. traffic-analyzer  (proprietary)
+54. usb-modem  (stock)
+55. vlan-iptv  (gnuton-feature)
+56. vpn-director  (gnuton-feature)
+57. vpn-killswitch  (gnuton-feature)
+58. web-ui  (gnuton-feature)
+59. aidisk-nfs  (gnuton-feature)
+60. network-tools  (gnuton-feature)
 61. qos-classification  (gnuton-feature)
 62. sysinfo  (gnuton-feature)
 63. temperature-monitoring  (gnuton-feature)
@@ -341,8 +341,8 @@ graph TD
   boot_hook --> ddns
   boot_hook --> ntp
   cron --> reboot_schedule
-  web_ui --> networkmap
   boot_hook --> networkmap
+  franklin_mount --> networkmap
   boot_hook --> kernel_modules
   boot_hook --> vlan_iptv
   boot_hook --> bridge_management
