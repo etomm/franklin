@@ -263,3 +263,30 @@ gnuton-www/lib*.so` paths.
 Prefer testing pages that are mostly client-side (VPN Director, DNS Director,
 QoS Stats, Traffic Monitor, WiFi Insight, Wireless Survey) before the
 Administration/System pages, which are more likely to call backend functions.
+
+### Concrete segfault: `Advanced_System_Content.asp` / `get_all_accounts()`
+
+Disassembly of the crash (`PC=0x2d80c`) shows a loop doing
+`ldr r1, [r3, r5, lsl #2]` where `r3 = [sp,#4]` is a 2-D list pointer and it is
+**NULL** → segfault. gnuton's `get_all_accounts()` builds that list from NVRAM
+`acc_list`; on stock `acc_list` is empty, so gnuton returns NULL and the page
+handler iterates it without a guard. Stock's own httpd tolerates the empty
+case.
+
+Page-level workaround (revertable, text file on USB): remove the crashing
+server-side call from the page. In
+`/tmp/mnt/FRANKEN/gnuton-www/www/Advanced_System_Content.asp` replace
+
+```
+var accounts = [<% get_all_accounts(); %>][0];
+```
+
+with
+
+```
+var accounts = [[]][0];
+```
+
+(empty list). The account list then simply shows empty on that page, but httpd
+no longer segfaults. Same idea applies to any other page that calls a gnuton
+backend function returning NULL on stock.
