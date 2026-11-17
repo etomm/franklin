@@ -212,3 +212,22 @@ URLs on the gnuton UI (`http://192.168.0.4:8088/...`), from the `/www` diff:
 
 Notes: `cloud_*`/AiCloud pages are intentionally unsupported (removed upstream).
 Some pages may show empty data or error if they need a gnuton backend service.
+
+### Known crashes / risky pages
+
+Two distinct failure modes when running gnuton's httpd on stock:
+
+1. **Missing library symbol** → clean exit with
+   `symbol lookup error: ... undefined symbol: X`. Fix: copy the gnuton
+   library exporting `X` into the `LD_LIBRARY_PATH` dir (already fixed for
+   `replace_char` via `libshared.so`).
+2. **Segfault** → process dies with a kernel SIGSEGV trace (no clean message).
+   Caused by gnuton httpd calling gnuton-specific server-side functions that
+   assume gnuton data structures/NVRAM. Example: `Advanced_System_Content.asp`
+   (calls `get_all_accounts()`, `get_header_info()`, `httpd_cert_info()`, etc.)
+   segfaults on stock. These are harder — they need either the matching gnuton
+   backend or a page-level workaround (avoid the page / override it).
+
+Prefer testing pages that are mostly client-side (VPN Director, DNS Director,
+QoS Stats, Traffic Monitor, WiFi Insight, Wireless Survey) before the
+Administration/System pages, which are more likely to call backend functions.
