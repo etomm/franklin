@@ -67,5 +67,8 @@ verify any specific file.
     (offset 0x02dc25c5) has an invalid size field (0x3a62 = 14946, far
     exceeding the 8-byte remainder), so the id table cannot be read. This
     indicates a non-standard squashfs layout in the gnuton image.
+  - Tested on both the latest (3004.388.11_1) and an older
+    (3004.388.10_2) gnuton release - both fail identically, confirming
+    this is a systematic gnuton build characteristic, not a corrupt download.
   - The image is available locally for manual extraction with specialized
     tooling (e.g. patching the id table or using a custom extractor).
