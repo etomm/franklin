@@ -19,6 +19,12 @@
 #   * httpd must run with cwd = the tree it serves, with the gnuton-only libs on
 #     LD_LIBRARY_PATH, and acc_num=0 (otherwise Advanced_System_Content.asp
 #     segfaults).
+# Resolve the Franklin root when run by hand; the boot driver exports it.
+if [ -z "${FRANKLIN_ROOT:-}" ]; then
+    FRANKLIN_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+    export FRANKLIN_ROOT
+fi
+
 set -u
 root="${FRANKLIN_ROOT:?}"
 httpd="$root/opt/bin/gnuton-httpd"
@@ -50,9 +56,31 @@ if [ "${acc:-}" != "0" ]; then
     echo "web-ui-overlay: set acc_num=0 (was '${acc:-}')"
 fi
 
-http_ok() { wget -q -O /dev/null -T 5 "http://127.0.0.1:$1/" 2>/dev/null; }
+# HTTP probe. ASUS's /usr/sbin/wget is not a normal wget (-O silently writes
+# nothing, no exit status), so use a raw request over nc and look at the status
+# line. A gnuton-only static asset is the honest test: stock answers 404 for it, while .asp pages are auth-gated and redirect on both, so they prove nothing.
+http_get() {  # http_get <port> <path> -> status line
+    req="GET $2 HTTP/1.0"
+    if command -v nc >/dev/null 2>&1; then
+        printf '%s\r\n\r\n' "$req" | nc 127.0.0.1 "$1" 2>/dev/null | head -1
+    else
+        printf '%s\r\n\r\n' "$req" | busybox nc 127.0.0.1 "$1" 2>/dev/null | head -1
+    fi
+}
+http_ok() {  # http_ok <port> [path]
+    case "$(http_get "$1" "${2:-/}")" in
+        *" 200 "*) return 0 ;;
+    esac
+    return 1
+}
 is_mounted() { grep -q " $1 " /proc/mounts 2>/dev/null; }
-restart_httpd() { [ -x /sbin/rc ] && /sbin/rc restart_httpd >/dev/null 2>&1; }
+# /sbin/rc restart_httpd segfaults on stock XT9 (verified); /sbin/service works.
+restart_httpd() {
+    if [ -x /sbin/service ] && /sbin/service restart_httpd >/dev/null 2>&1; then
+        return 0
+    fi
+    /sbin/rc restart_httpd >/dev/null 2>&1
+}
 mnt_host() {
     if [ -x "$helper" ]; then "$helper" "$1" "$2" "$3"; else mount "--$1" "$2" "$3"; fi
 }
@@ -89,14 +117,14 @@ if [ -f "$state/web-ui-overlay.replace" ]; then
 
     # 1. Pre-flight on a spare port: never touch the live UI with an unproven
     #    binary.
-    if http_ok 8089; then
+    if http_ok 8089 /js/chart.min.js; then
         echo "web-ui-overlay: port 8089 busy, cannot pre-flight"
         exit 1
     fi
     ( cd "$mnt" && LD_LIBRARY_PATH="$lib" "$httpd" -p 8089 ) >>"$log/preflight.log" 2>&1 &
     pre=$!
     sleep 2
-    if ! http_ok 8089; then
+    if ! http_ok 8089 /js/chart.min.js; then
         kill "$pre" 2>/dev/null
         echo "web-ui-overlay: pre-flight failed; stock UI untouched ($log/preflight.log)"
         exit 1
@@ -104,6 +132,10 @@ if [ -f "$state/web-ui-overlay.replace" ]; then
     kill "$pre" 2>/dev/null
     sleep 1
     echo "web-ui-overlay: pre-flight OK"
+
+    # Clear any earlier instance (parallel mode or a previous swap) so :80 is
+    # free for the stock rc restart to bind with our wrapper.
+    killall gnuton-httpd 2>/dev/null && sleep 1
 
     # 2. Wrapper: rc restarts /usr/sbin/httpd by absolute path, so the
     #    replacement must be a script that sets the library path and execs the
@@ -127,7 +159,7 @@ if [ -f "$state/web-ui-overlay.replace" ]; then
     sleep 3
 
     # 4. Verify, roll back to stock if the UI did not come back.
-    if http_ok 80; then
+    if http_ok 80 /js/chart.min.js; then
         echo "web-ui-overlay: :80 now serves the gnuton UI"
         exit 0
     fi

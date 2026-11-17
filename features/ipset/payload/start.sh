@@ -1,6 +1,12 @@
 #!/bin/sh
 # Load ip_set core + hash:ip from this feature's folder, then expose the
 # gnuton `ipset` tool if it was staged under the merged /opt prefix.
+# Resolve the Franklin root when run by hand; the boot driver exports it.
+if [ -z "${FRANKLIN_ROOT:-}" ]; then
+    FRANKLIN_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+    export FRANKLIN_ROOT
+fi
+
 set -u
 dir="${FRANKLIN_ROOT:?}/features/ipset"
 load() {

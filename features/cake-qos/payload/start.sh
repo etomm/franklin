@@ -1,5 +1,11 @@
 #!/bin/sh
 # Load sch_cake.ko from this feature's own folder.
+# Resolve the Franklin root when run by hand; the boot driver exports it.
+if [ -z "${FRANKLIN_ROOT:-}" ]; then
+    FRANKLIN_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+    export FRANKLIN_ROOT
+fi
+
 set -u
 dir="${FRANKLIN_ROOT:?}/features/cake-qos"
 ko="$dir/sch_cake.ko"

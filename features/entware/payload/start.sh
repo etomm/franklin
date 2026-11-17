@@ -1,6 +1,12 @@
 #!/bin/sh
 # Entware lives in franklin/opt (preserved across rebuilds); this only makes
 # sure the layout and PATH exist. It never installs packages by itself.
+# Resolve the Franklin root when run by hand; the boot driver exports it.
+if [ -z "${FRANKLIN_ROOT:-}" ]; then
+    FRANKLIN_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+    export FRANKLIN_ROOT
+fi
+
 set -u
 root="${FRANKLIN_ROOT:?}"
 mkdir -p "$root/opt"
