@@ -228,6 +228,38 @@ Two distinct failure modes when running gnuton's httpd on stock:
    segfaults on stock. These are harder — they need either the matching gnuton
    backend or a page-level workaround (avoid the page / override it).
 
+### Library ABI mismatch (fix for segfaults)
+
+All of gnuton httpd's dependent libraries **differ** from stock's versions:
+
+| library | gnuton vs stock |
+|---|---|
+| libnt.so | differ |
+| libletsencrypt.so | differ |
+| libcfgmnt.so | differ |
+| libcodb.so | differ |
+| libconn_diag.so | differ |
+| libpasswd.so | differ |
+| libasuslog.so | differ |
+| libwebapi.so | differ |
+| libshared.so | differ (exports `replace_char`) |
+| libovpn.so | only on gnuton |
+
+So a segfault is very likely an ABI/data mismatch with a stock library.
+Fix: copy gnuton's versions of **all** of these into the `LD_LIBRARY_PATH`
+directory (`/tmp/mnt/FRANKEN/gnuton-www/`) and restart httpd, so the process
+resolves them from gnuton rather than stock:
+
+```
+for l in libnt.so libletsencrypt.so libcfgmnt.so libcodb.so libconn_diag.so \
+         libpasswd.so libasuslog.so libwebapi.so libshared.so libovpn.so; do
+  # copy gnuton rootfs lib/$l or usr/lib/$l into /tmp/mnt/FRANKEN/gnuton-www/
+done
+```
+
+Verify with `/proc/<pid>/maps` that the process maps the `/tmp/mnt/FRANKEN/
+gnuton-www/lib*.so` paths.
+
 Prefer testing pages that are mostly client-side (VPN Director, DNS Director,
 QoS Stats, Traffic Monitor, WiFi Insight, Wireless Survey) before the
 Administration/System pages, which are more likely to call backend functions.
