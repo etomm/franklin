@@ -198,6 +198,20 @@ Then copy the composition back and re-plug. Nothing in Franklin hardcodes the
 mount point or the label (the shim derives the USB base from its own path), so
 a new label/`/tmp/mnt/<name>` needs no code change.
 
+If you would rather not unplug the stick: the router can format it itself. Stock
+busybox only ships `mkfs.ext2`/`mkfs.ext3`, but the kernel has
+`CONFIG_EXT4_FS=y`, so building a static `mke2fs` is enough:
+
+```sh
+tools/build-mke2fs.sh                 # in WSL; produces a 1.1 MB static ARM binary
+# push it to /tmp/mke2fs on the router, then:
+umount /tmp/mnt/<label>
+/tmp/mke2fs -q -t ext4 -L FRANKLIN /dev/sda
+```
+
+Verified on the XT9: `mke2fs 1.47.2` creates an ext4 image there and the stock
+kernel mounts it `ext4 rw` (loop test), so no PC-side formatting is required.
+
 ## Mounts: overlay first, bind as fallback
 
 The stock rootfs is a read-only squashfs, and ASUS's busybox `mount` refuses
