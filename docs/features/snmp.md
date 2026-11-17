@@ -39,6 +39,10 @@ gnuton has `snmpd`; not yet run.
 
 Library deps; low risk.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `usr/sbin/snmpd`

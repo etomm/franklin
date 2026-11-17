@@ -40,6 +40,10 @@ openvpn present; page loads.
 
 Router-mode only.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_VPN_OpenVPN.asp`

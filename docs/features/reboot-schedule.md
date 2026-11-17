@@ -39,6 +39,10 @@ Page present.
 
 Low.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_System_Content.asp`

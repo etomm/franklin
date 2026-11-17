@@ -3,9 +3,9 @@
 **Category:** Monitoring  
 **Modes:** all  
 **Status:** `tested`  
-**Kind:** gnuton-feature  
+**Kind:** workaround  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** gnuton networkmap daemon; Franklin needs a shm-size workaround
 
 ## Dependencies
 
@@ -39,6 +39,10 @@ Fixed shm size mismatch; `nmp_cache.js` populated; gnuton UI lists clients.
 ## Risks / notes
 
 Dual networkmap (watchdog) when swapping; shm size coupling.
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

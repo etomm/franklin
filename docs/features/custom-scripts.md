@@ -3,9 +3,9 @@
 **Category:** Automation  
 **Modes:** all  
 **Status:** `tested`  
-**Kind:** franklin-feature  
+**Kind:** gnuton-feature  
 **Required:** no  
-**Upstream:** gnuton/Merlin (/jffs/scripts) — re-created by Franklin on stock
+**Upstream:** gnuton / Asuswrt-Merlin
 
 ## Dependencies
 
@@ -38,6 +38,10 @@ Use the USB `asusware.arm` hook instead; verified it runs at boot.
 ## Risks / notes
 
 USB must be present at boot.
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

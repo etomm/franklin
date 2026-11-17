@@ -2,9 +2,27 @@
 
 Franklin cannot become gnuton/Merlin firmware, but it can port **userland**
 features. This document tracks parity. A sortable (click-to-sort) version of
-the table is available in [`gnuton-feature-parity.html`](gnuton-feature-parity.html).
+the table is available in [`gnuton-feature-parity.html`](gnuton-feature-parity.html)
+(regenerated from this file by `tools/parity-sync.py`, so it cannot drift).
 Detailed per-feature plans (what it does, modes, requirements, tested status)
-are in [`features/README.md`](features/README.md); each row below links to its plan.
+are in [`features/README.md`](features/README.md); **every row below links to
+its plan**.
+
+Each plan declares a `Kind`, so three different things stay separated:
+
+| Kind | Meaning |
+|---|---|
+| `gnuton-feature` | Upstream gnuton/Merlin provides it; Franklin ports it. |
+| `workaround` | Franklin-only mechanism needed because stock is not gnuton (boot hook, kernel-module recipe, web UI overlay). **Not** a gnuton feature. |
+| `franklin-feature` | Franklin addition that gnuton does not have at all (Entware, CIFS client, aria2, smartmontools). |
+| `stock` | Stock ASUSWRT already provides it; nothing to port, only "don't break it". |
+| `proprietary` | Closed/licensed (Trend Micro DPI, ASUS cloud). |
+
+How each `Kind` was decided is reproducible: `tools/parity-audit.py` compares
+an extracted stock rootfs with an extracted gnuton rootfs and reports what
+exists **only in gnuton** (gnuton feature), in **both** (stock), or in
+**neither** (Franklin addition). Results: [`parity-audit.md`](parity-audit.md).
+
 
 Version legend (reference builds used in the table below):
 - **gnuton 3006.102.9** — gnuton master, pinned in `GNUTON_REF` (commit
@@ -27,26 +45,26 @@ is only fully ported when both Backend and UI are ✅.
 
 | # | Feature | Available in (upstream) | Franklin (mine) | Backend | UI | Notes |
 |---|---|---|---|---|---|---|
-| 1 | IPTV / VLAN port tagging (wired) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | 📋 | ethswctl softswitch map [plan](features/boot-hook.md) |
-| 2 | VLAN / switch control (ethswctl, softswitch) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | 📋 | XT9 verified sequence [plan](features/boot-hook.md) |
+| 1 | IPTV / VLAN port tagging (wired) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | 📋 | ethswctl softswitch map [plan](features/vlan-iptv.md) |
+| 2 | VLAN / switch control (ethswctl, softswitch) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | 📋 | XT9 verified sequence [plan](features/vlan-iptv.md) |
 | 3 | Boot-time scripts (services-start, firewall-start, nat-start, wan-start) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | 🚫 | asusware.arm `S99franklin-boot` hook [plan](features/boot-hook.md) |
 | 4 | Custom scripts in `/jffs/scripts` | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | 🚫 | `/jffs/franklin` scripts [plan](features/custom-scripts.md) |
 | 5 | JFFS partition (persistent storage) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | 🚫 | `/jffs` used for profiles/logs [plan](features/jffs.md) |
 | 6 | Cake qdisc | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Research) | 🔄 | 📋 | needs compatible `sch_cake.ko` [plan](features/cake-qos.md) |
-| 7 | IGMP snooping / multicast | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Research) | 🔄 | 📋 | firmware-level mostly |
+| 7 | IGMP snooping / multicast | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Research) | 🔄 | 📋 | firmware-level mostly [plan](features/igmp-snooping.md) |
 | 8 | QoS / bandwidth limiter | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Research) | 🔄 | 📋 | tc + IFB [plan](features/cake-qos.md) |
 | 9 | SQM with fq_codel / ifb | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Research) | 🔄 | 📋 | kernel has IFB + fq_codel [plan](features/cake-qos.md) |
 | 10 | amtm (ASUSWRT Merlin Terminal Menu) | gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | Franklin's own menu equivalent [plan](features/amtm.md) |
-| 11 | CIFS mount (client) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware cifs-utils |
+| 11 | CIFS mount (client) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware cifs-utils [plan](features/cifs-client.md) |
 | 12 | DDNS (custom providers) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware ddns-scripts [plan](features/ddns.md) |
-| 13 | DHCP static leases / custom config | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware dnsmasq |
+| 13 | DHCP static leases / custom config | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware dnsmasq [plan](features/dhcp-leases.md) |
 | 14 | Diagnostics (tcpdump, iperf3, ethtool, mtr) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | stock has iperf3, ethtool, tc, brctl, jq, curl, wget; tcpdump via Entware [plan](features/network-tools.md) |
 | 15 | Disk monitoring (smartmontools) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware smartmontools [plan](features/disk-monitoring.md) |
-| 16 | Disk spindown / power management | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware hdparm |
+| 16 | Disk spindown / power management | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware hdparm [plan](features/disk-spindown.md) |
 | 17 | DNS (dnsmasq, custom config) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware dnsmasq [plan](features/dnsmasq-custom.md) |
 | 18 | DNS-over-TLS (DoT) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware (stubby/unbound) [plan](features/dns-over-tls.md) |
 | 19 | DNSFilter / ad blocking | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware [plan](features/dns-director.md) |
-| 20 | Download manager (aria2) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware aria2 [plan](features/entware.md) |
+| 20 | Download manager (aria2) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware aria2 [plan](features/download-manager.md) |
 | 21 | Firewall (iptables) rules | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | wrappers + Entware [plan](features/firewall-custom.md) |
 | 22 | Integrated web UI (modify existing stock pages) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | bind-mount overlay of `/www`, edit existing pages; preferred over separate :8080 [plan](features/web-ui.md) |
 | 23 | LED control | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | wrappers [plan](features/led-control.md) |
@@ -57,41 +75,41 @@ is only fully ported when both Backend and UI are ✅.
 | 28 | NVRAM tools / config export | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | wrappers around nvram [plan](features/nvram-tools.md) |
 | 29 | Reboot schedule | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | cron job [plan](features/reboot-schedule.md) |
 | 30 | SNMP | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via Entware snmpd [plan](features/snmp.md) |
-| 31 | SSH (dropbear / openssh) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | stock SSH + Entware openssh |
-| 32 | System log / syslog | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | Entware syslog-ng |
+| 31 | SSH (dropbear / openssh) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | stock SSH + Entware openssh [plan](features/ssh-access.md) |
+| 32 | System log / syslog | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | Entware syslog-ng [plan](features/syslog.md) |
 | 33 | Temperature monitoring | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | via sysfs/Entware [plan](features/temperature-monitoring.md) |
-| 34 | Web UI overlay over `/www` (bind mount) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | preferred approach: modify existing pages in place [plan](features/web-ui.md) |
-| 35 | Bridge management (brctl) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 🚫 | wrappers [plan](features/boot-hook.md) |
+| 34 | Web UI overlay over `/www` (bind mount) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 📋 | preferred approach: modify existing pages in place [plan](features/web-ui-overlay.md) |
+| 35 | Bridge management (brctl) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 🚫 | wrappers [plan](features/bridge-management.md) |
 | 36 | cron / scheduled tasks | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 🚫 | Entware cron or shell loop [plan](features/cron.md) |
 | 37 | Entware / opkg package ecosystem | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | 🚫 | `armv7sf-k3.2` repo [plan](features/entware.md) |
 | 38 | Adaptive QoS | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#adaptive-qos--qos-engine) | 🏠 | stock firmware provides QoS [plan](features/adaptive-qos.md) |
 | 39 | AiMesh / mesh management | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 [⛔](#aimesh--mesh-stability) | 🏠 | stock firmware handles [plan](features/aimesh.md) |
-| 40 | AiProtection (Trend Micro) | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
-| 41 | AP / Bridge / Repeater / Media bridge modes | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
-| 42 | Cloud sync (Dropbox etc.) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
-| 43 | Firmware upgrade helpers | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
+| 40 | AiProtection (Trend Micro) | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/aiprotection.md) |
+| 41 | AP / Bridge / Repeater / Media bridge modes | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/ap-modes.md) |
+| 42 | Cloud sync (Dropbox etc.) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/cloud-sync.md) |
+| 43 | Firmware upgrade helpers | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/firmware-upgrade.md) |
 | 44 | FTP server | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#usb-apps-samba-ftp-webdav-dlna-time-machine) | 🏠 | stock firmware handles; Entware alternative available [plan](features/samba-ftp-webdav.md) |
 | 45 | Guest network | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/guest-network.md) |
 | 46 | IPSec VPN | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#vpn-stack-openvpn-wireguard-ipsec) | 🏠 | stock firmware handles [plan](features/ipsec-vpn.md) |
-| 47 | IPv6 (native, 6in4, 6to4, 6rd) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#kernel-and-network-stack) | 🏠 | stock firmware handles IPv6 |
-| 48 | MAC filter | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
-| 49 | Media server (minidlna) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock provides minidlna (`/usr/sbin/minidlna`) [plan](features/samba-ftp-webdav.md) |
+| 47 | IPv6 (native, 6in4, 6to4, 6rd) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#kernel-and-network-stack) | 🏠 | stock firmware handles IPv6 [plan](features/ipv6.md) |
+| 48 | MAC filter | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/mac-filter.md) |
+| 49 | Media server (minidlna) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock provides minidlna (`/usr/sbin/minidlna`) [plan](features/media-server.md) |
 | 50 | NAT acceleration (CTF/FA) | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 [⛔](#nat-acceleration-ctffa) | 🏠 | stock firmware handles [plan](features/nat-acceleration.md) |
 | 51 | Network map / client list | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/networkmap.md) |
-| 52 | Parental controls | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
-| 53 | Port forwarding / virtual server / DMZ | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
+| 52 | Parental controls | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/parental-controls.md) |
+| 53 | Port forwarding / virtual server / DMZ | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/port-forwarding.md) |
 | 54 | Samba / SMB file sharing | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#usb-apps-samba-ftp-webdav-dlna-time-machine) | 🏠 | stock firmware handles; Entware alternative available [plan](features/samba-ftp-webdav.md) |
 | 55 | Samba recycle bin | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/samba-ftp-webdav.md) |
-| 56 | Time Machine (AFP) backup | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/samba-ftp-webdav.md) |
-| 57 | Traffic Analyzer / bandwidth monitor | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
-| 58 | USB modem (3G/4G) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles |
+| 56 | Time Machine (AFP) backup | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/time-machine.md) |
+| 57 | Traffic Analyzer / bandwidth monitor | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/traffic-analyzer.md) |
+| 58 | USB modem (3G/4G) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/usb-modem.md) |
 | 59 | USB storage (Samba, FTP, DLNA, printer) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#usb-apps-samba-ftp-webdav-dlna-time-machine) | 🏠 | stock firmware handles; Entware alternative available [plan](features/samba-ftp-webdav.md) |
 | 60 | VPN client (OpenVPN) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#vpn-stack-openvpn-wireguard-ipsec) | 🏠 | stock firmware handles; Entware alternative available [plan](features/openvpn-client.md) |
 | 61 | VPN server (OpenVPN) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#vpn-stack-openvpn-wireguard-ipsec) | 🏠 | stock firmware handles; Entware alternative available [plan](features/openvpn-server.md) |
 | 62 | Web UI HTTPS admin | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 | 🏠 | stock firmware handles [plan](features/web-ui.md) |
 | 63 | WebDAV | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#usb-apps-samba-ftp-webdav-dlna-time-machine) | 🏠 | stock firmware handles [plan](features/samba-ftp-webdav.md) |
 | 64 | WireGuard | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | 🏠 [⛔](#vpn-stack-openvpn-wireguard-ipsec) | 🏠 | stock firmware handles; Entware alternative available [plan](features/wireguard-client.md) |
-| 65 | Wireless tuning (band steering, smart connect, WPS) | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 [⛔](#wireless-tuning) | 🏠 | stock firmware handles |
+| 65 | Wireless tuning (band steering, smart connect, WPS) | Stock 3.0.0.4.388 | n/a (Stock handles) | 🏠 [⛔](#wireless-tuning) | 🏠 | stock firmware handles [plan](features/wireless-tuning.md) |
 
 ## Feature descriptions
 

@@ -39,6 +39,10 @@ gnuton binaries present; kernel NFS support to verify.
 
 Kernel NFS may be absent; check config.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `usr/sbin/nfsd`

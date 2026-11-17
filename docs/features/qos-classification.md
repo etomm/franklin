@@ -40,6 +40,10 @@ Page loads; data depends on DPI.
 
 Router-mode.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/QoS_Stats.asp`

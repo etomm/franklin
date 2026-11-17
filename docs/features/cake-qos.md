@@ -40,6 +40,10 @@ Built from ASUS GPL 4.19.183; insmod + `tc qdisc add dev br0 root cake` works (n
 
 Router-mode for WAN shaping; module must match kernel; not persistent until boot hook.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `docs/xt9-kernel-notes.md`

@@ -3,9 +3,9 @@
 **Category:** Kernel  
 **Modes:** all  
 **Status:** `tested`  
-**Kind:** franklin-feature  
+**Kind:** workaround  
 **Required:** no  
-**Upstream:** ASUS GPL 4.19.183 (not gnuton)
+**Upstream:** n/a — Franklin workaround (ASUS GPL 4.19.183, not gnuton)
 
 ## Dependencies
 
@@ -38,6 +38,10 @@ Cake, TEE, nf_dup, ipset built+loaded+functionally verified.
 ## Risks / notes
 
 Must match kernel 4.19.183 + config; not vanilla.
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

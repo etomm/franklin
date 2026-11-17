@@ -39,6 +39,10 @@ Not yet.
 
 Model-specific LED paths.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - (none yet)

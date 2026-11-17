@@ -40,6 +40,10 @@ Module/tool present.
 
 Router-mode.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_WireguardServer_Content.asp`

@@ -39,6 +39,10 @@ wireguard.ko present on stock; `wg` binary present.
 
 Disables hardware NAT acceleration; Router-mode.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_WireguardClient_Content.asp`

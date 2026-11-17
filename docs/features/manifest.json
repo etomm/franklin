@@ -1,4 +1,84 @@
 {
+  "kinds": {
+    "gnuton-feature": [
+      "web-ui",
+      "vpn-director",
+      "vpn-killswitch",
+      "openvpn-client",
+      "openvpn-server",
+      "wireguard-client",
+      "wireguard-server",
+      "ipsec-vpn",
+      "dns-director",
+      "dns-over-tls",
+      "dnsmasq-custom",
+      "firewall-custom",
+      "cake-qos",
+      "adaptive-qos",
+      "traffic-monitor",
+      "qos-classification",
+      "sysinfo",
+      "wifi-insight",
+      "wireless-survey",
+      "network-tools",
+      "snmp",
+      "tor",
+      "nfs",
+      "aidisk-nfs",
+      "amtm",
+      "ipset",
+      "tee",
+      "cron",
+      "custom-scripts",
+      "nvram-tools",
+      "led-control",
+      "temperature-monitoring",
+      "ddns",
+      "ntp",
+      "reboot-schedule",
+      "vlan-iptv"
+    ],
+    "workaround": [
+      "networkmap",
+      "boot-hook",
+      "kernel-modules",
+      "web-ui-overlay"
+    ],
+    "franklin-feature": [
+      "entware",
+      "disk-monitoring",
+      "cifs-client",
+      "download-manager"
+    ],
+    "stock": [
+      "nat-acceleration",
+      "samba-ftp-webdav",
+      "jffs",
+      "aimesh",
+      "guest-network",
+      "bridge-management",
+      "igmp-snooping",
+      "dhcp-leases",
+      "disk-spindown",
+      "ssh-access",
+      "syslog",
+      "ap-modes",
+      "firmware-upgrade",
+      "ipv6",
+      "mac-filter",
+      "parental-controls",
+      "port-forwarding",
+      "usb-modem",
+      "wireless-tuning",
+      "media-server",
+      "time-machine"
+    ],
+    "proprietary": [
+      "aiprotection",
+      "cloud-sync",
+      "traffic-analyzer"
+    ]
+  },
   "features": [
     {
       "id": "web-ui",
@@ -158,7 +238,7 @@
       "category": "Network",
       "modes": "Router",
       "status": "out-of-scope",
-      "kind": "out-of-scope",
+      "kind": "stock",
       "required": false,
       "depends_on": []
     },
@@ -390,7 +470,7 @@
       "category": "Automation",
       "modes": "all",
       "status": "tested",
-      "kind": "franklin-feature",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook"
@@ -436,7 +516,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "planned",
-      "kind": "gnuton-feature",
+      "kind": "franklin-feature",
       "required": false,
       "depends_on": [
         "entware"
@@ -516,7 +596,7 @@
       "category": "Monitoring",
       "modes": "all",
       "status": "tested",
-      "kind": "gnuton-feature",
+      "kind": "workaround",
       "required": false,
       "depends_on": [
         "web-ui",
@@ -529,7 +609,7 @@
       "category": "System",
       "modes": "all",
       "status": "tested",
-      "kind": "franklin-feature",
+      "kind": "workaround",
       "required": true,
       "depends_on": []
     },
@@ -539,45 +619,322 @@
       "category": "Kernel",
       "modes": "all",
       "status": "tested",
+      "kind": "workaround",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "vlan-iptv",
+      "title": "VLAN / IPTV port tagging (ethswctl, softswitch)",
+      "category": "Network",
+      "modes": "Router / AP (wired switch config)",
+      "status": "planned",
+      "kind": "gnuton-feature",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "bridge-management",
+      "title": "Bridge management (brctl)",
+      "category": "Network",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "igmp-snooping",
+      "title": "IGMP snooping / multicast",
+      "category": "Network",
+      "modes": "Router / AP",
+      "status": "out-of-scope",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "cifs-client",
+      "title": "CIFS mount (client)",
+      "category": "Storage",
+      "modes": "all",
+      "status": "planned",
       "kind": "franklin-feature",
       "required": false,
       "depends_on": [
+        "boot-hook",
+        "kernel-modules"
+      ]
+    },
+    {
+      "id": "dhcp-leases",
+      "title": "DHCP static leases / custom config",
+      "category": "DNS",
+      "modes": "Router (DHCP server)",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": [
+        "dnsmasq-custom"
+      ]
+    },
+    {
+      "id": "disk-spindown",
+      "title": "Disk spindown / power management",
+      "category": "Storage",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "ssh-access",
+      "title": "SSH access (dropbear / openssh)",
+      "category": "System",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "syslog",
+      "title": "System log / remote syslog",
+      "category": "Monitoring",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "aiprotection",
+      "title": "AiProtection (Trend Micro)",
+      "category": "Security",
+      "modes": "Router",
+      "status": "out-of-scope",
+      "kind": "proprietary",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "ap-modes",
+      "title": "AP / Bridge / Repeater / Media bridge modes",
+      "category": "Wireless",
+      "modes": "AP / Router / Mesh",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "cloud-sync",
+      "title": "Cloud sync (Dropbox, etc.)",
+      "category": "Storage",
+      "modes": "all",
+      "status": "out-of-scope",
+      "kind": "proprietary",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "firmware-upgrade",
+      "title": "Firmware upgrade helpers",
+      "category": "System",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "ipv6",
+      "title": "IPv6 (native, 6in4, 6to4, 6rd)",
+      "category": "Network",
+      "modes": "Router",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "mac-filter",
+      "title": "MAC filter",
+      "category": "Wireless",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "parental-controls",
+      "title": "Parental controls",
+      "category": "Security",
+      "modes": "Router",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": [
+        "firewall-custom"
+      ]
+    },
+    {
+      "id": "port-forwarding",
+      "title": "Port forwarding / virtual server / DMZ",
+      "category": "Network",
+      "modes": "Router",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": [
+        "firewall-custom"
+      ]
+    },
+    {
+      "id": "traffic-analyzer",
+      "title": "Traffic Analyzer / bandwidth monitor",
+      "category": "Monitoring",
+      "modes": "Router",
+      "status": "out-of-scope",
+      "kind": "proprietary",
+      "required": false,
+      "depends_on": [
+        "adaptive-qos"
+      ]
+    },
+    {
+      "id": "usb-modem",
+      "title": "USB modem (3G/4G)",
+      "category": "Network",
+      "modes": "Router",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "wireless-tuning",
+      "title": "Wireless tuning (band steering, Smart Connect, WPS)",
+      "category": "Wireless",
+      "modes": "all (mesh/AP)",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "download-manager",
+      "title": "Download manager (aria2)",
+      "category": "Storage",
+      "modes": "all",
+      "status": "planned",
+      "kind": "franklin-feature",
+      "required": false,
+      "depends_on": [
+        "entware",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "media-server",
+      "title": "Media server (minidlna)",
+      "category": "Storage",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "time-machine",
+      "title": "Time Machine (AFP) backup",
+      "category": "Storage",
+      "modes": "all",
+      "status": "stock",
+      "kind": "stock",
+      "required": false,
+      "depends_on": [
+        "samba-ftp-webdav"
+      ]
+    },
+    {
+      "id": "web-ui-overlay",
+      "title": "Web UI overlay (bind-mount httpd + /www) \u2014 workaround",
+      "category": "UI",
+      "modes": "all",
+      "status": "tested",
+      "kind": "workaround",
+      "required": false,
+      "depends_on": [
+        "web-ui",
+        "networkmap",
         "boot-hook"
       ]
     }
   ],
   "build_order": [
     "aimesh",
+    "aiprotection",
+    "ap-modes",
     "boot-hook",
+    "bridge-management",
+    "cloud-sync",
     "cron",
     "custom-scripts",
     "ddns",
+    "disk-spindown",
     "dnsmasq-custom",
+    "dhcp-leases",
     "dns-over-tls",
     "entware",
     "amtm",
     "disk-monitoring",
+    "download-manager",
     "firewall-custom",
     "dns-director",
+    "firmware-upgrade",
     "guest-network",
+    "igmp-snooping",
     "ipsec-vpn",
+    "ipv6",
     "jffs",
     "kernel-modules",
     "cake-qos",
+    "cifs-client",
     "ipset",
     "adaptive-qos",
     "led-control",
+    "mac-filter",
+    "media-server",
     "nat-acceleration",
     "nfs",
     "ntp",
     "nvram-tools",
     "openvpn-client",
     "openvpn-server",
+    "parental-controls",
+    "port-forwarding",
     "reboot-schedule",
     "samba-ftp-webdav",
     "snmp",
+    "ssh-access",
+    "syslog",
     "tee",
+    "time-machine",
     "tor",
+    "traffic-analyzer",
+    "usb-modem",
+    "vlan-iptv",
     "vpn-director",
     "vpn-killswitch",
     "web-ui",
@@ -588,9 +945,11 @@
     "sysinfo",
     "temperature-monitoring",
     "traffic-monitor",
+    "web-ui-overlay",
     "wifi-insight",
     "wireguard-client",
     "wireguard-server",
-    "wireless-survey"
+    "wireless-survey",
+    "wireless-tuning"
   ]
 }

@@ -39,6 +39,10 @@ Sysinfo page loads.
 
 Model-specific sensors.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Tools_Sysinfo.asp`

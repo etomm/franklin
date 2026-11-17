@@ -5,7 +5,7 @@
 **Status:** `stock`  
 **Kind:** stock  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** stock ASUS
 
 ## Dependencies
 
@@ -38,6 +38,10 @@ JFFS present and writable; `/jffs/scripts` hooks did not run on stock.
 ## Risks / notes
 
 JFFS is stock (nothing to build). Don't rely on `/jffs/scripts` for boot on stock.
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

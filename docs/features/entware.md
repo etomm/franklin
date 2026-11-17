@@ -39,6 +39,10 @@ Not yet installed.
 
 Its binaries are built for its own toolchain/libc; use unset LD_LIBRARY_PATH. Cannot provide gnuton-patched binaries or kernel modules.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - (none yet)

@@ -39,6 +39,10 @@ Ran gnuton httpd + www on stock XT9 on :8088; stock UI on :80 untouched; most pa
 
 httpd/lib ABI coupling to the ASUS kernel build; pages that call gnuton daemons may crash or show empty data; AiCloud pages intentionally unsupported.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_System_Content.asp`

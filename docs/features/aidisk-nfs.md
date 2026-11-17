@@ -40,6 +40,10 @@ Page loads; daemons not yet.
 
 Depends on nfs feature.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_AiDisk_NFS.asp`

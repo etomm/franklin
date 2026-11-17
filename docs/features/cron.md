@@ -39,6 +39,10 @@ Not yet.
 
 Entware LD_LIBRARY_PATH; re-add jobs at boot.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - (none yet)

@@ -5,7 +5,7 @@
 **Status:** `stock`  
 **Kind:** stock  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** stock ASUS
 
 ## Dependencies
 
@@ -13,7 +13,7 @@
 
 ## Build / install (separable)
 
-See Franklin approach above; deploy from USB/boot hook.
+Nothing to build: stock firmware provides it. Franklin only must not break it.
 
 ## What it does
 
@@ -38,6 +38,10 @@ Device is an AiMesh node; mesh works on stock.
 ## Risks / notes
 
 Firmware/driver-level; not portable.
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

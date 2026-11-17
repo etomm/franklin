@@ -39,6 +39,10 @@ Page loads (200).
 
 Scan may interfere briefly; model-specific.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_Wireless_Survey.asp`

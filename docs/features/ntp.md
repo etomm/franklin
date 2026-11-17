@@ -39,6 +39,10 @@ Stock uses ntpclient; gnuton has ntpd.
 
 Low.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `usr/sbin/ntpd`

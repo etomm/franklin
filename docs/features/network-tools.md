@@ -39,6 +39,10 @@ Pages present on stock.
 
 Low.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Main_Netstat_Content.asp`

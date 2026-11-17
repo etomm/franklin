@@ -40,6 +40,10 @@ Not yet (Router-mode feature; device is AP).
 
 Requires WAN/Router mode; complex policy routing; interaction with killswitch.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_VPNDirector.asp`

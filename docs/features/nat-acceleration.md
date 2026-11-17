@@ -3,9 +3,9 @@
 **Category:** Network  
 **Modes:** Router  
 **Status:** `out-of-scope`  
-**Kind:** out-of-scope  
+**Kind:** stock  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** stock ASUS (Broadcom CTF/FA)
 
 ## Dependencies
 
@@ -13,7 +13,7 @@
 
 ## Build / install (separable)
 
-See Franklin approach above; deploy from USB/boot hook.
+Nothing to build: stock firmware provides it. Franklin only must not break it.
 
 ## What it does
 
@@ -38,6 +38,10 @@ Config shows it built-in on stock; not modularizable.
 ## Risks / notes
 
 Firmware-level only.
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

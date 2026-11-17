@@ -39,6 +39,10 @@ nvram present; some vars not settable/persisted (jffs2_scripts).
 
 nvram var support varies; don't rely on unsupported vars.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - (none yet)

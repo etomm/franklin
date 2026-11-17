@@ -7,8 +7,13 @@
 # Reference to upstream gnuton is pinned in GNUTON_REF and fetched on demand
 # by tools/fetch-gnuton.sh (see docs/gnuton-feature-parity.md).
 
-# Feature plans (one detailed plan per gnuton feature)
-See [docs/features/README.md](docs/features/README.md).
+# Feature plans (one detailed plan per feature, separated by kind)
+See [docs/features/README.md](docs/features/README.md): plans are grouped as
+`workaround` (Franklin mechanisms, not gnuton features), `franklin-feature`
+(additions gnuton does not have), `gnuton-feature` (ported upstream features),
+`stock` (already in stock firmware) and `proprietary`. Each plan declares its
+dependencies as links. The evidence behind each `Kind` is reproducible with
+`tools/parity-audit.py` (see [docs/parity-audit.md](docs/parity-audit.md)).
 
 ## Project layout
 - core/        device-agnostic boot hooks, libraries, tools

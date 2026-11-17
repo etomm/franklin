@@ -39,6 +39,10 @@ gnuton pages load via :8088.
 
 Needs gnuton data paths; AP mode limited.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Main_TrafficMonitor_realtime.asp`

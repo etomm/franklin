@@ -40,6 +40,10 @@ Not yet.
 
 Leak if rules not applied early; Router-mode only.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `Changelog-NG.txt (3004.388.8 killswitch)`

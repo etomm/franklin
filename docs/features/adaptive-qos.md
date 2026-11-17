@@ -41,6 +41,10 @@ Audit: BCM_DPI modularizable; not yet built.
 
 Signature DB/service coupling; Router-mode.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `docs/kernel-feature-matrix.md`

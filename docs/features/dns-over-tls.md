@@ -40,6 +40,10 @@ Not yet.
 
 dnsmasq version support; IPv6 DoT blocking fixes in gnuton are userland/kernel mix.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_System_Content.asp`

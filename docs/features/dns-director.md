@@ -41,6 +41,10 @@ Not yet (Router-mode).
 
 AP mode has no local DHCP/DNS; depends on upstream.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/DNSDirector.asp`

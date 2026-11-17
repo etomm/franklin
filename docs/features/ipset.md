@@ -40,6 +40,10 @@ Built+loaded `ip_set`/`ip_set_hash_ip`; gnuton `ipset` create/add/list/destroy w
 
 Module must match kernel; load before use.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `docs/xt9-kernel-notes.md`

@@ -3,9 +3,9 @@
 **Category:** System  
 **Modes:** all  
 **Status:** `tested`  
-**Kind:** franklin-feature  
+**Kind:** workaround  
 **Required:** yes  
-**Upstream:** n/a — Franklin-specific (stock has no script hooks; Merlin uses /jffs/scripts)
+**Upstream:** n/a — Franklin workaround (stock has no script hooks; Merlin uses /jffs/scripts)
 
 ## Dependencies
 
@@ -38,6 +38,10 @@ Verified: S99xt9-log ran at boot.
 ## Risks / notes
 
 USB must be present; runs late (after services).
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

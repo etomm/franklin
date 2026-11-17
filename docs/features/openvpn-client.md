@@ -39,6 +39,10 @@ openvpn binary present on stock; page loads via gnuton UI.
 
 Routing/killswitch logic lives in rc; VPN page may depend on rc helpers.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Advanced_OpenVPNClient_Content.asp`

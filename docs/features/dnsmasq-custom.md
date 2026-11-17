@@ -39,6 +39,10 @@ dnsmasq present on stock; JFFS config path to verify.
 
 Stock may not read `/jffs/configs` (Merlin feature) — verify.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `usr/sbin/dnsmasq`

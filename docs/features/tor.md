@@ -40,6 +40,10 @@ gnuton has `Tor`; not yet run.
 
 Router-mode; performance; rules re-apply.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `usr/sbin/Tor`

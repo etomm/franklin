@@ -39,6 +39,10 @@ Page loads (200).
 
 Some data may be model-specific.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/WiFi_Insight.asp`

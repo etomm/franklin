@@ -3,9 +3,9 @@
 **Category:** Storage  
 **Modes:** all  
 **Status:** `planned`  
-**Kind:** gnuton-feature  
+**Kind:** franklin-feature  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** n/a — Franklin addition (smartmontools via Entware)
 
 ## Dependencies
 
@@ -13,7 +13,7 @@
 
 ## Build / install (separable)
 
-See Franklin approach above; deploy from USB/boot hook.
+Franklin addition: install on USB and start from the boot hook.
 
 ## What it does
 
@@ -38,6 +38,10 @@ Not present on stock.
 ## Risks / notes
 
 USB device path.
+
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
 
 ## Links / sources
 

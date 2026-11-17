@@ -39,6 +39,10 @@ gnuton has `amtm`.
 
 Designed for Merlin paths; may need adaptation.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `usr/sbin/amtm`

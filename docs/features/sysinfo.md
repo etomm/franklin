@@ -39,6 +39,10 @@ gnuton sysinfo page loads (200).
 
 Low.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `www/Tools_Sysinfo.asp`

@@ -40,6 +40,10 @@ Built all three; insmod OK; `iptables -j TEE --gateway ...` add/list/del works.
 
 Module match; load order.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `docs/xt9-kernel-notes.md`

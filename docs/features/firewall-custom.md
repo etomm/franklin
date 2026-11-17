@@ -39,6 +39,10 @@ USB asusware.arm hook verified; /jffs/scripts NOT honored on stock.
 
 Router-mode; rules reset on service restart — re-apply.
 
+## Why this kind (evidence)
+
+See the parity table and dependencies above.
+
 ## Links / sources
 
 - `docs/xt9-notes.md`
