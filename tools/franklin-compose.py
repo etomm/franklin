@@ -307,23 +307,54 @@ Enabled: yes
 """
 
 
+def prune_previous(franklin, preserve):
+    """Delete exactly what the previous composition owned.
+
+    Keeping the `OWNERS` map is what lets `franklin/opt` hold both composed
+    feature files and an Entware install: a rebuild removes only the files the
+    previous build wrote, so packages installed later survive, while files that
+    dropped out of the payload (e.g. an excluded library) really disappear.
+    """
+    removed = 0
+    owners = os.path.join(franklin, "OWNERS")
+    if os.path.isfile(owners):
+        with open(owners, encoding="utf-8") as fh:
+            for line in fh:
+                rel = line.split("\t")[0].strip()
+                if not rel or rel.split("/")[0] in preserve:
+                    continue
+                path = os.path.join(franklin, rel)
+                if os.path.isfile(path) or os.path.islink(path):
+                    os.remove(path)
+                    removed += 1
+    # Generated artefacts are always ours.
+    for rel in ("bin/franklin-boot", "BUILD-INFO", "OWNERS", "SHA256SUMS"):
+        path = os.path.join(franklin, rel)
+        if os.path.isfile(path):
+            os.remove(path)
+    for sub in ("features", "registry.d"):
+        path = os.path.join(franklin, sub)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+    # Drop directories left empty by the deletions.
+    for root, dirs, files in os.walk(franklin, topdown=False):
+        if root == franklin:
+            continue
+        rel = os.path.relpath(root, franklin)
+        if rel.split(os.sep)[0] in preserve:
+            continue
+        if not os.listdir(root):
+            os.rmdir(root)
+    return removed
+
+
 def compose(args, feats, order, cfg):
     out = os.path.abspath(args.out or os.path.join(ROOT, "build", "usb"))
     franklin = os.path.join(out, "franklin")
     preserve = set(cfg.get("preserve") or [])
 
-    # Own the tree: remove everything except the preserved state dirs.
-    if os.path.isdir(franklin):
-        for name in sorted(os.listdir(franklin)):
-            if name in preserve:
-                continue
-            target = os.path.join(franklin, name)
-            if os.path.isdir(target):
-                shutil.rmtree(target)
-            else:
-                os.remove(target)
-    else:
-        os.makedirs(franklin)
+    os.makedirs(franklin, exist_ok=True)
+    pruned = prune_previous(franklin, preserve)
     for name in sorted(preserve):
         os.makedirs(os.path.join(franklin, name), exist_ok=True)
 

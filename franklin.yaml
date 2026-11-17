@@ -23,6 +23,7 @@ features:
   - entware
   - web-ui
   - web-ui-overlay
+  - partial-rc
   - networkmap
 
 # Optional per-device profile applied over the composition.
@@ -35,6 +36,5 @@ opt: true
 # Directories under franklin/ that the composer must never delete when
 # rebuilding in place on a real stick (installed packages, state, logs).
 preserve:
-  - opt
   - state
   - log

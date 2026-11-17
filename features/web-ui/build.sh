@@ -72,13 +72,27 @@ delta_files=$(find "$DELTA" -type f | wc -l)
 ) >"$DELTA/WHITEOUTS"
 whiteouts=$(wc -l <"$DELTA/WHITEOUTS")
 
-# 4. libs that stock does not have (or has a different build of)
+# 3. libs that stock does not have (or has a different build of).
+#    Skip system/SoC-bound libraries: gnuton's XT8 builds of these override the
+#    stock XT9 ones and break runtime data (verified: wlcsm/nvram/shared/bwdpi
+#    work fine from stock, while the gnuton copies can silently return nothing).
+SKIP_LIBS="libwlcsm libnvram libshared libbwdpi libbcm libwl libacsd libwlsys libwlctl"
 LIB="$OUT/opt/lib/gnuton"
 libs=0
+skipped=0
 for lib in $(cd "$GNUTON_ROOTFS" && find usr/lib lib -name '*.so*' -type f | sort); do
     src="$GNUTON_ROOTFS/$lib"
     rel=${lib#usr/}
     rel=${rel#lib/}
+    base=$(basename "$rel")
+    skip=0
+    for pat in $SKIP_LIBS; do
+        case "$base" in "$pat"*) skip=1 ;; esac
+    done
+    if [ "$skip" = "1" ]; then
+        skipped=$((skipped + 1))
+        continue
+    fi
     stock="$STOCK_ROOTFS/$lib"
     if [ -f "$stock" ] && cmp -s "$src" "$stock"; then
         continue
@@ -90,7 +104,7 @@ done
 
 # 5. reproducible metadata
 find "$OUT" -exec touch -d '@0' {} + 2>/dev/null || true
-printf 'gnuton httpd + www delta + %d lib(s)\n' "$libs" > "$DELTA/SOURCE"
+printf 'gnuton httpd + www delta + %d lib(s), %d skipped\n' "$libs" "$skipped" > "$DELTA/SOURCE"
 echo "staged $OUT"
 echo "  www delta: $delta_files file(s) (stock fallback: the rest), $whiteouts whiteout(s)"
-echo "  libs: $libs"
+echo "  libs: $libs (skipped $skipped system libs)"

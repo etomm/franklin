@@ -1,0 +1,20 @@
+id: partial-rc
+title: partial rc (capability advertisement)
+kind: workaround
+required: false
+enabled_by_default: true
+requires: [boot-hook]
+provides:
+  - rc_support capability tokens the gnuton UI checks
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  The gnuton UI builds its menu from menuTree.js, which hides entries when
+  httpd's get_ui_support() reports no support for them. That support is derived
+  from nvram `rc_support`, and stock XT9 advertises fewer tokens than gnuton
+  (measured: missing wifiradar, nfsd, nwtool, usbX, cake). This feature appends
+  the tokens for capabilities Franklin actually provides, so the corresponding
+  pages exist in the menu. Purely runtime: the original string is saved and
+  restored by stop.sh, and a reboot regenerates it from firmware.

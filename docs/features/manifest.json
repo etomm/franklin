@@ -44,6 +44,7 @@
       "kernel-modules",
       "franklin-mount",
       "overlayfs",
+      "partial-rc",
       "web-ui-overlay"
     ],
     "franklin-feature": [
@@ -893,6 +894,18 @@
       ]
     },
     {
+      "id": "partial-rc",
+      "title": "partial rc (capability advertisement) \u2014 workaround",
+      "category": "System",
+      "modes": "all",
+      "status": "tested",
+      "kind": "workaround",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
       "id": "web-ui-overlay",
       "title": "Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround",
       "category": "UI",
@@ -951,6 +964,7 @@
     "openvpn-server",
     "overlayfs",
     "parental-controls",
+    "partial-rc",
     "port-forwarding",
     "reboot-schedule",
     "samba-ftp-webdav",

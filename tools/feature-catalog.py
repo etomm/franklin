@@ -954,6 +954,26 @@ FEATURES = [
                   "the same way as cake/TEE; verified end-to-end on the device.",
          links=["docs/build-architecture.md", "docs/xt9-kernel-notes.md"]),
 
+    dict(id="partial-rc", title="partial rc (capability advertisement) — workaround", cat="System",
+         modes="all",
+         status="tested",
+         what="Tells the gnuton UI which capabilities exist, by appending tokens to nvram "
+              "`rc_support` that stock XT9 does not advertise.",
+         gnuton="gnuton's rc advertises more capabilities; the UI's menuTree.js hides pages "
+                "when httpd's get_ui_support() reports no flag for them.",
+         deps="`boot-hook`. Runtime-only nvram change (no commit).",
+         franklin="A small shell stand-in for the rc behaviour we need: append `wifiradar`, "
+                  "`nwtool`, `usbX`, `cake` to rc_support at boot, restore on stop. This is "
+                  "the first slice of a partial-rc; further slices add data producers "
+                  "(wireless station lists) as they are proven.",
+         tested="Verified on the XT9: tokens are absent from stock's rc_support and the hook "
+                "sets them at runtime; original string saved for rollback.",
+         risks="Advertising a capability whose backend is missing would show a page that "
+               "cannot work, so only tokens Franklin really provides are added.",
+         evidence="workaround: stock rc_support lacks wifiradar/nfsd/nwtool/usbX/cake, which "
+                  "is why gnuton-only menus are filtered out (menuTree.exclude).",
+         links=["docs/build-architecture.md"]),
+
     dict(id="web-ui-overlay", title="Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround", cat="UI",
          modes="all",
          status="tested",
@@ -997,6 +1017,7 @@ KIND = {
     "web-ui-overlay": "workaround",
     "franklin-mount": "workaround",
     "overlayfs": "workaround",
+    "partial-rc": "workaround",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
     "entware": "franklin-feature",
@@ -1038,6 +1059,7 @@ UPSTREAM = {
     "networkmap": "gnuton networkmap daemon; Franklin needs a shm-size workaround",
     "franklin-mount": "n/a — Franklin workaround (ASUS busybox mount refuses rootfs targets)",
     "overlayfs": "n/a — Franklin workaround (CONFIG_OVERLAY_FS unset on stock)",
+    "partial-rc": "n/a — Franklin workaround (stock rc advertises fewer capabilities than gnuton)",
     "amtm": "third-party (thelonelycoder/amtm) — bundled by gnuton/Merlin, not gnuton code",
     "cron": "stock ASUS (crond/cru); gnuton only adds the crontab command",
     "entware": "third-party (Entware project) - NOT gnuton",
@@ -1078,6 +1100,7 @@ DEPS = {
     "kernel-modules": ["boot-hook"],
     "web-ui-overlay": ["web-ui", "boot-hook", "franklin-mount"],
     "networkmap": ["boot-hook", "franklin-mount"],
+    "partial-rc": ["boot-hook"],
     # gnuton features
     "web-ui": ["boot-hook"],
     "cake-qos": ["kernel-modules", "boot-hook"],
