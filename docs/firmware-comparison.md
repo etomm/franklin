@@ -288,7 +288,7 @@ Fix (revertable): make the two consistent — set `acc_num=0` (matches the empty
 `acc_list`) so `count=0` and the caller skips the loop:
 
 ```
-busybox sh -c 'nvram set acc_num=0'
+busybox sh -c 'nvram set acc_num=0; nvram commit'
 ```
 
 (Note: `/bin/nvram` is a custom ASUS tool and `sh` resolves to
@@ -296,5 +296,10 @@ busybox sh -c 'nvram set acc_num=0'
 `nvram set name=value` form.) Alternatively, populate `acc_list` with a valid
 entry like `admin>1` so `acc_num=1` is consistent.
 
+**Confirmed working**: after `acc_num=0` + commit, `Advanced_System_Content.asp`
+loads instead of segfaulting.
+
 This was not a library or rc problem — it was the firmware's account NVRAM being
-inconsistent, which the stock httpd guards against and gnuton's does not.
+inconsistent, which the stock httpd guards against and gnuton's does not. For
+Franklin, a boot hook should enforce this consistency (`if acc_list empty,
+acc_num=0`) so it survives resets/firmware changes.
