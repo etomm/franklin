@@ -1,0 +1,26 @@
+id: tee
+title: TEE (packet duplication)
+kind: gnuton-feature
+required: false
+enabled_by_default: false
+requires: [kernel-modules]
+provides:
+  - xt_TEE.ko
+  - nf_dup_ipv4.ko
+  - nf_dup_ipv6.ko
+artifacts:
+  - build/tee/xt_TEE.ko
+  - build/tee/nf_dup_ipv4.ko
+  - build/tee/nf_dup_ipv6.ko
+files:
+  - src: build/tee/nf_dup_ipv4.ko
+    dst: franklin/kmod/4.19.183/nf_dup_ipv4.ko
+  - src: build/tee/nf_dup_ipv6.ko
+    dst: franklin/kmod/4.19.183/nf_dup_ipv6.ko
+  - src: build/tee/xt_TEE.ko
+    dst: franklin/kmod/4.19.183/xt_TEE.ko
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+build: build.sh

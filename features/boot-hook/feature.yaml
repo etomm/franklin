@@ -1,0 +1,16 @@
+id: boot-hook
+title: Boot hook (asusware.arm shim)
+kind: workaround
+required: true
+enabled_by_default: true
+requires: []
+provides:
+  - asusware.arm/etc/init.d/S99franklin
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  Stock firmware only runs scripts from an `asusware.*` app folder at the USB
+  root. This shim is the single entry point: everything else lives in
+  franklin/ and is driven by the generated registry.

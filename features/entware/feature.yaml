@@ -1,0 +1,17 @@
+id: entware
+title: Entware package ecosystem
+kind: franklin-feature
+required: false
+enabled_by_default: false
+requires: [boot-hook]
+provides:
+  - opkg
+  - /opt layout (franklin/opt)
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  Entware installs into franklin/opt, which the composer preserves across
+  rebuilds and the boot hook exposes as /opt. Nothing of Entware is shipped in
+  this repository.

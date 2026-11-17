@@ -1,0 +1,79 @@
+#!/bin/sh
+# Franklin runtime driver (generated composition copies this to
+# <usb>/franklin/bin/franklin-boot and the asusware shim execs it).
+#
+# Responsibilities:
+#   * discover its own USB base (never hardcode a mount point),
+#   * optionally point /tmp/opt at franklin/opt so Entware survives rebuilds,
+#   * run each feature's start hook in dependency order,
+#   * isolate failures: one broken feature never stops the others,
+#   * log everything to franklin/log/boot.log.
+
+set -u
+self="$0"
+while [ -L "$self" ]; do self=$(readlink "$self"); done
+FRANKLIN_ROOT=$(cd "$(dirname "$self")/.." && pwd)
+USB=$(dirname "$FRANKLIN_ROOT")
+export FRANKLIN_ROOT USB
+
+LOG_DIR="$FRANKLIN_ROOT/log"
+mkdir -p "$LOG_DIR" "$FRANKLIN_ROOT/state" 2>/dev/null
+LOG="$LOG_DIR/boot.log"
+if [ -f "$LOG" ] && [ "$(wc -c <"$LOG" 2>/dev/null || echo 0)" -gt 262144 ]; then
+    mv "$LOG" "$LOG.1" 2>/dev/null
+fi
+
+log() { printf '%s franklin: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$LOG" 2>/dev/null; }
+log "boot from $FRANKLIN_ROOT"
+
+# /opt: ASUS points /tmp/opt at asusware.arm; re-point it at franklin/opt so
+# Entware installs into the preserved subtree instead of the composed tree.
+if [ "${FRANKLIN_OPT:-1}" = "1" ] && [ -d "$FRANKLIN_ROOT/opt" ]; then
+    if [ -L /tmp/opt ] || [ -e /tmp/opt ]; then
+        rm -f /tmp/opt
+    fi
+    ln -s "$FRANKLIN_ROOT/opt" /tmp/opt 2>/dev/null && log "/tmp/opt -> $FRANKLIN_ROOT/opt"
+fi
+
+# Failures are recorded, never fatal.
+FAILED=""
+run_hook() {
+    fid="$1"; hook="$2"; label="$3"
+    [ -n "$hook" ] || return 0
+    script="$FRANKLIN_ROOT/features/$fid/$hook"
+    if [ ! -f "$script" ]; then
+        log "$fid: $label hook missing ($hook)"
+        return 0
+    fi
+    if [ -f "$FRANKLIN_ROOT/state/$fid.enabled" ]; then
+        enabled=1
+    elif [ -f "$FRANKLIN_ROOT/state/$fid.disabled" ]; then
+        enabled=0
+    else
+        enabled="$FRANKLIN_ENABLED"
+    fi
+    if [ "$label" = "start" ] && [ "$enabled" != "1" ]; then
+        log "$fid: disabled (state)"
+        return 0
+    fi
+    log "$fid: $label"
+    if ! /bin/sh "$script" >>"$LOG" 2>&1; then
+        log "$fid: $label FAILED"
+        FAILED="$FAILED $fid"
+    fi
+}
+
+for env in "$FRANKLIN_ROOT/registry.d"/*.env; do
+    [ -f "$env" ] || continue
+    FRANKLIN_FEATURE=""; FRANKLIN_KIND=""; FRANKLIN_DIR=""
+    FRANKLIN_START=""; FRANKLIN_STOP=""; FRANKLIN_VERIFY=""; FRANKLIN_ENABLED=0
+    . "$env"
+    run_hook "$FRANKLIN_FEATURE" "$FRANKLIN_START" start
+done
+
+if [ -n "$FAILED" ]; then
+    log "boot finished with failures:$FAILED"
+else
+    log "boot finished cleanly"
+fi
+exit 0

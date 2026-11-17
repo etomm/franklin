@@ -1,0 +1,26 @@
+id: ipset
+title: ipset
+kind: gnuton-feature
+required: false
+enabled_by_default: false
+requires: [kernel-modules]
+provides:
+  - ip_set.ko
+  - ip_set_hash_ip.ko
+  - ipset tool
+artifacts:
+  - build/ipset/ip_set.ko
+  - build/ipset/ip_set_hash_ip.ko
+files:
+  - src: build/ipset/ip_set.ko
+    dst: franklin/kmod/4.19.183/ip_set.ko
+  - src: build/ipset/ip_set_hash_ip.ko
+    dst: franklin/kmod/4.19.183/ip_set_hash_ip.ko
+  - src: tools/gnuton-bin/ipset
+    dst: franklin/bin/ipset
+    optional: true
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+build: build.sh
