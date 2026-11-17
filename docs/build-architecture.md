@@ -351,3 +351,14 @@ sh     franklin/features/web-ui-overlay/stop.sh   # unmounts /www, restores stoc
 Removing a feature: delete its id from `franklin.yaml` (or pass
 `--without <id>`), recompose. Its `state/` files and `log/` lines remain
 harmless.
+
+### Library overrides: only skip hardware-data libs
+
+Measured on the XT9, the hard way: /Main_Login.asp renders ~22 KB with gnuton's
+libnvram/libshared, but 0-8 KB (blank page) or nothing at all with stock's.
+gnuton httpd is ABI-coupled to those two. libwlcsm and libbwdpi, on the
+other hand, read hardware data and must come from stock, otherwise wireless
+client data comes back empty.
+
+So eatures/web-ui/build.sh skips exactly libwlcsm and libbwdpi, and ships
+gnuton's libnvram/libshared.

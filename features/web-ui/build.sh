@@ -73,10 +73,12 @@ delta_files=$(find "$DELTA" -type f | wc -l)
 whiteouts=$(wc -l <"$DELTA/WHITEOUTS")
 
 # 3. libs that stock does not have (or has a different build of).
-#    Skip system/SoC-bound libraries: gnuton's XT8 builds of these override the
-#    stock XT9 ones and break runtime data (verified: wlcsm/nvram/shared/bwdpi
-#    work fine from stock, while the gnuton copies can silently return nothing).
-SKIP_LIBS="libwlcsm libnvram libshared libbwdpi libbcm libwl libacsd libwlsys libwlctl"
+#    Skip only the libraries that read *hardware data*: gnuton's XT8 builds of
+#    libwlcsm/libbwdpi return nothing useful on the XT9. Do NOT skip libnvram or
+#    libshared: gnuton's httpd is ABI-coupled to them (measured: with stock
+#    copies /Main_Login.asp renders 0-8 KB or nothing at all, with gnuton's it
+#    renders ~22 KB).
+SKIP_LIBS="libwlcsm libbwdpi"
 LIB="$OUT/opt/lib/gnuton"
 libs=0
 skipped=0
