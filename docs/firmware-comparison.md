@@ -136,3 +136,24 @@ into the LD_LIBRARY_PATH directory and restart.
 
 This confirms most of gnuton's userland software can be run on stock
 firmware by supplying its binaries + libraries + `/www`, without flashing.
+
+### What ports cleanly vs what needs workarounds
+
+Tested by running gnuton binaries on stock XT9:
+
+- **Works directly (binaries + libs + www):**
+  - `httpd` (needs `libovpn.so`, `libshared.so`, `cwd=/www`)
+  - Most web pages: VPN Director, DNS Director, Tools/Sysinfo, Tools/Other,
+    WiFi Insight, Traffic Monitor, etc.
+- **Runs but lacks its data pipeline:**
+  - `cfg_server` starts on stock (all deps present) but does not populate the
+    client cache (`/tmp/nmp_cache.js`) in the format gnuton's httpd expects.
+  - Consequence: gnuton's Network Map / client list shows 0 or spins.
+- **Does not run:**
+  - `networkmap` — fails with `client info shmget failed`: it depends on shared
+    memory segments created by gnuton's `rc`/init, which stock does not set up.
+
+Porting strategy: run gnuton's rebuilt **binaries + libs + /www** where they
+work, and use **stock daemons/UI** as the workaround for daemon-coupled
+features (Network Map, client list). Network map is therefore marked
+stock-handled in the parity table.
