@@ -177,9 +177,11 @@ These are marked ⛔ in the "Unportable (gnuton fixes)" column. Each item
 links to the relevant gnuton commits (search):
 
 <a id="httpd-optimizations"></a>
-- **httpd optimizations** — gnuton reworked `httpd` apply paths (e.g.
-  replacing switch blocks with string formatting) for speed; Franklin cannot
-  patch `httpd`.
+- **httpd optimizations** — gnuton rebuilt `httpd` (larger binary, different
+  hash). Tested on stock XT9: it runs on a separate port with `libovpn.so` and
+  `cwd=/www`, and serves the stock UI. So this is **partially portable**
+  (daemon swap is possible), though it is still not something Franklin does by
+  default; the preferred path remains the `/www` overlay.
   [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=httpd+optimization&type=commits)
 <a id="adaptive-qos--qos-engine"></a>
 - **Adaptive QoS / QoS engine** — gnuton's QoS improvements live in the

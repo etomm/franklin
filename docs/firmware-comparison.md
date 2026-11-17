@@ -87,3 +87,30 @@ verify any specific file.
   NFS, QoS stats, WiFi insight, amtm, etc.) on top of the same stock base.
   Franklin's stock-handled classifications remain valid; gnuton's additions
   are the reference for Franklin's planned features.
+
+## httpd portability test (gnuton httpd on stock XT9)
+
+Tested whether gnuton's rebuilt `httpd` can run on the stock XT9 firmware:
+
+1. Copied gnuton's `/usr/sbin/httpd` and `/usr/lib/libovpn.so` to `/tmp` on the
+   router (via SSH).
+2. Ran it on port 8088 with `LD_LIBRARY_PATH=/tmp /tmp/httpd-gnuton -p 8088`
+   from `cwd=/www` (matching how the stock httpd is started).
+3. Result: **it runs and serves the stock web UI successfully** (root, index,
+   Main_Login all return 200). The stock httpd was unaffected on port 80.
+
+Findings:
+- The only missing dependency was `libovpn.so` (present in gnuton's
+  `/usr/lib`, absent from stock). Supplying it via `LD_LIBRARY_PATH` is enough.
+- The process must run with `cwd=/www` (the stock httpd's cwd), because httpd
+  resolves pages relative to its working directory.
+- It can run on a separate port (8088) without touching the stock httpd.
+- Serving stock `/www` means gnuton's UI additions (VPN Director, etc.) do not
+  appear — those require gnuton's `/www` files too.
+
+Implication: gnuton's httpd is **portable** to stock firmware (contrary to the
+earlier assumption), but getting gnuton's full UI still requires its `/www`
+tree. Franklin can either:
+- keep the stock httpd and overlay `/www` (preferred, no daemon swap), or
+- run gnuton's httpd on a separate port with `libovpn.so` and gnuton's `/www`
+  for a gnuton-like UI, with recovery via SSH if needed.
