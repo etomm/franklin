@@ -73,6 +73,21 @@ Verified on the device (stock XT9):
 So the shim must live in `asusware.arm/etc/init.d/`. Everything else is
 Franklin's own tree.
 
+Two things are easy to get wrong here (both found on the device):
+
+1. **ASUS only runs an app's `S*` if its ipkg control file says
+   `Enabled: yes`.** The chain is `/rom/.asusrouter` → `app_init_run.sh` →
+   `app_get_field.sh <pkg> Enabled 1`, which reads
+   `/opt/lib/ipkg/info/<pkg>.control`. Without that file the hook is silently
+   skipped, so the composer generates
+   `asusware.arm/lib/ipkg/info/franklin.control`.
+2. **`/opt` is a symlink chain**, so the shim must resolve its real path
+   (`cd "$(dirname "$0")" && pwd -P`) before walking up to the mount point;
+   otherwise it computes `/franklin/bin/franklin-boot`.
+
+Also: the autorun PATH starts with `/opt/{usr/,}bin`, which is different from an
+interactive shell's PATH — do not assume `sh` means the same binary in both.
+
 ### `/opt` and Entware
 
 The `/opt` prefix already exists on stock — ASUS creates the whole symlink farm
