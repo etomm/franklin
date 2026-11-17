@@ -157,3 +157,58 @@ Porting strategy: run gnuton's rebuilt **binaries + libs + /www** where they
 work, and use **stock daemons/UI** as the workaround for daemon-coupled
 features (Network Map, client list). Network map is therefore marked
 stock-handled in the parity table.
+
+### Network Map / client list: shm size mismatch (the real fix)
+
+The empty client list was **not** a gnuton-`networkmap` problem per se — it was a
+**shared-memory size mismatch**:
+
+- Stock `networkmap` creates shm key `0x3e9` at **197,916 bytes**.
+- gnuton's `httpd` and `networkmap` expect **198,168 bytes**.
+- `shmget`/attach fails when the existing segment is smaller than requested, so
+  gnuton's httpd gets no client table → `nmp_cache.js` stays
+  `{"maclist":[],...}` → UI shows 0 clients.
+
+Revertable fix (all from `/tmp`, USB-based):
+1. `kill $(pidof networkmap)`
+2. `ipcrm -M 0x3e9`
+3. `LD_LIBRARY_PATH=/tmp /tmp/gnuton-bin-networkmap &`
+
+gnuton's `networkmap` recreates `0x3e9` at 198,168 bytes; after that the stock
+`networkmap` (restarted by the ASUS watchdog) attaches to the **same larger
+segment** (`nattch: 2`) and keeps it populated. gnuton's httpd then reads that
+shm and writes `/tmp/nmp_cache.js` on demand (on a client-list request), which
+is why the cache only refreshes when a client page is loaded.
+
+So the current state is a **dual-daemon** setup:
+- gnuton `networkmap` → owns the correctly-sized shm
+- stock `networkmap` → piggybacks on it (watchdog-restarted)
+- gnuton `httpd` → reads the shm, writes `nmp_cache.js`
+
+Long-term plan: **bind-mount gnuton's daemon** (and/or the shm setup) so the
+correct-sized segment exists from boot, instead of relying on a manual
+`ipcrm` + restart.
+
+### gnuton-only pages (vs stock XT8) to test
+
+URLs on the gnuton UI (`http://192.168.0.4:8088/...`), from the `/www` diff:
+- `Advanced_VPNDirector.asp` — VPN Director
+- `Advanced_OpenVPNClient_Content.asp` — OpenVPN client
+- `Advanced_VPNStatus.asp` — VPN status
+- `Advanced_TOR_Content.asp` — Tor
+- `Advanced_SNMP_Content.asp` — SNMP
+- `Advanced_AiDisk_NFS.asp` — AiDisk NFS
+- `Advanced_Wireless_Survey.asp` — wireless survey
+- `DNSDirector.asp` — DNS Director
+- `GearUpAccelerator.asp` — GearUp accelerator
+- `WiFi_Insight.asp` — WiFi Insight
+- `QoS_Stats.asp` — QoS stats
+- `Tools_Sysinfo.asp` — Tools / Sysinfo
+- `Tools_OtherSettings.asp` — Tools / Other settings
+- `Main_TrafficMonitor_monthly.asp` — monthly traffic monitor
+- `Main_TrafficMonitor_settings.asp` — traffic monitor settings
+- `UploadingJFFS.asp` — JFFS upload
+- `user1.asp` … `user20.asp` — custom user pages
+
+Notes: `cloud_*`/AiCloud pages are intentionally unsupported (removed upstream).
+Some pages may show empty data or error if they need a gnuton backend service.
