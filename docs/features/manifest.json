@@ -36,7 +36,8 @@
       "ddns",
       "ntp",
       "reboot-schedule",
-      "vlan-iptv"
+      "vlan-iptv",
+      "cifs-client"
     ],
     "workaround": [
       "networkmap",
@@ -47,7 +48,6 @@
     "franklin-feature": [
       "entware",
       "disk-monitoring",
-      "cifs-client",
       "download-manager"
     ],
     "stock": [
@@ -376,7 +376,8 @@
       "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
-        "boot-hook"
+        "boot-hook",
+        "kernel-modules"
       ]
     },
     {
@@ -665,7 +666,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "planned",
-      "kind": "franklin-feature",
+      "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
         "boot-hook",

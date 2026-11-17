@@ -24,7 +24,7 @@ import os
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-SCAN_DIRS = ("www", "usr/sbin", "sbin", "usr/bin", "bin")
+SCAN_DIRS = ("www", "usr/sbin", "sbin", "usr/bin", "bin", "lib/modules")
 
 # feature probe -> page/binary needles (matched case-insensitively on basename)
 PROBES = [
@@ -66,6 +66,10 @@ PROBES = [
     ("hdparm", ["hdparm"]),
     ("aria2", ["aria2c"]),
     ("smartctl", ["smartctl"]),
+    ("AiMesh agent (amas)", ["amas_ipc"]),
+    ("AiMesh config sync", ["cfg_server", "cfg_client"]),
+    ("AiMesh UI", ["aimesh.asp"]),
+    ("mesh wireless driver", ["dhd.ko"]),
 ]
 
 

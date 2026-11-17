@@ -10,6 +10,7 @@
 ## Dependencies
 
 - [boot-hook](boot-hook.md)
+- [kernel-modules](kernel-modules.md)
 
 ## Build / install (separable)
 
@@ -21,29 +22,30 @@ Export USB/attached storage over NFS.
 
 ## How gnuton implements it
 
-`nfsd`, `exportfs`, `mountd`, `portmap`, `statd` (gnuton /usr/sbin) + pages.
+Ships `nfsd`, `exportfs`, `mountd`, `portmap`, `statd` and the kernel modules `fs/nfsd/nfsd.ko`, `fs/nfs/nfs.ko`, `exportfs.ko`, `lockd.ko`, `sunrpc.ko` (all present only in gnuton's module tree).
 
 ## Requirements
 
-kernel NFS support (check config), nfs-utils binaries, config.
+`nfsd.ko`/`nfs.ko`/`exportfs.ko`/`lockd.ko`/`sunrpc.ko` built for 4.19.183 (stock config has no CONFIG_NFS* at all), gnuton NFS userspace binaries, `nfsd` startup from the boot hook, `/etc/exports` on USB/JFFS.
 
 ## Franklin approach
 
-Run gnuton NFS binaries if kernel supports NFS; else Entware.
+Build the NFS modules with the kernel-module recipe, load them from the boot hook, run gnuton's `rpcbind`/`nfsd`/`exportfs` from USB, and expose the gnuton page.
 
 ## Tested / verified
 
-gnuton binaries present; kernel NFS support to verify.
+gnuton-only modules and binaries confirmed; stock XT9 config has no NFS entries, so modules must be built (not yet done).
 
 ## Risks / notes
 
-Kernel NFS may be absent; check config.
+Two layers must be supplied (kernel modules + userspace); stock cannot serve NFS on its own. Router/AP mode irrelevant, but USB storage must be mounted first.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+gnuton-feature: `nfsd.ko`/`nfs.ko`/`exportfs.ko` and `usr/sbin/nfsd` exist ONLY in gnuton; stock's kernel config has no CONFIG_NFS_FS/NFSD.
 
 ## Links / sources
 
 - `usr/sbin/nfsd`
 - `www/Advanced_AiDisk_NFS.asp`
+- `docs/kernel-feature-matrix.md`

@@ -9,9 +9,9 @@ Method: a file that exists **only in gnuton** proves gnuton adds something;
 a file in **both** proves the feature is stock ASUSWRT that gnuton merely
 inherits. That is how each plan's `Kind` was chosen.
 
-Directories compared: `www/`, `usr/sbin/`, `sbin/`, `usr/bin/`, `bin/`.
+Directories compared: `www/`, `usr/sbin/`, `sbin/`, `usr/bin/`, `bin/`, `lib/modules/`.
 
-Totals: gnuton 1678 files, stock 1590 files, gnuton-only 119, stock-only 31.
+Totals: gnuton 1842 files, stock 1713 files, gnuton-only 161, stock-only 32.
 
 
 ## Feature probes
@@ -55,6 +55,10 @@ Totals: gnuton 1678 files, stock 1590 files, gnuton-only 119, stock-only 31.
 | hdparm | — | — | in neither → **franklin addition** (or proprietary) |
 | aria2 | — | — | in neither → **franklin addition** (or proprietary) |
 | smartctl | — | — | in neither → **franklin addition** (or proprietary) |
+| AiMesh agent (amas) | `amas_ipc` | `amas_ipc` | in both → **stock** (not a gnuton feature) |
+| AiMesh config sync | `cfg_server`, `cfg_client` | `cfg_server`, `cfg_client` | in both → **stock** (not a gnuton feature) |
+| AiMesh UI | `aimesh.asp` | `aimesh.asp` | in both → **stock** (not a gnuton feature) |
+| mesh wireless driver | `dhd.ko` | `dhd.ko` | in both → **stock** (not a gnuton feature) |
 
 ## Files present only in gnuton
 
@@ -65,6 +69,48 @@ bin/getopt
 bin/hostname
 bin/makemime
 bin/swmdk
+lib/modules/4.1.52/kernel/drivers/hid/hid-generic.ko
+lib/modules/4.1.52/kernel/drivers/hid/hid.ko
+lib/modules/4.1.52/kernel/drivers/hid/usbhid/usbhid.ko
+lib/modules/4.1.52/kernel/drivers/input/input-core.ko
+lib/modules/4.1.52/kernel/drivers/net/ppp/ppp_deflate.ko
+lib/modules/4.1.52/kernel/fs/cifs/cifs.ko
+lib/modules/4.1.52/kernel/fs/exportfs/exportfs.ko
+lib/modules/4.1.52/kernel/fs/fscache/fscache.ko
+lib/modules/4.1.52/kernel/fs/lockd/lockd.ko
+lib/modules/4.1.52/kernel/fs/nfs/nfs.ko
+lib/modules/4.1.52/kernel/fs/nfs/nfsv2.ko
+lib/modules/4.1.52/kernel/fs/nfs/nfsv3.ko
+lib/modules/4.1.52/kernel/fs/nfs_common/grace.ko
+lib/modules/4.1.52/kernel/fs/nfsd/nfsd.ko
+lib/modules/4.1.52/kernel/net/dns_resolver/dns_resolver.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_bitmap_ip.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_bitmap_ipmac.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_bitmap_port.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_ip.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_ipmac.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_ipmark.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_ipport.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_ipportip.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_ipportnet.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_mac.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_net.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_netiface.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_netnet.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_netport.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_hash_netportnet.ko
+lib/modules/4.1.52/kernel/net/netfilter/ipset/ip_set_list_set.ko
+lib/modules/4.1.52/kernel/net/netfilter/xt_set.ko
+lib/modules/4.1.52/kernel/net/netfilter/xt_tee.ko
+lib/modules/4.1.52/kernel/net/sched/em_cmp.ko
+lib/modules/4.1.52/kernel/net/sched/em_ipset.ko
+lib/modules/4.1.52/kernel/net/sched/em_meta.ko
+lib/modules/4.1.52/kernel/net/sched/em_nbyte.ko
+lib/modules/4.1.52/kernel/net/sched/em_text.ko
+lib/modules/4.1.52/kernel/net/sched/em_u32.ko
+lib/modules/4.1.52/kernel/net/sched/sch_cake/sch_cake.ko
+lib/modules/4.1.52/kernel/net/sunrpc/sunrpc.ko
 sbin/check_wgc_ep
 sbin/ddns_custom_updated
 sbin/devmem
@@ -192,6 +238,7 @@ bin/ceventc
 bin/ceventd
 bin/stress
 bin/tmctl
+lib/modules/4.1.52/kernel/net/netfilter/xt_recent.ko
 sbin/firmware_check_update
 sbin/ntp
 sbin/write_webdav_conf

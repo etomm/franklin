@@ -33,7 +33,7 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | Kernel modules (build recipe) | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
 | Web UI overlay (bind-mount httpd + /www) — workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [networkmap](../features/networkmap.md), [boot-hook](../features/boot-hook.md) | [web-ui-overlay](web-ui-overlay.md) |
 
-### Franklin features (not in gnuton at all) (4)
+### Franklin features (not in gnuton at all) (3)
 
 Franklin additions. gnuton does not provide these; removing them changes nothing for any gnuton port.
 
@@ -41,10 +41,9 @@ Franklin additions. gnuton does not provide these; removing them changes nothing
 |---|---|---|---|---|---|---|
 | Entware package ecosystem | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
 | Disk monitoring (smartmontools) | Storage | all | `planned` | no | [entware](../features/entware.md) | [disk-monitoring](disk-monitoring.md) |
-| CIFS mount (client) | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md), [kernel-modules](../features/kernel-modules.md) | [cifs-client](cifs-client.md) |
 | Download manager (aria2) | Storage | all | `planned` | no | [entware](../features/entware.md), [boot-hook](../features/boot-hook.md) | [download-manager](download-manager.md) |
 
-### gnuton / Merlin features (ported by Franklin) (36)
+### gnuton / Merlin features (ported by Franklin) (37)
 
 Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 
@@ -72,7 +71,7 @@ Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 | Network Tools | Diagnostics | all | `stock+` | no | [web-ui](../features/web-ui.md) | [network-tools](network-tools.md) |
 | SNMP | Services | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [snmp](snmp.md) |
 | Tor | Services | Router | `planned` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [tor](tor.md) |
-| NFS server | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [nfs](nfs.md) |
+| NFS server | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md), [kernel-modules](../features/kernel-modules.md) | [nfs](nfs.md) |
 | AiDisk NFS | Storage | all | `planned` | no | [nfs](../features/nfs.md), [web-ui](../features/web-ui.md) | [aidisk-nfs](aidisk-nfs.md) |
 | amtm (terminal menu) | Tools | all | `planned` | no | [entware](../features/entware.md) | [amtm](amtm.md) |
 | ipset | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [ipset](ipset.md) |
@@ -86,6 +85,7 @@ Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 | NTP client/server | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [ntp](ntp.md) |
 | Reboot schedule | Automation | all | `planned` | no | [cron](../features/cron.md) | [reboot-schedule](reboot-schedule.md) |
 | VLAN / IPTV port tagging (ethswctl, softswitch) | Network | Router / AP (wired switch config) | `planned` | no | [boot-hook](../features/boot-hook.md) | [vlan-iptv](vlan-iptv.md) |
+| CIFS mount (client) | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md), [kernel-modules](../features/kernel-modules.md) | [cifs-client](cifs-client.md) |
 
 ### Stock ASUSWRT features (nothing to port) (21)
 
@@ -155,7 +155,7 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 25. jffs  (stock)
 26. kernel-modules  (workaround)
 27. cake-qos  (gnuton-feature)
-28. cifs-client  (franklin-feature)
+28. cifs-client  (gnuton-feature)
 29. ipset  (gnuton-feature)
 30. adaptive-qos  (gnuton-feature)
 31. led-control  (gnuton-feature)
@@ -310,6 +310,7 @@ graph TD
   boot_hook --> tor
   firewall_custom --> tor
   boot_hook --> nfs
+  kernel_modules --> nfs
   nfs --> aidisk_nfs
   web_ui --> aidisk_nfs
   entware --> amtm

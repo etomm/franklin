@@ -29,6 +29,19 @@ IP_SET|ipset core
 IP_SET_HASH_IP|ipset hash:ip
 IP_SET_HASH_NET|ipset hash:net
 #
+# Filesystems / storage (gnuton ships these as modules; check stock)
+CIFS_FS|CIFS client (SMB)
+NFS_FS|NFS client
+NFSD|NFS server
+EXPORTFS|NFS exportfs
+LOCKD|NFS lockd
+SUNRPC|sunrpc
+FUSE_FS|FUSE
+#
+# USB / PPP peripherals (gnuton ships usbhid + ppp_deflate)
+USBHID|USB HID class
+PPP_DEFLATE|PPP deflate compression
+#
 # Broadcom offload / DPI (typically built-in / driver level)
 BCM_DPI|Broadcom DPI engine
 BCM_INGQOS|Broadcom ingress QoS

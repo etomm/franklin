@@ -285,12 +285,22 @@ FEATURES = [
          modes="all",
          status="planned",
          what="Export USB/attached storage over NFS.",
-         gnuton="`nfsd`, `exportfs`, `mountd`, `portmap`, `statd` (gnuton /usr/sbin) + pages.",
-         deps="kernel NFS support (check config), nfs-utils binaries, config.",
-         franklin="Run gnuton NFS binaries if kernel supports NFS; else Entware.",
-         tested="gnuton binaries present; kernel NFS support to verify.",
-         risks="Kernel NFS may be absent; check config.",
-         links=["usr/sbin/nfsd", "www/Advanced_AiDisk_NFS.asp"]),
+         gnuton="Ships `nfsd`, `exportfs`, `mountd`, `portmap`, `statd` and the kernel modules "
+                "`fs/nfsd/nfsd.ko`, `fs/nfs/nfs.ko`, `exportfs.ko`, `lockd.ko`, `sunrpc.ko` "
+                "(all present only in gnuton's module tree).",
+         deps="`nfsd.ko`/`nfs.ko`/`exportfs.ko`/`lockd.ko`/`sunrpc.ko` built for 4.19.183 (stock "
+              "config has no CONFIG_NFS* at all), gnuton NFS userspace binaries, `nfsd` startup "
+              "from the boot hook, `/etc/exports` on USB/JFFS.",
+         franklin="Build the NFS modules with the kernel-module recipe, load them from the boot "
+                  "hook, run gnuton's `rpcbind`/`nfsd`/`exportfs` from USB, and expose the gnuton "
+                  "page.",
+         tested="gnuton-only modules and binaries confirmed; stock XT9 config has no NFS entries, "
+                "so modules must be built (not yet done).",
+         risks="Two layers must be supplied (kernel modules + userspace); stock cannot serve NFS "
+               "on its own. Router/AP mode irrelevant, but USB storage must be mounted first.",
+         evidence="gnuton-feature: `nfsd.ko`/`nfs.ko`/`exportfs.ko` and `usr/sbin/nfsd` exist ONLY "
+                  "in gnuton; stock's kernel config has no CONFIG_NFS_FS/NFSD.",
+         links=["usr/sbin/nfsd", "www/Advanced_AiDisk_NFS.asp", "docs/kernel-feature-matrix.md"]),
 
     dict(id="samba-ftp-webdav", title="Samba / FTP / WebDAV (stock USB apps)", cat="Storage",
          modes="all",
@@ -483,13 +493,24 @@ FEATURES = [
     dict(id="aimesh", title="AiMesh", cat="Wireless",
          modes="Mesh (AiMesh router/node)",
          status="stock",
-         what="ASUS mesh: multiple nodes with a single SSID, seamless roaming.",
-         gnuton="Stock AiMesh + gnuton fixes; drivers/daemons.",
-         deps="Stock firmware (mesh coordination, drivers).",
-         franklin="Stock handles it; don't touch drivers. gnuton has mesh config UIs.",
-         tested="Device is an AiMesh node; mesh works on stock.",
-         risks="Firmware/driver-level; not portable.",
-         links=["www/AiMesh.asp"]),
+         what="ASUS mesh: multiple nodes with a single SSID, seamless roaming, and a "
+              "controller that pushes configuration to every node.",
+         gnuton="Stock AiMesh only: gnuton ships the same closed mesh stack (amas*, "
+                "cfg_server/cfg_client, bsd, dhd.ko) and adds nothing to it.",
+         deps="Stock firmware: mesh agent, config-sync daemons and wireless drivers. Nothing "
+              "Franklin can build or replace.",
+         franklin="Stock handles it and Franklin must stay out of the way: no patching of "
+                  "amas/cfg_server, no nvram-only state, and no touching build/version "
+                  "identity. On a node, settings are owned by the controller.",
+         tested="Device is an AiMesh node in AP mode on stock; mesh works. Both rootfs "
+                "contain identical mesh components, so there is no gnuton delta to port.",
+         risks="Firmware/control-plane level, not portable. Config pushed by cfg_server can "
+               "overwrite anything Franklin sets in nvram. All nodes must run the same build — "
+               "see docs/mesh-and-firmware-compatibility.md.",
+         evidence="stock: `amas*`, `cfg_server`, `cfg_client`, `bsd`, `dhd.ko` and the AiMesh "
+                  "pages exist in BOTH rootfs; no gnuton-only mesh file was found by "
+                  "tools/parity-audit.py.",
+         links=["docs/mesh-and-firmware-compatibility.md", "docs/parity-audit.md"]),
 
     dict(id="guest-network", title="Guest network", cat="Wireless",
          modes="Router / AP / Mesh",
@@ -590,18 +611,19 @@ FEATURES = [
          modes="all",
          status="planned",
          what="Mount a remote SMB/CIFS share on the router (e.g. for backups or media).",
-         gnuton="Not provided: gnuton ships no `mount.cifs` (verified in its rootfs); Merlin "
-                "users typically add it via Entware.",
-         deps="Kernel CIFS support (`cifs.ko` built from the ASUS GPL if absent), `mount.cifs` "
-              "userspace, boot hook to mount at boot.",
-         franklin="Franklin addition: build/load `cifs.ko` if missing and mount from the boot "
-                  "hook using Entware `cifs-utils`.",
-         tested="Neither rootfs ships `mount.cifs`; kernel CIFS support to confirm via the "
-                "kernel matrix.",
+         gnuton="gnuton ships `fs/cifs/cifs.ko` in its module tree (kernel 4.1.52), so the "
+                "filesystem is available to it; mounting is done with busybox/Entware tools.",
+         deps="`cifs.ko` built for 4.19.183 from the ASUS GPL (stock kernel has no CONFIG_CIFS "
+              "at all), a mount helper (`mount -t cifs` or Entware cifs-utils), boot hook to "
+              "mount at boot.",
+         franklin="Build `cifs.ko` with the kernel-module recipe, load it from the boot hook and "
+                  "mount the share; credentials live on USB/JFFS.",
+         tested="gnuton-only module confirmed (`lib/modules/4.1.52/.../fs/cifs/cifs.ko`); stock "
+                "XT9 config has no CONFIG_CIFS entry, so the module must be built and is not yet.",
          risks="Needs a matching kernel module; credentials must live on USB/JFFS with tight perms.",
-         evidence="franklin-feature: absent from BOTH stock and gnuton rootfs (`usr/sbin/mount.cifs` "
-                  "missing in each), so this is not a gnuton port.",
-         links=["docs/kernel-feature-matrix.md"]),
+         evidence="gnuton-feature: `cifs.ko` exists ONLY in the gnuton module tree and stock's "
+                  "4.19.183 config has no CIFS support, so stock cannot mount CIFS and gnuton can.",
+         links=["docs/kernel-feature-matrix.md", "docs/xt9-kernel-notes.md"]),
 
     dict(id="dhcp-leases", title="DHCP static leases / custom config", cat="DNS",
          modes="Router (DHCP server)",
@@ -893,7 +915,6 @@ KIND = {
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
     "entware": "franklin-feature",
-    "cifs-client": "franklin-feature",
     "download-manager": "franklin-feature",
     "disk-monitoring": "franklin-feature",
     # stock ASUSWRT already provides these
@@ -930,7 +951,7 @@ UPSTREAM = {
     "web-ui-overlay": "n/a — Franklin workaround (gnuton needs none: its httpd is in the image)",
     "networkmap": "gnuton networkmap daemon; Franklin needs a shm-size workaround",
     "entware": "third-party (Entware project) - NOT gnuton",
-    "cifs-client": "n/a — Franklin addition (not in stock or gnuton)",
+    "cifs-client": "gnuton (ships fs/cifs/cifs.ko; stock kernel has no CIFS)",
     "download-manager": "n/a — Franklin addition (aria2 is not shipped by gnuton)",
     "disk-monitoring": "n/a — Franklin addition (smartmontools via Entware)",
     "aiprotection": "stock ASUS / Trend Micro (proprietary)",
@@ -982,7 +1003,7 @@ DEPS = {
     "temperature-monitoring": ["web-ui"],
     "snmp": ["boot-hook"],
     "tor": ["boot-hook", "firewall-custom"],
-    "nfs": ["boot-hook"],
+    "nfs": ["boot-hook", "kernel-modules"],
     "aidisk-nfs": ["nfs", "web-ui"],
     "amtm": ["entware"],
     "cron": ["boot-hook"],

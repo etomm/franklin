@@ -3,9 +3,9 @@
 **Category:** Storage  
 **Modes:** all  
 **Status:** `planned`  
-**Kind:** franklin-feature  
+**Kind:** gnuton-feature  
 **Required:** no  
-**Upstream:** n/a — Franklin addition (not in stock or gnuton)
+**Upstream:** gnuton (ships fs/cifs/cifs.ko; stock kernel has no CIFS)
 
 ## Dependencies
 
@@ -14,7 +14,7 @@
 
 ## Build / install (separable)
 
-Franklin addition: install on USB and start from the boot hook.
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 
@@ -22,19 +22,19 @@ Mount a remote SMB/CIFS share on the router (e.g. for backups or media).
 
 ## How gnuton implements it
 
-Not provided: gnuton ships no `mount.cifs` (verified in its rootfs); Merlin users typically add it via Entware.
+gnuton ships `fs/cifs/cifs.ko` in its module tree (kernel 4.1.52), so the filesystem is available to it; mounting is done with busybox/Entware tools.
 
 ## Requirements
 
-Kernel CIFS support (`cifs.ko` built from the ASUS GPL if absent), `mount.cifs` userspace, boot hook to mount at boot.
+`cifs.ko` built for 4.19.183 from the ASUS GPL (stock kernel has no CONFIG_CIFS at all), a mount helper (`mount -t cifs` or Entware cifs-utils), boot hook to mount at boot.
 
 ## Franklin approach
 
-Franklin addition: build/load `cifs.ko` if missing and mount from the boot hook using Entware `cifs-utils`.
+Build `cifs.ko` with the kernel-module recipe, load it from the boot hook and mount the share; credentials live on USB/JFFS.
 
 ## Tested / verified
 
-Neither rootfs ships `mount.cifs`; kernel CIFS support to confirm via the kernel matrix.
+gnuton-only module confirmed (`lib/modules/4.1.52/.../fs/cifs/cifs.ko`); stock XT9 config has no CONFIG_CIFS entry, so the module must be built and is not yet.
 
 ## Risks / notes
 
@@ -42,8 +42,9 @@ Needs a matching kernel module; credentials must live on USB/JFFS with tight per
 
 ## Why this kind (evidence)
 
-franklin-feature: absent from BOTH stock and gnuton rootfs (`usr/sbin/mount.cifs` missing in each), so this is not a gnuton port.
+gnuton-feature: `cifs.ko` exists ONLY in the gnuton module tree and stock's 4.19.183 config has no CIFS support, so stock cannot mount CIFS and gnuton can.
 
 ## Links / sources
 
 - `docs/kernel-feature-matrix.md`
+- `docs/xt9-kernel-notes.md`
