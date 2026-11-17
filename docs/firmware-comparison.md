@@ -230,35 +230,35 @@ Two distinct failure modes when running gnuton's httpd on stock:
 
 ### Library ABI mismatch (fix for segfaults)
 
-All of gnuton httpd's dependent libraries **differ** from stock's versions:
+Do **not** chase libraries one at a time. Compute the full diff between gnuton's
+`/lib` + `/usr/lib` and the XT9's, supply every gnuton library that differs or
+is missing, and add that directory to `LD_LIBRARY_PATH` first.
 
-| library | gnuton vs stock |
+Method used:
+1. `ssh ... 'cd /lib && md5sum *.so*; cd /usr/lib && md5sum *.so*'` → XT9 list.
+2. For every `*.so*` in gnuton's `lib/` and `usr/lib/`, compare MD5; collect the
+   ones that differ or are absent.
+3. Exclude core runtime libs (`libc.so.6`, `libpthread.so.0`, `libdl.so.2`,
+   `libm.so.6`, `librt.so.1`, `libgcc_s.so.1`, `ld-linux*`) so the process keeps
+   the firmware's runtime.
+4. Copy the remaining (~308 files) into one dir on USB
+   (`/tmp/mnt/FRANKEN/gnuton-libs/`), e.g. via a single tar transfer.
+5. Start httpd with
+   `LD_LIBRARY_PATH=/tmp/mnt/FRANKEN/gnuton-libs:/tmp/mnt/FRANKEN/gnuton-www`.
+
+Note: `libdisk.so` is a good example of why this matters — it differs between
+XT8 (388_24814, same as gnuton) and XT9 (388_24854) and caused a NULL-list
+segfault via `get_account_list()`.
+
+The earlier per-library findings (different libs):
+
+| library | gnuton vs stock XT9 |
 |---|---|
-| libnt.so | differ |
-| libletsencrypt.so | differ |
-| libcfgmnt.so | differ |
-| libcodb.so | differ |
-| libconn_diag.so | differ |
-| libpasswd.so | differ |
-| libasuslog.so | differ |
-| libwebapi.so | differ |
+| libnt.so, libletsencrypt.so, libcfgmnt.so, libcodb.so | differ |
+| libconn_diag.so, libpasswd.so, libasuslog.so, libwebapi.so | differ |
 | libshared.so | differ (exports `replace_char`) |
+| libdisk.so | differ (XT9 388_24854 vs XT8/gnuton 388_24814) |
 | libovpn.so | only on gnuton |
-
-So a segfault is very likely an ABI/data mismatch with a stock library.
-Fix: copy gnuton's versions of **all** of these into the `LD_LIBRARY_PATH`
-directory (`/tmp/mnt/FRANKEN/gnuton-www/`) and restart httpd, so the process
-resolves them from gnuton rather than stock:
-
-```
-for l in libnt.so libletsencrypt.so libcfgmnt.so libcodb.so libconn_diag.so \
-         libpasswd.so libasuslog.so libwebapi.so libshared.so libovpn.so; do
-  # copy gnuton rootfs lib/$l or usr/lib/$l into /tmp/mnt/FRANKEN/gnuton-www/
-done
-```
-
-Verify with `/proc/<pid>/maps` that the process maps the `/tmp/mnt/FRANKEN/
-gnuton-www/lib*.so` paths.
 
 Prefer testing pages that are mostly client-side (VPN Director, DNS Director,
 QoS Stats, Traffic Monitor, WiFi Insight, Wireless Survey) before the
