@@ -23,74 +23,75 @@ tr:nth-child(even) { background: #fafafa; }
 <th data-key="franklin">Franklin (mine)</th>
 <th data-key="backend">Backend</th>
 <th data-key="ui">UI</th>
+<th data-key="unportable">Unportable (gnuton fixes)</th>
 <th data-key="notes">Notes</th>
 </tr></thead>
 <tbody>
-<tr data-be="0" data-ui="2"><td>1</td><td>IPTV / VLAN port tagging (wired)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>📋</td><td>ethswctl softswitch map</td></tr>
-<tr data-be="0" data-ui="2"><td>2</td><td>VLAN / switch control (ethswctl, softswitch)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>📋</td><td>XT9 verified sequence</td></tr>
-<tr data-be="0" data-ui="4"><td>3</td><td>Boot-time scripts (services-start, firewall-start, nat-start, wan-start)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>—</td><td>asusware.arm `S99franklin-boot` hook</td></tr>
-<tr data-be="0" data-ui="4"><td>4</td><td>Custom scripts in `/jffs/scripts`</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>—</td><td>`/jffs/franklin` scripts</td></tr>
-<tr data-be="0" data-ui="4"><td>5</td><td>JFFS partition (persistent storage)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>—</td><td>`/jffs` used for profiles/logs</td></tr>
-<tr data-be="1" data-ui="2"><td>6</td><td>Cake qdisc</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>needs compatible `sch_cake.ko`</td></tr>
-<tr data-be="1" data-ui="2"><td>7</td><td>IGMP snooping / multicast</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>firmware-level mostly</td></tr>
-<tr data-be="1" data-ui="2"><td>8</td><td>QoS / bandwidth limiter</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>tc + IFB</td></tr>
-<tr data-be="1" data-ui="2"><td>9</td><td>SQM with fq_codel / ifb</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>kernel has IFB + fq_codel</td></tr>
-<tr data-be="2" data-ui="2"><td>10</td><td>amtm (ASUSWRT Merlin Terminal Menu)</td><td>gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>Franklin's own menu equivalent</td></tr>
-<tr data-be="2" data-ui="2"><td>11</td><td>CIFS mount (client)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware cifs-utils</td></tr>
-<tr data-be="2" data-ui="2"><td>12</td><td>DDNS (custom providers)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware ddns-scripts</td></tr>
-<tr data-be="2" data-ui="2"><td>13</td><td>DHCP static leases / custom config</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware dnsmasq</td></tr>
-<tr data-be="2" data-ui="2"><td>14</td><td>Diagnostics (tcpdump, iperf3, ethtool, mtr)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>stock has iperf3, ethtool, tc, brctl, jq, curl, wget; tcpdump via Entware</td></tr>
-<tr data-be="2" data-ui="2"><td>15</td><td>Disk monitoring (smartmontools)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware smartmontools</td></tr>
-<tr data-be="2" data-ui="2"><td>16</td><td>Disk spindown / power management</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware hdparm</td></tr>
-<tr data-be="2" data-ui="2"><td>17</td><td>DNS (dnsmasq, custom config)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware dnsmasq</td></tr>
-<tr data-be="2" data-ui="2"><td>18</td><td>DNS-over-TLS (DoT)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware (stubby/unbound)</td></tr>
-<tr data-be="2" data-ui="2"><td>19</td><td>DNSFilter / ad blocking</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware</td></tr>
-<tr data-be="2" data-ui="2"><td>20</td><td>Download manager (aria2)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware aria2</td></tr>
-<tr data-be="2" data-ui="2"><td>21</td><td>Firewall (iptables) rules</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>wrappers + Entware</td></tr>
-<tr data-be="2" data-ui="2"><td>22</td><td>Integrated web UI (modify existing stock pages)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>bind-mount overlay of `/www`, edit existing pages; preferred over separate :8080</td></tr>
-<tr data-be="2" data-ui="2"><td>23</td><td>LED control</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>wrappers</td></tr>
-<tr data-be="2" data-ui="2"><td>24</td><td>Network tools (ping, traceroute, nslookup, WoL)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>stock + Entware</td></tr>
-<tr data-be="2" data-ui="2"><td>25</td><td>NFS (server/export)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware nfs-utils</td></tr>
-<tr data-be="2" data-ui="2"><td>26</td><td>NTP client/server</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>Entware ntpd</td></tr>
-<tr data-be="2" data-ui="2"><td>27</td><td>NVRAM save/restore</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>wrappers</td></tr>
-<tr data-be="2" data-ui="2"><td>28</td><td>NVRAM tools / config export</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>wrappers around nvram</td></tr>
-<tr data-be="2" data-ui="2"><td>29</td><td>Reboot schedule</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>cron job</td></tr>
-<tr data-be="2" data-ui="2"><td>30</td><td>SNMP</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via Entware snmpd</td></tr>
-<tr data-be="2" data-ui="2"><td>31</td><td>SSH (dropbear / openssh)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>stock SSH + Entware openssh</td></tr>
-<tr data-be="2" data-ui="2"><td>32</td><td>System log / syslog</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>Entware syslog-ng</td></tr>
-<tr data-be="2" data-ui="2"><td>33</td><td>Temperature monitoring</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>via sysfs/Entware</td></tr>
-<tr data-be="2" data-ui="2"><td>34</td><td>Web UI overlay over `/www` (bind mount)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>preferred approach: modify existing pages in place</td></tr>
-<tr data-be="2" data-ui="4"><td>35</td><td>Bridge management (brctl)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>—</td><td>wrappers</td></tr>
-<tr data-be="2" data-ui="4"><td>36</td><td>cron / scheduled tasks</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>—</td><td>Entware cron or shell loop</td></tr>
-<tr data-be="2" data-ui="4"><td>37</td><td>Entware / opkg package ecosystem</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>—</td><td>`armv7sf-k3.2` repo</td></tr>
-<tr data-be="4" data-ui="4"><td>38</td><td>Adaptive QoS</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware provides QoS</td></tr>
-<tr data-be="4" data-ui="4"><td>39</td><td>AiMesh / mesh management</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>40</td><td>AiProtection (Trend Micro)</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>41</td><td>AP / Bridge / Repeater / Media bridge modes</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>42</td><td>Cloud sync (Dropbox etc.)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>43</td><td>Firmware upgrade helpers</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>44</td><td>FTP server</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles; Entware alternative available</td></tr>
-<tr data-be="4" data-ui="4"><td>45</td><td>Guest network</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>46</td><td>IPSec VPN</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>47</td><td>IPv6 (native, 6in4, 6to4, 6rd)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles IPv6</td></tr>
-<tr data-be="4" data-ui="4"><td>48</td><td>MAC filter</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>49</td><td>Media server (minidlna)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock provides minidlna (`/usr/sbin/minidlna`)</td></tr>
-<tr data-be="4" data-ui="4"><td>50</td><td>NAT acceleration (CTF/FA)</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>51</td><td>Network map / client list</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>52</td><td>Parental controls</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>53</td><td>Port forwarding / virtual server / DMZ</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>54</td><td>Samba / SMB file sharing</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles; Entware alternative available</td></tr>
-<tr data-be="4" data-ui="4"><td>55</td><td>Samba recycle bin</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>56</td><td>Time Machine (AFP) backup</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>57</td><td>Traffic Analyzer / bandwidth monitor</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>58</td><td>USB modem (3G/4G)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>59</td><td>USB storage (Samba, FTP, DLNA, printer)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles; Entware alternative available</td></tr>
-<tr data-be="4" data-ui="4"><td>60</td><td>VPN client (OpenVPN)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles; Entware alternative available</td></tr>
-<tr data-be="4" data-ui="4"><td>61</td><td>VPN server (OpenVPN)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles; Entware alternative available</td></tr>
-<tr data-be="4" data-ui="4"><td>62</td><td>Web UI HTTPS admin</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>63</td><td>WebDAV</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
-<tr data-be="4" data-ui="4"><td>64</td><td>WireGuard</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles; Entware alternative available</td></tr>
-<tr data-be="4" data-ui="4"><td>65</td><td>Wireless tuning (band steering, smart connect, WPS)</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>—</td><td>—</td><td>stock firmware handles</td></tr>
+<tr data-be="0" data-ui="2"><td>1</td><td>IPTV / VLAN port tagging (wired)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>📋</td><td>·</td><td>ethswctl softswitch map</td></tr>
+<tr data-be="0" data-ui="2"><td>2</td><td>VLAN / switch control (ethswctl, softswitch)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>📋</td><td>·</td><td>XT9 verified sequence</td></tr>
+<tr data-be="0" data-ui="4"><td>3</td><td>Boot-time scripts (services-start, firewall-start, nat-start, wan-start)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>🚫</td><td>·</td><td>asusware.arm `S99franklin-boot` hook</td></tr>
+<tr data-be="0" data-ui="4"><td>4</td><td>Custom scripts in `/jffs/scripts`</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>🚫</td><td>·</td><td>`/jffs/franklin` scripts</td></tr>
+<tr data-be="0" data-ui="4"><td>5</td><td>JFFS partition (persistent storage)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Ported)</td><td>✅</td><td>🚫</td><td>·</td><td>`/jffs` used for profiles/logs</td></tr>
+<tr data-be="1" data-ui="2"><td>6</td><td>Cake qdisc</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>·</td><td>needs compatible `sch_cake.ko`</td></tr>
+<tr data-be="1" data-ui="2"><td>7</td><td>IGMP snooping / multicast</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>·</td><td>firmware-level mostly</td></tr>
+<tr data-be="1" data-ui="2"><td>8</td><td>QoS / bandwidth limiter</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>·</td><td>tc + IFB</td></tr>
+<tr data-be="1" data-ui="2"><td>9</td><td>SQM with fq_codel / ifb</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Research)</td><td>🔄</td><td>📋</td><td>·</td><td>kernel has IFB + fq_codel</td></tr>
+<tr data-be="2" data-ui="2"><td>10</td><td>amtm (ASUSWRT Merlin Terminal Menu)</td><td>gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>Franklin's own menu equivalent</td></tr>
+<tr data-be="2" data-ui="2"><td>11</td><td>CIFS mount (client)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware cifs-utils</td></tr>
+<tr data-be="2" data-ui="2"><td>12</td><td>DDNS (custom providers)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware ddns-scripts</td></tr>
+<tr data-be="2" data-ui="2"><td>13</td><td>DHCP static leases / custom config</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware dnsmasq</td></tr>
+<tr data-be="2" data-ui="2"><td>14</td><td>Diagnostics (tcpdump, iperf3, ethtool, mtr)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>stock has iperf3, ethtool, tc, brctl, jq, curl, wget; tcpdump via Entware</td></tr>
+<tr data-be="2" data-ui="2"><td>15</td><td>Disk monitoring (smartmontools)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware smartmontools</td></tr>
+<tr data-be="2" data-ui="2"><td>16</td><td>Disk spindown / power management</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware hdparm</td></tr>
+<tr data-be="2" data-ui="2"><td>17</td><td>DNS (dnsmasq, custom config)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware dnsmasq</td></tr>
+<tr data-be="2" data-ui="2"><td>18</td><td>DNS-over-TLS (DoT)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware (stubby/unbound)</td></tr>
+<tr data-be="2" data-ui="2"><td>19</td><td>DNSFilter / ad blocking</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware</td></tr>
+<tr data-be="2" data-ui="2"><td>20</td><td>Download manager (aria2)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware aria2</td></tr>
+<tr data-be="2" data-ui="2"><td>21</td><td>Firewall (iptables) rules</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>wrappers + Entware</td></tr>
+<tr data-be="2" data-ui="2"><td>22</td><td>Integrated web UI (modify existing stock pages)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>bind-mount overlay of `/www`, edit existing pages; preferred over separate :8080</td></tr>
+<tr data-be="2" data-ui="2"><td>23</td><td>LED control</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>wrappers</td></tr>
+<tr data-be="2" data-ui="2"><td>24</td><td>Network tools (ping, traceroute, nslookup, WoL)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>stock + Entware</td></tr>
+<tr data-be="2" data-ui="2"><td>25</td><td>NFS (server/export)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware nfs-utils</td></tr>
+<tr data-be="2" data-ui="2"><td>26</td><td>NTP client/server</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>Entware ntpd</td></tr>
+<tr data-be="2" data-ui="2"><td>27</td><td>NVRAM save/restore</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>wrappers</td></tr>
+<tr data-be="2" data-ui="2"><td>28</td><td>NVRAM tools / config export</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>wrappers around nvram</td></tr>
+<tr data-be="2" data-ui="2"><td>29</td><td>Reboot schedule</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>cron job</td></tr>
+<tr data-be="2" data-ui="2"><td>30</td><td>SNMP</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via Entware snmpd</td></tr>
+<tr data-be="2" data-ui="2"><td>31</td><td>SSH (dropbear / openssh)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>stock SSH + Entware openssh</td></tr>
+<tr data-be="2" data-ui="2"><td>32</td><td>System log / syslog</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>Entware syslog-ng</td></tr>
+<tr data-be="2" data-ui="2"><td>33</td><td>Temperature monitoring</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>via sysfs/Entware</td></tr>
+<tr data-be="2" data-ui="2"><td>34</td><td>Web UI overlay over `/www` (bind mount)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>📋</td><td>·</td><td>preferred approach: modify existing pages in place</td></tr>
+<tr data-be="2" data-ui="4"><td>35</td><td>Bridge management (brctl)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>🚫</td><td>·</td><td>wrappers</td></tr>
+<tr data-be="2" data-ui="4"><td>36</td><td>cron / scheduled tasks</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>🚫</td><td>·</td><td>Entware cron or shell loop</td></tr>
+<tr data-be="2" data-ui="4"><td>37</td><td>Entware / opkg package ecosystem</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>0.1 (Planned)</td><td>📋</td><td>🚫</td><td>·</td><td>`armv7sf-k3.2` repo</td></tr>
+<tr data-be="4" data-ui="4"><td>38</td><td>Adaptive QoS</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware provides QoS</td></tr>
+<tr data-be="4" data-ui="4"><td>39</td><td>AiMesh / mesh management</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>40</td><td>AiProtection (Trend Micro)</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>41</td><td>AP / Bridge / Repeater / Media bridge modes</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>42</td><td>Cloud sync (Dropbox etc.)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>43</td><td>Firmware upgrade helpers</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>44</td><td>FTP server</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles; Entware alternative available</td></tr>
+<tr data-be="4" data-ui="4"><td>45</td><td>Guest network</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>46</td><td>IPSec VPN</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>47</td><td>IPv6 (native, 6in4, 6to4, 6rd)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles IPv6</td></tr>
+<tr data-be="4" data-ui="4"><td>48</td><td>MAC filter</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>49</td><td>Media server (minidlna)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock provides minidlna (`/usr/sbin/minidlna`)</td></tr>
+<tr data-be="4" data-ui="4"><td>50</td><td>NAT acceleration (CTF/FA)</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>51</td><td>Network map / client list</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>52</td><td>Parental controls</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>53</td><td>Port forwarding / virtual server / DMZ</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>54</td><td>Samba / SMB file sharing</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles; Entware alternative available</td></tr>
+<tr data-be="4" data-ui="4"><td>55</td><td>Samba recycle bin</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>56</td><td>Time Machine (AFP) backup</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>57</td><td>Traffic Analyzer / bandwidth monitor</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>58</td><td>USB modem (3G/4G)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>59</td><td>USB storage (Samba, FTP, DLNA, printer)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles; Entware alternative available</td></tr>
+<tr data-be="4" data-ui="4"><td>60</td><td>VPN client (OpenVPN)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles; Entware alternative available</td></tr>
+<tr data-be="4" data-ui="4"><td>61</td><td>VPN server (OpenVPN)</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles; Entware alternative available</td></tr>
+<tr data-be="4" data-ui="4"><td>62</td><td>Web UI HTTPS admin</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>63</td><td>WebDAV</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
+<tr data-be="4" data-ui="4"><td>64</td><td>WireGuard</td><td>Merlin 388.2 / gnuton 3006.102.9</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles; Entware alternative available</td></tr>
+<tr data-be="4" data-ui="4"><td>65</td><td>Wireless tuning (band steering, smart connect, WPS)</td><td>Stock 3.0.0.4.388</td><td>n/a (Stock handles)</td><td>🏠</td><td>🏠</td><td>⛔</td><td>stock firmware handles</td></tr>
 </tbody>
 </table>
 <script>
