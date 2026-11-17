@@ -35,6 +35,14 @@ if [ "${FRANKLIN_OPT:-1}" = "1" ] && [ -d "$FRANKLIN_ROOT/opt" ]; then
     ln -s "$FRANKLIN_ROOT/opt" /tmp/opt 2>/dev/null && log "/tmp/opt -> $FRANKLIN_ROOT/opt"
 fi
 
+# Stock PATH does not contain /opt/bin, so Franklin's tools (and Entware's)
+# are prepended here for everything this driver starts.
+if [ -d "$FRANKLIN_ROOT/opt/bin" ] || [ -d "$FRANKLIN_ROOT/opt/sbin" ]; then
+    PATH="$FRANKLIN_ROOT/opt/bin:$FRANKLIN_ROOT/opt/sbin:$PATH"
+    export PATH
+    log "PATH prepended with franklin/opt/{bin,sbin}"
+fi
+
 # Failures are recorded, never fatal.
 FAILED=""
 run_hook() {

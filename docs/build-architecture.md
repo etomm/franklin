@@ -13,9 +13,21 @@ core/boot/franklin-boot          <- runtime driver, copied into the stick
 ```
 
 **No file mapping.** A feature's `payload/` folder *is* the folder it gets on
-the stick (`franklin/features/<id>/`). If something has to come from outside
-the repo (gnuton binaries, a `.ko` built from the GPL), `build.sh` puts it in
-`payload/`; the composer never needs to know where it came from.
+the stick. Shared directories merge into one prefix, exactly like a package
+installing into `/opt`; everything else stays private to the feature:
+
+| In `payload/` | Lands at | Why |
+|---|---|---|
+| `opt/`, `bin/`, `sbin/`, `lib/`, `etc/`, `share/`, `var/` | `franklin/<dir>/` (merged) | shared prefix: binaries, libs, configs |
+| anything else (`start.sh`, `.ko`, data) | `franklin/features/<id>/` | private to the feature |
+
+So `payload/opt/bin/ipset` becomes `/opt/bin/ipset` at runtime, and
+`payload/start.sh` becomes `franklin/features/ipset/start.sh`.
+
+The composer **fails on a file collision** (same path from two features with
+different content) and writes a generated `franklin/OWNERS` map
+(`path<TAB>feature`) so removing a feature stays exact without anyone
+hand-maintaining a file list.
 
 ## What the composer writes
 
@@ -27,9 +39,11 @@ the repo (gnuton binaries, a `.ko` built from the GPL), `build.sh` puts it in
   franklin/
     bin/franklin-boot           discovers its USB base, runs the registry
     registry.d/NN-<id>.env      generated, dependency-ordered
-    features/<id>/              payload/ copied verbatim, hooks live here
+    features/<id>/              private per-feature files, hooks live here
+    opt/ bin/ sbin/ lib/ etc/ share/ var/   merged from all features
     opt/  state/  log/          preserved state (see below)
     BUILD-INFO                  git sha + feature list (no timestamps)
+    OWNERS                      which feature owns each merged file
     SHA256SUMS                  hash of every composed file
 ```
 
@@ -61,16 +75,26 @@ Franklin's own tree.
 
 ### `/opt` and Entware
 
-Because ASUS points `/tmp/opt` at `asusware.arm`, the boot driver re-points it:
+The `/opt` prefix already exists on stock — ASUS creates the whole symlink farm
+at boot (`/opt/bin -> /tmp/opt/bin`, `/opt/etc -> /tmp/opt/etc`, …) and points
+`/tmp/opt` at `asusware.arm`. Verified on the XT9. **Nothing has to be
+recreated.**
+
+The boot driver only re-points that single symlink:
 
 ```
 /tmp/opt -> /tmp/mnt/<LABEL>/franklin/opt
 ```
 
-Consequences: `/opt/bin` etc. keep working as a normal Entware layout, Entware
-files land in the **preserved** `franklin/opt`, and a rebuild never deletes
-installed packages. Set `opt: false` in `franklin.yaml` to leave ASUS's
-original link alone.
+Consequences: `/opt/bin`, `/opt/lib`, `/opt/etc`, … immediately resolve into
+Franklin's merged tree, Entware installs into the **preserved** `franklin/opt`
+and survives rebuilds, and Franklin binaries are simply files in `opt/bin`.
+
+One gap stock leaves: `PATH` is `/usr/sbin:/usr/bin:/sbin:/bin`, with no
+`/opt/bin`. The driver prepends `franklin/opt/bin:franklin/opt/sbin` for
+everything it starts (verified on the device).
+
+Set `opt: false` in `franklin.yaml` to leave ASUS's original link alone.
 
 ## feature.yaml schema
 
@@ -171,16 +195,19 @@ python tools/franklin-compose.py
 straight into the feature's own payload folder:
 
 ```
-features/web-ui/payload/httpd          gnuton /usr/sbin/httpd
-features/web-ui/payload/www/           gnuton /www (broken links skipped)
-features/web-ui/payload/lib/           every .so stock lacks or builds differently
+features/web-ui/payload/opt/bin/gnuton-httpd      gnuton /usr/sbin/httpd
+features/web-ui/payload/opt/share/gnuton-www/     gnuton /www (broken links skipped)
+features/web-ui/payload/opt/lib/gnuton/           every .so stock lacks or differs
 ```
+
+Namespaced on purpose: `gnuton-httpd` will not shadow `httpd`, and
+`opt/lib/gnuton` keeps gnuton's 219 libraries away from Entware's `opt/lib`.
 
 Those generated files are gitignored; the folder is the whole contract.
 
 At boot `web-ui-overlay/start.sh` runs that httpd on `:8088` with
-`cwd=franklin/features/web-ui/www` and
-`LD_LIBRARY_PATH=franklin/features/web-ui/lib`, after fixing `acc_num=0`
+`cwd=/opt/share/gnuton-www` and `LD_LIBRARY_PATH=/opt/lib/gnuton`, after
+fixing `acc_num=0`
 (without it `Advanced_System_Content.asp` segfaults). Stock `:80` keeps serving
 the stock UI, so the overlay is always reversible.
 

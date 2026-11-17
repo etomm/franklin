@@ -1,10 +1,14 @@
 #!/bin/sh
-# Stage gnuton's web UI into this feature's payload/ folder.
+# Stage gnuton's web UI into this feature's payload/, using the shared /opt
+# prefix (merged with the other features) but namespaced where collisions with
+# Entware are likely:
 #
-# The folder layout *is* the layout on the stick:
-#   payload/httpd      gnuton /usr/sbin/httpd
-#   payload/www/       gnuton /www tree
-#   payload/lib/       every lib that is missing or different in stock
+#   payload/opt/bin/gnuton-httpd       gnuton /usr/sbin/httpd
+#   payload/opt/share/gnuton-www/      gnuton /www tree
+#   payload/opt/lib/gnuton/            every lib missing or different in stock
+#
+# Which becomes /opt/bin/gnuton-httpd, /opt/share/gnuton-www, /opt/lib/gnuton
+# on the device, because /tmp/opt points at franklin/opt.
 #
 # Inputs (both extracted per docs/firmware-comparison.md):
 #   STOCK_ROOTFS   firmware/xt8/rootfs
@@ -27,22 +31,23 @@ OUT="${OUT:-$ROOT/features/web-ui/payload}"
 }
 
 rm -rf "$OUT"
-mkdir -p "$OUT/lib"
+mkdir -p "$OUT/opt/bin" "$OUT/opt/lib/gnuton" "$OUT/opt/share"
 
-# 1. httpd
-cp "$GNUTON_ROOTFS/usr/sbin/httpd" "$OUT/httpd"
-chmod 755 "$OUT/httpd"
+# 1. httpd (namespaced: stock has its own /opt/bin/httpd once Entware exists)
+cp "$GNUTON_ROOTFS/usr/sbin/httpd" "$OUT/opt/bin/gnuton-httpd"
+chmod 755 "$OUT/opt/bin/gnuton-httpd"
 
 # 2. /www tree
 # The extracted rootfs can contain dangling symlinks (extraction artefacts), so
 # copy regular files and resolve symlinks, skipping broken ones.
-mkdir -p "$OUT/www"
+WWW="$OUT/opt/share/gnuton-www"
+mkdir -p "$WWW"
 (
     cd "$GNUTON_ROOTFS/www" || exit 1
-    find . -type d -exec mkdir -p "$OUT/www/{}" \;
+    find . -type d -exec mkdir -p "$WWW/{}" \;
     find . \( -type f -o -type l \) -print | while IFS= read -r f; do
         if [ -f "$f" ]; then
-            cp "$f" "$OUT/www/$f"
+            cp "$f" "$WWW/$f"
         else
             echo "  skipping broken link: www/${f#./}" >&2
         fi
@@ -50,6 +55,7 @@ mkdir -p "$OUT/www"
 )
 
 # 3. libs that stock does not have (or has a different build of)
+LIB="$OUT/opt/lib/gnuton"
 count=0
 for lib in $(cd "$GNUTON_ROOTFS" && find usr/lib lib -name '*.so*' -type f | sort); do
     src="$GNUTON_ROOTFS/$lib"
@@ -59,12 +65,12 @@ for lib in $(cd "$GNUTON_ROOTFS" && find usr/lib lib -name '*.so*' -type f | sor
     if [ -f "$stock" ] && cmp -s "$src" "$stock"; then
         continue
     fi
-    mkdir -p "$OUT/lib/$(dirname "$rel")"
-    cp "$src" "$OUT/lib/$rel"
+    mkdir -p "$LIB/$(dirname "$rel")"
+    cp "$src" "$LIB/$rel"
     count=$((count + 1))
 done
 
 # 4. reproducible metadata
 find "$OUT" -exec touch -d '@0' {} + 2>/dev/null || true
-printf 'gnuton httpd + www + %d differing lib(s)\n' "$count" > "$OUT/SOURCE"
+printf 'gnuton httpd + www + %d differing lib(s)\n' "$count" > "$OUT/opt/share/gnuton-www/SOURCE"
 echo "staged $OUT ($count libs)"

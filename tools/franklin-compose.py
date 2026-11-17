@@ -197,22 +197,48 @@ def sha256(path):
     return h.hexdigest()
 
 
-def copy_tree(src, dst, out_files):
-    """Deterministic copy: sorted, mtime 0, symlinks refused."""
+# Payload folders with these names are merged into franklin/<name>/ (a shared
+# prefix, exactly like a package installing into /opt). Everything else in
+# payload/ is private to the feature and lands in franklin/features/<id>/.
+MERGE_DIRS = ("opt", "bin", "sbin", "lib", "etc", "share", "var")
+
+# dst path -> (feature id, sha256) for collision detection.
+OWNED = {}
+
+
+def copy_tree(src, dst, out_files, owner):
+    """Deterministic copy: sorted, mtime 0, symlinks refused, collisions fatal."""
     if os.path.islink(src):
         raise Fail("refusing to copy symlink: %s" % src)
     if os.path.isdir(src):
         os.makedirs(dst, exist_ok=True)
         for name in sorted(os.listdir(src)):
-            copy_tree(os.path.join(src, name), os.path.join(dst, name), out_files)
+            copy_tree(os.path.join(src, name), os.path.join(dst, name), out_files, owner)
         return
     if not os.path.isfile(src):
         raise Fail("not a regular file (broken symlink?): %s" % src)
+    digest = sha256(src)
+    prev = OWNED.get(dst)
+    if prev:
+        other, other_digest = prev
+        if other_digest != digest:
+            raise Fail("file collision: %s is provided by both '%s' and '%s'"
+                       % (dst, other, owner))
+        return  # identical content, already copied
+    OWNED[dst] = (owner, digest)
     os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
     shutil.copyfile(src, dst)
     os.utime(dst, (0, 0))
     os.chmod(dst, 0o755 if src.endswith((".sh", ".py")) else 0o644)
     out_files.append(dst)
+
+
+def split_payload(payload):
+    """Split payload entries into merged prefix dirs and private feature files."""
+    merged, private = [], []
+    for name in sorted(os.listdir(payload)):
+        (merged if name in MERGE_DIRS else private).append(name)
+    return merged, private
 
 
 def write_file(path, text, mode=0o644, out_files=None):
@@ -286,17 +312,26 @@ def compose(args, feats, order, cfg):
         os.makedirs(os.path.join(franklin, name), exist_ok=True)
 
     written = []
-    # Each feature folder is copied verbatim: features/<id>/payload ->
-    # franklin/features/<id>. The folder layout *is* the destination layout,
-    # so there is no src/dst mapping to maintain.
+    # A payload folder is the layout on the stick. Shared dirs (opt, bin, sbin,
+    # lib, etc, share, var) merge into franklin/<dir>/ like a package prefix;
+    # everything else stays private to the feature.
+    OWNED.clear()
     for fid in order:
         payload = os.path.join(feats[fid]["_dir"], "payload")
-        if os.path.isdir(payload):
-            copy_tree(payload, os.path.join(franklin, "features", fid), written)
+        if not os.path.isdir(payload):
+            continue
+        merged, private = split_payload(payload)
+        private_dir = os.path.join(franklin, "features", fid)
+        for name in private:
+            copy_tree(os.path.join(payload, name),
+                      os.path.join(private_dir, name), written, fid)
+        for name in merged:
+            copy_tree(os.path.join(payload, name),
+                      os.path.join(franklin, name), written, fid)
 
     # runtime driver + registry
     copy_tree(os.path.join(ROOT, "core", "boot", "franklin-boot"),
-              os.path.join(franklin, "bin", "franklin-boot"), written)
+              os.path.join(franklin, "bin", "franklin-boot"), written, "core")
     reg = os.path.join(franklin, "registry.d")
     for i, fid in enumerate(order, 1):
         write_file(os.path.join(reg, "%02d-%s.env" % (i * 10, fid)),
@@ -317,6 +352,16 @@ def compose(args, feats, order, cfg):
     info += ["  - %s (%s)" % (fid, feats[fid]["kind"]) for fid in order]
     info.append("order: %s" % ", ".join(order))
     write_file(os.path.join(franklin, "BUILD-INFO"), "\n".join(info) + "\n", 0o644, written)
+
+    # Generated ownership map: which feature owns each merged file, so removing
+    # a feature is exact without anyone hand-writing a file list.
+    owners = []
+    for path in sorted(OWNED):
+        rel = os.path.relpath(path, franklin).replace("\\", "/")
+        if rel.startswith("features/"):
+            continue
+        owners.append("%s\t%s" % (rel, OWNED[path][0]))
+    write_file(os.path.join(franklin, "OWNERS"), "\n".join(owners) + "\n", 0o644, written)
 
     sums = []
     for path in sorted(written):

@@ -9,10 +9,9 @@
 set -u
 PORT="${FRANKLIN_WEBUI_PORT:-8088}"
 root="${FRANKLIN_ROOT:?}"
-base="$root/features/web-ui"
-www="$base/www"
-lib="$base/lib"
-httpd="$base/httpd"
+httpd="$root/opt/bin/gnuton-httpd"
+www="$root/opt/share/gnuton-www"
+lib="$root/opt/lib/gnuton"
 state="$root/state"
 log="$root/log"
 pidfile="$state/web-ui-overlay.pid"
