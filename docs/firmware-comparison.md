@@ -114,3 +114,16 @@ tree. Franklin can either:
 - keep the stock httpd and overlay `/www` (preferred, no daemon swap), or
 - run gnuton's httpd on a separate port with `libovpn.so` and gnuton's `/www`
   for a gnuton-like UI, with recovery via SSH if needed.
+
+### Running gnuton's full UI alongside stock (tested)
+Deployed on the XT9 at `http://192.168.0.4:8088` (stock UI stays on port 80):
+- `/tmp/mnt/FRANKEN/gnuton-httpd` — gnuton httpd
+- `/tmp/mnt/FRANKEN/gnuton-www/www/` — gnuton `/www` tree
+- `/tmp/mnt/FRANKEN/gnuton-www/libovpn.so`
+- Started with `cd .../www && LD_LIBRARY_PATH=.../gnuton-www gnuton-httpd -p 8088`.
+- gnuton-specific pages return 200: `Advanced_VPNDirector.asp`,
+  `Tools_Sysinfo.asp`, `WiFi_Insight.asp`, `DNSDirector.asp`, etc.
+- Helper: `tools/start-gnuton-webui.sh [port]`.
+
+This confirms most of gnuton's userland software can be run on stock
+firmware by supplying its binaries + libraries + `/www`, without flashing.
