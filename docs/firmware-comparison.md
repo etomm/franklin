@@ -55,11 +55,17 @@ layer applies to both. Franklin's stock-handled classifications in
 XT8 rootfs under `firmware/xt8/rootfs/` can be grepped/diffed locally to
 verify any specific file.
 
-## gnuton firmware (downloaded, not yet extracted)
+## gnuton firmware (downloaded, extraction failed)
 - gnuton 3004.388.11_1-gnuton1 for RT-AX95Q/XT8 was downloaded into
   `firmware/gnuton-xt8/RT-AX95Q_3004_388.11_1-gnuton1_puresqubi.w` (gitignored).
-- Extraction of the squashfs rootfs failed with the available tooling: the
-  id table could not be read (likely a non-standard squashfs layout). The
-  image is available locally for extraction with appropriate tooling
-  (e.g. `sasquatch` or a patched `unsquashfs`) to compare gnuton's changes
-  against stock.
+  MD5 verified against the release's `.md5` file
+  (`03a7940f5486dd8c5ca310356956b0c5`).
+- Extraction of the squashfs rootfs failed with all available tooling:
+  - `unsquashfs` 4.5.1 and 4.7.5 (built from source), `sasquatch`
+    (recraft/sasquatch docker), `7z`, `binwalk -e -M`, loop mount.
+  - Root cause: the squashfs id table metadata block at `id_table_start`
+    (offset 0x02dc25c5) has an invalid size field (0x3a62 = 14946, far
+    exceeding the 8-byte remainder), so the id table cannot be read. This
+    indicates a non-standard squashfs layout in the gnuton image.
+  - The image is available locally for manual extraction with specialized
+    tooling (e.g. patching the id table or using a custom extractor).
