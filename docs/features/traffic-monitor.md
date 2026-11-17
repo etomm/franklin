@@ -3,7 +3,16 @@
 **Category:** Monitoring  
 **Modes:** Router (WAN stats); AP limited  
 **Status:** `stock+`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [web-ui](web-ui.md)
+
+## Build / install (separable)
+
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 

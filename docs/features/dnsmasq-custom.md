@@ -3,7 +3,16 @@
 **Category:** DNS  
 **Modes:** Router / AP  
 **Status:** `stock+`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Add /jffs or Entware dnsmasq config (verify stock path).
 
 ## What it does
 

@@ -3,7 +3,17 @@
 **Category:** QoS  
 **Modes:** Router  
 **Status:** `research`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [adaptive-qos](adaptive-qos.md)
+- [web-ui](web-ui.md)
+
+## Build / install (separable)
+
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 

@@ -3,7 +3,16 @@
 **Category:** Network  
 **Modes:** Router  
 **Status:** `out-of-scope`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- none
+
+## Build / install (separable)
+
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 

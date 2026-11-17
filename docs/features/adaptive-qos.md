@@ -3,7 +3,18 @@
 **Category:** QoS  
 **Modes:** Router  
 **Status:** `research`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [kernel-modules](kernel-modules.md)
+- [boot-hook](boot-hook.md)
+- [ipset](ipset.md)
+
+## Build / install (separable)
+
+Build BCM_DPI.ko (modularizable per audit) + bwdpi userspace/signatures.
 
 ## What it does
 

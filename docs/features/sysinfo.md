@@ -3,7 +3,16 @@
 **Category:** Monitoring  
 **Modes:** all  
 **Status:** `stock+`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [web-ui](web-ui.md)
+
+## Build / install (separable)
+
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 

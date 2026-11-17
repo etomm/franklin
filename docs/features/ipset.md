@@ -3,7 +3,17 @@
 **Category:** Network  
 **Modes:** all  
 **Status:** `tested`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [kernel-modules](kernel-modules.md)
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Run features/ipset/build.sh -> builds ip_set*.ko; copy gnuton /usr/sbin/ipset.
 
 ## What it does
 

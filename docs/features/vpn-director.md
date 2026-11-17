@@ -3,7 +3,17 @@
 **Category:** VPN  
 **Modes:** Router (needs WAN + routing)  
 **Status:** `planned`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [firewall-custom](firewall-custom.md)
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+ip rule/ip route rules from boot hook.
 
 ## What it does
 

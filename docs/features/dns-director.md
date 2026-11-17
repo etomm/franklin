@@ -3,7 +3,18 @@
 **Category:** DNS  
 **Modes:** Router (DHCP/DNS server)  
 **Status:** `planned`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [firewall-custom](firewall-custom.md)
+- [dnsmasq-custom](dnsmasq-custom.md)
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+iptables REDIRECT + dnsmasq config from boot hook.
 
 ## What it does
 

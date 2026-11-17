@@ -3,7 +3,17 @@
 **Category:** Monitoring  
 **Modes:** all  
 **Status:** `tested`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [web-ui](web-ui.md)
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Run gnuton networkmap (creates shm 0x3e9 at 198168) or fix shm size.
 
 ## What it does
 

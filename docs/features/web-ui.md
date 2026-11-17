@@ -3,7 +3,16 @@
 **Category:** UI  
 **Modes:** all (AP / Router / Mesh)  
 **Status:** `tested`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Deploy gnuton httpd + /www + differing libs to USB; start on :8088 (see docs/xt9-kernel-notes.md).
 
 ## What it does
 

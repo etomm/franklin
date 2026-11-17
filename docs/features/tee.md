@@ -3,7 +3,17 @@
 **Category:** Network  
 **Modes:** all  
 **Status:** `tested`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [kernel-modules](kernel-modules.md)
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Run features/tee/build.sh -> builds xt_TEE.ko + nf_dup_ipv4/6.ko.
 
 ## What it does
 

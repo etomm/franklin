@@ -3,7 +3,16 @@
 **Category:** System  
 **Modes:** all  
 **Status:** `tested`  
+**Required:** yes  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [jffs](jffs.md)
+
+## Build / install (separable)
+
+Copy usb/asusware.arm to the USB root; boot hook runs S* scripts.
 
 ## What it does
 

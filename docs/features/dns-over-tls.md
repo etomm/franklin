@@ -3,7 +3,17 @@
 **Category:** DNS  
 **Modes:** Router / AP  
 **Status:** `planned`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [dnsmasq-custom](dnsmasq-custom.md)
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Configure dnsmasq DoT or run Entware stubby.
 
 ## What it does
 

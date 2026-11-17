@@ -3,7 +3,16 @@
 **Category:** Kernel  
 **Modes:** all  
 **Status:** `tested`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Run features/kernel-modules/build.sh (calls tools/build-kernel-modules.sh with the ASUS GPL + device config).
 
 ## What it does
 

@@ -3,7 +3,17 @@
 **Category:** Services  
 **Modes:** Router  
 **Status:** `planned`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [boot-hook](boot-hook.md)
+- [firewall-custom](firewall-custom.md)
+
+## Build / install (separable)
+
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 

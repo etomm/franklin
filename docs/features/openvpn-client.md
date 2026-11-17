@@ -3,7 +3,16 @@
 **Category:** VPN  
 **Modes:** Router (WAN + VPN client)  
 **Status:** `stock+`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 

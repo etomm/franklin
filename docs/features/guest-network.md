@@ -3,7 +3,16 @@
 **Category:** Wireless  
 **Modes:** Router / AP / Mesh  
 **Status:** `stock`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- none
+
+## Build / install (separable)
+
+See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 

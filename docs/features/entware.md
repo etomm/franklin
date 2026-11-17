@@ -3,7 +3,16 @@
 **Category:** Packages  
 **Modes:** all  
 **Status:** `planned`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Install Entware on USB (armv7sf-k3.2).
 
 ## What it does
 

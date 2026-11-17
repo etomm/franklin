@@ -3,7 +3,16 @@
 **Category:** Automation  
 **Modes:** all  
 **Status:** `planned`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Entware cron or stock cru; re-add at boot.
 
 ## What it does
 

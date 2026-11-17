@@ -3,7 +3,17 @@
 **Category:** QoS  
 **Modes:** Router (WAN shaping)  
 **Status:** `tested`  
+**Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+- [kernel-modules](kernel-modules.md)
+- [boot-hook](boot-hook.md)
+
+## Build / install (separable)
+
+Run features/cake-qos/build.sh -> builds sch_cake.ko from the ASUS GPL.
 
 ## What it does
 

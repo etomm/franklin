@@ -1,0 +1,553 @@
+{
+  "features": [
+    {
+      "id": "web-ui",
+      "title": "Web UI (gnuton httpd + /www)",
+      "category": "UI",
+      "modes": "all (AP / Router / Mesh)",
+      "status": "tested",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "vpn-director",
+      "title": "VPN Director",
+      "category": "VPN",
+      "modes": "Router (needs WAN + routing)",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "firewall-custom",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "vpn-killswitch",
+      "title": "VPN Killswitch",
+      "category": "VPN",
+      "modes": "Router (WAN + VPN client)",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "firewall-custom",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "openvpn-client",
+      "title": "OpenVPN Client",
+      "category": "VPN",
+      "modes": "Router (WAN + VPN client)",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "openvpn-server",
+      "title": "OpenVPN Server",
+      "category": "VPN",
+      "modes": "Router",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "boot-hook",
+        "firewall-custom"
+      ]
+    },
+    {
+      "id": "wireguard-client",
+      "title": "WireGuard Client",
+      "category": "VPN",
+      "modes": "Router",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "wireguard-server",
+      "title": "WireGuard Server",
+      "category": "VPN",
+      "modes": "Router",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "boot-hook",
+        "firewall-custom"
+      ]
+    },
+    {
+      "id": "ipsec-vpn",
+      "title": "IPSec VPN",
+      "category": "VPN",
+      "modes": "Router",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "boot-hook",
+        "firewall-custom"
+      ]
+    },
+    {
+      "id": "dns-director",
+      "title": "DNS Director (DNSFilter)",
+      "category": "DNS",
+      "modes": "Router (DHCP/DNS server)",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "firewall-custom",
+        "dnsmasq-custom",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "dns-over-tls",
+      "title": "DNS-over-TLS (DoT)",
+      "category": "DNS",
+      "modes": "Router / AP",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "dnsmasq-custom",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "dnsmasq-custom",
+      "title": "Custom dnsmasq config",
+      "category": "DNS",
+      "modes": "Router / AP",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "firewall-custom",
+      "title": "Custom firewall / NAT rules",
+      "category": "Network",
+      "modes": "Router",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "nat-acceleration",
+      "title": "NAT acceleration (CTF/FA)",
+      "category": "Network",
+      "modes": "Router",
+      "status": "out-of-scope",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "cake-qos",
+      "title": "Cake QoS",
+      "category": "QoS",
+      "modes": "Router (WAN shaping)",
+      "status": "tested",
+      "required": false,
+      "depends_on": [
+        "kernel-modules",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "adaptive-qos",
+      "title": "Adaptive QoS / DPI",
+      "category": "QoS",
+      "modes": "Router",
+      "status": "research",
+      "required": false,
+      "depends_on": [
+        "kernel-modules",
+        "boot-hook",
+        "ipset"
+      ]
+    },
+    {
+      "id": "traffic-monitor",
+      "title": "Traffic Monitor",
+      "category": "Monitoring",
+      "modes": "Router (WAN stats); AP limited",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "web-ui"
+      ]
+    },
+    {
+      "id": "qos-classification",
+      "title": "QoS Classification / Stats",
+      "category": "QoS",
+      "modes": "Router",
+      "status": "research",
+      "required": false,
+      "depends_on": [
+        "adaptive-qos",
+        "web-ui"
+      ]
+    },
+    {
+      "id": "sysinfo",
+      "title": "Tools / Sysinfo",
+      "category": "Monitoring",
+      "modes": "all",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "web-ui"
+      ]
+    },
+    {
+      "id": "wifi-insight",
+      "title": "WiFi Insight",
+      "category": "Wireless",
+      "modes": "all (mesh/AP)",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "web-ui"
+      ]
+    },
+    {
+      "id": "wireless-survey",
+      "title": "Wireless Survey",
+      "category": "Wireless",
+      "modes": "all",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "web-ui"
+      ]
+    },
+    {
+      "id": "network-tools",
+      "title": "Network Tools",
+      "category": "Diagnostics",
+      "modes": "all",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "web-ui"
+      ]
+    },
+    {
+      "id": "snmp",
+      "title": "SNMP",
+      "category": "Services",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "tor",
+      "title": "Tor",
+      "category": "Services",
+      "modes": "Router",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook",
+        "firewall-custom"
+      ]
+    },
+    {
+      "id": "nfs",
+      "title": "NFS server",
+      "category": "Storage",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "samba-ftp-webdav",
+      "title": "Samba / FTP / WebDAV (stock USB apps)",
+      "category": "Storage",
+      "modes": "all",
+      "status": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "aidisk-nfs",
+      "title": "AiDisk NFS",
+      "category": "Storage",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "nfs",
+        "web-ui"
+      ]
+    },
+    {
+      "id": "amtm",
+      "title": "amtm (terminal menu)",
+      "category": "Tools",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "entware"
+      ]
+    },
+    {
+      "id": "entware",
+      "title": "Entware package ecosystem",
+      "category": "Packages",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "ipset",
+      "title": "ipset",
+      "category": "Network",
+      "modes": "all",
+      "status": "tested",
+      "required": false,
+      "depends_on": [
+        "kernel-modules",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "tee",
+      "title": "TEE (packet duplication)",
+      "category": "Network",
+      "modes": "all",
+      "status": "tested",
+      "required": false,
+      "depends_on": [
+        "kernel-modules",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "cron",
+      "title": "cron / scheduled tasks",
+      "category": "Automation",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "custom-scripts",
+      "title": "Custom scripts",
+      "category": "Automation",
+      "modes": "all",
+      "status": "tested",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "jffs",
+      "title": "JFFS partition",
+      "category": "Storage",
+      "modes": "all",
+      "status": "stock",
+      "required": true,
+      "depends_on": []
+    },
+    {
+      "id": "nvram-tools",
+      "title": "NVRAM tools / config export",
+      "category": "System",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "led-control",
+      "title": "LED control",
+      "category": "System",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "disk-monitoring",
+      "title": "Disk monitoring (smartmontools)",
+      "category": "Storage",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "entware"
+      ]
+    },
+    {
+      "id": "temperature-monitoring",
+      "title": "Temperature monitoring",
+      "category": "Monitoring",
+      "modes": "all",
+      "status": "stock+",
+      "required": false,
+      "depends_on": [
+        "web-ui"
+      ]
+    },
+    {
+      "id": "ddns",
+      "title": "DDNS (custom providers)",
+      "category": "Network",
+      "modes": "Router",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "ntp",
+      "title": "NTP client/server",
+      "category": "System",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "reboot-schedule",
+      "title": "Reboot schedule",
+      "category": "Automation",
+      "modes": "all",
+      "status": "planned",
+      "required": false,
+      "depends_on": [
+        "cron"
+      ]
+    },
+    {
+      "id": "aimesh",
+      "title": "AiMesh",
+      "category": "Wireless",
+      "modes": "Mesh (AiMesh router/node)",
+      "status": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "guest-network",
+      "title": "Guest network",
+      "category": "Wireless",
+      "modes": "Router / AP / Mesh",
+      "status": "stock",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "networkmap",
+      "title": "Network Map / client list",
+      "category": "Monitoring",
+      "modes": "all",
+      "status": "tested",
+      "required": false,
+      "depends_on": [
+        "web-ui",
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "boot-hook",
+      "title": "Boot hook (asusware.arm)",
+      "category": "System",
+      "modes": "all",
+      "status": "tested",
+      "required": true,
+      "depends_on": [
+        "jffs"
+      ]
+    },
+    {
+      "id": "kernel-modules",
+      "title": "Kernel modules (build recipe)",
+      "category": "Kernel",
+      "modes": "all",
+      "status": "tested",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    }
+  ],
+  "build_order": [
+    "aimesh",
+    "guest-network",
+    "jffs",
+    "boot-hook",
+    "cron",
+    "custom-scripts",
+    "ddns",
+    "dnsmasq-custom",
+    "dns-over-tls",
+    "entware",
+    "amtm",
+    "disk-monitoring",
+    "firewall-custom",
+    "dns-director",
+    "ipsec-vpn",
+    "kernel-modules",
+    "cake-qos",
+    "ipset",
+    "adaptive-qos",
+    "led-control",
+    "nat-acceleration",
+    "nfs",
+    "ntp",
+    "nvram-tools",
+    "openvpn-client",
+    "openvpn-server",
+    "reboot-schedule",
+    "samba-ftp-webdav",
+    "snmp",
+    "tee",
+    "tor",
+    "vpn-director",
+    "vpn-killswitch",
+    "web-ui",
+    "aidisk-nfs",
+    "network-tools",
+    "networkmap",
+    "qos-classification",
+    "sysinfo",
+    "temperature-monitoring",
+    "traffic-monitor",
+    "wifi-insight",
+    "wireguard-client",
+    "wireguard-server",
+    "wireless-survey"
+  ]
+}

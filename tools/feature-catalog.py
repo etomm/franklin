@@ -524,12 +524,94 @@ FEATURES = [
          links=["docs/xt9-kernel-notes.md", "docs/kernel-feature-matrix.md"]),
 ]
 
+REQUIRED = {"boot-hook", "jffs"}
+
+# id -> list of feature ids it depends on (runtime and/or build)
+DEPS = {
+    "boot-hook": ["jffs"],
+    "web-ui": ["boot-hook"],
+    "networkmap": ["web-ui", "boot-hook"],
+    "kernel-modules": ["boot-hook"],
+    "cake-qos": ["kernel-modules", "boot-hook"],
+    "tee": ["kernel-modules", "boot-hook"],
+    "ipset": ["kernel-modules", "boot-hook"],
+    "adaptive-qos": ["kernel-modules", "boot-hook", "ipset"],
+    "qos-classification": ["adaptive-qos", "web-ui"],
+    "traffic-monitor": ["web-ui"],
+    "sysinfo": ["web-ui"],
+    "wifi-insight": ["web-ui"],
+    "wireless-survey": ["web-ui"],
+    "network-tools": ["web-ui"],
+    "temperature-monitoring": ["web-ui"],
+    "snmp": ["boot-hook"],
+    "tor": ["boot-hook", "firewall-custom"],
+    "nfs": ["boot-hook"],
+    "aidisk-nfs": ["nfs", "web-ui"],
+    "samba-ftp-webdav": [],
+    "amtm": ["entware"],
+    "entware": ["boot-hook"],
+    "cron": ["boot-hook"],
+    "custom-scripts": ["boot-hook"],
+    "jffs": [],
+    "nvram-tools": ["boot-hook"],
+    "led-control": ["boot-hook"],
+    "disk-monitoring": ["entware"],
+    "ddns": ["boot-hook"],
+    "ntp": ["boot-hook"],
+    "reboot-schedule": ["cron"],
+    "aimesh": [],
+    "guest-network": [],
+    "dnsmasq-custom": ["boot-hook"],
+    "dns-director": ["firewall-custom", "dnsmasq-custom", "boot-hook"],
+    "dns-over-tls": ["dnsmasq-custom", "boot-hook"],
+    "firewall-custom": ["boot-hook"],
+    "vpn-director": ["firewall-custom", "boot-hook"],
+    "vpn-killswitch": ["firewall-custom", "boot-hook"],
+    "openvpn-client": ["boot-hook"],
+    "openvpn-server": ["boot-hook", "firewall-custom"],
+    "wireguard-client": ["boot-hook"],
+    "wireguard-server": ["boot-hook", "firewall-custom"],
+    "ipsec-vpn": ["boot-hook", "firewall-custom"],
+    "nat-acceleration": [],
+}
+
+# Optional human-readable build/install note per feature (separable).
+BUILD = {
+    "boot-hook": "Copy usb/asusware.arm to the USB root; boot hook runs S* scripts.",
+    "web-ui": "Deploy gnuton httpd + /www + differing libs to USB; start on :8088 (see docs/xt9-kernel-notes.md).",
+    "kernel-modules": "Run features/kernel-modules/build.sh (calls tools/build-kernel-modules.sh with the ASUS GPL + device config).",
+    "cake-qos": "Run features/cake-qos/build.sh -> builds sch_cake.ko from the ASUS GPL.",
+    "tee": "Run features/tee/build.sh -> builds xt_TEE.ko + nf_dup_ipv4/6.ko.",
+    "ipset": "Run features/ipset/build.sh -> builds ip_set*.ko; copy gnuton /usr/sbin/ipset.",
+    "networkmap": "Run gnuton networkmap (creates shm 0x3e9 at 198168) or fix shm size.",
+    "adaptive-qos": "Build BCM_DPI.ko (modularizable per audit) + bwdpi userspace/signatures.",
+    "firewall-custom": "iptables/nat rules applied from the USB boot hook.",
+    "dns-director": "iptables REDIRECT + dnsmasq config from boot hook.",
+    "dns-over-tls": "Configure dnsmasq DoT or run Entware stubby.",
+    "dnsmasq-custom": "Add /jffs or Entware dnsmasq config (verify stock path).",
+    "vpn-director": "ip rule/ip route rules from boot hook.",
+    "vpn-killswitch": "prohibit ip rule from boot hook.",
+    "entware": "Install Entware on USB (armv7sf-k3.2).",
+    "cron": "Entware cron or stock cru; re-add at boot.",
+    "custom-scripts": "Use USB asusware.arm (not /jffs/scripts on stock).",
+}
+
+
 TEMPLATE = """# {title}
 
 **Category:** {cat}  
 **Modes:** {modes}  
 **Status:** `{status}`  
+**Required:** {required}  
 **Upstream:** gnuton / Asuswrt-Merlin
+
+## Dependencies
+
+{dependencies}
+
+## Build / install (separable)
+
+{build}
 
 ## What it does
 
@@ -560,16 +642,69 @@ TEMPLATE = """# {title}
 {links}
 """
 
+def dep_links(fid):
+    deps = DEPS.get(fid, [])
+    if not deps:
+        return "- none"
+    return "\n".join("- [%s](%s.md)" % (d, d) for d in deps)
+
+
+def topo_order():
+    ids = [f["id"] for f in FEATURES]
+    indeg = {i: 0 for i in ids}
+    for i in ids:
+        for d in DEPS.get(i, []):
+            if d in indeg:
+                indeg[i] += 1
+    order = []
+    ready = sorted([i for i in ids if indeg[i] == 0])
+    while ready:
+        n = ready.pop(0)
+        order.append(n)
+        for i in ids:
+            if n in DEPS.get(i, []):
+                indeg[i] -= 1
+                if indeg[i] == 0:
+                    ready.append(i)
+        ready = sorted(set(ready))
+    if len(order) != len(ids):
+        order += [i for i in ids if i not in order]
+    return order
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     rows = []
     for f in FEATURES:
         path = os.path.join(OUT, f["id"] + ".md")
         links = "\n".join("- `%s`" % l for l in f["links"]) or "- (none yet)"
+        build = BUILD.get(f["id"], "See Franklin approach above; deploy from USB/boot hook.")
         with open(path, "w", encoding="utf-8") as fh:
-            fh.write(TEMPLATE.format(links=links, **{k: f[k] for k in
-                     ("title","cat","modes","status","what","gnuton","deps","franklin","tested","risks")}))
+            fh.write(TEMPLATE.format(
+                links=links,
+                required="yes" if f["id"] in REQUIRED else "no",
+                dependencies=dep_links(f["id"]),
+                build=build,
+                **{k: f[k] for k in
+                   ("title","cat","modes","status","what","gnuton","deps","franklin","tested","risks")}))
         rows.append(f)
+
+    order = topo_order()
+
+    # machine-readable manifest
+    import json
+    manifest = {
+        "features": [
+            dict(id=f["id"], title=f["title"], category=f["cat"],
+                 modes=f["modes"], status=f["status"],
+                 required=(f["id"] in REQUIRED),
+                 depends_on=DEPS.get(f["id"], []))
+            for f in FEATURES
+        ],
+        "build_order": order,
+    }
+    with open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8") as fh:
+        json.dump(manifest, fh, indent=2)
 
     # index
     idx = os.path.join(OUT, "README.md")
@@ -578,15 +713,31 @@ def main():
         fh.write("One plan per gnuton/Merlin feature. Each plan explains what the feature\n")
         fh.write("does, how gnuton implements it, which modes it works in, what Franklin\n")
         fh.write("needs to recreate it, and what has been tested/verified.\n\n")
+        fh.write("Each feature is **separable**: it declares `Required` and its\n")
+        fh.write("`Dependencies` (links), so removing one feature does not break the\n")
+        fh.write("others as long as no remaining feature depends on it. A machine-readable\n")
+        fh.write("catalog is in [`manifest.json`](manifest.json) and the planner is\n")
+        fh.write("`tools/franklin-build.py`.\n\n")
         fh.write("Status: `tested` = verified on the XT9; `stock` = handled by stock\n")
         fh.write("firmware; `modular`/`planned` = buildable/planned; `research` =\n")
         fh.write("needs investigation; `out-of-scope` = firmware-level only.\n\n")
-        fh.write("| Feature | Category | Modes | Status | Plan |\n")
-        fh.write("|---|---|---|---|---|\n")
+        fh.write("| Feature | Category | Modes | Status | Required | Requires | Plan |\n")
+        fh.write("|---|---|---|---|---|---|---|\n")
         for f in rows:
-            fh.write("| %s | %s | %s | `%s` | [%s](%s.md) |\n" % (
-                f["title"], f["cat"], f["modes"], f["status"], f["id"], f["id"]))
-    print("wrote %d feature files + README" % len(rows))
+            req = "**yes**" if f["id"] in REQUIRED else "no"
+            deps = ", ".join("[%s](../features/%s.md)" % (d, d) for d in DEPS.get(f["id"], [])) or "—"
+            fh.write("| %s | %s | %s | `%s` | %s | %s | [%s](%s.md) |\n" % (
+                f["title"], f["cat"], f["modes"], f["status"], req, deps, f["id"], f["id"]))
+        fh.write("\n## Build order (dependency-resolved)\n\n")
+        for i, fid in enumerate(order, 1):
+            req = " (required)" if fid in REQUIRED else ""
+            fh.write("%d. [%s](%s.md)%s\n" % (i, fid, fid, req))
+        fh.write("\n## Dependency graph\n\n```mermaid\ngraph TD\n")
+        for f in FEATURES:
+            for d in DEPS.get(f["id"], []):
+                fh.write("  %s --> %s\n" % (d, f["id"]))
+        fh.write("```\n")
+    print("wrote %d feature files + README + manifest.json" % len(rows))
 
 if __name__ == "__main__":
     main()
