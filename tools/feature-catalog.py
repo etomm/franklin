@@ -130,12 +130,17 @@ FEATURES = [
     dict(id="dns-over-tls", title="DNS-over-TLS (DoT)", cat="DNS",
          modes="Router / AP",
          status="planned",
-         what="Encrypt DNS queries to upstream resolvers using stubby/getdns or dnsmasq DoT.",
-         gnuton="stubby/getdns, dnsmasq integration, DoT server presets; page `Advanced_System_Content.asp`.",
-         deps="stubby/getdns (stock may have), dnsmasq, cert bundle.",
-         franklin="Use Entware stubby/unbound or stock dnsmasq DoT; expose UI.",
-         tested="Not yet.",
-         risks="dnsmasq version support; IPv6 DoT blocking fixes in gnuton are userland/kernel mix.",
+         what="Encrypt DNS queries to upstream resolvers using stubby or dnsmasq DoT.",
+         gnuton="Configures the stock `stubby` binary and exposes DoT presets on "
+                "`Advanced_System_Content.asp`.",
+         deps="`stubby` (present in BOTH stock and gnuton), dnsmasq (stock), cert bundle.",
+         franklin="Run the stock `stubby` with a Franklin-managed config from USB/JFFS and "
+                  "expose the gnuton page. No Entware and no extra binary needed.",
+         tested="`usr/sbin/stubby` confirmed in the stock rootfs; UI wiring not tested.",
+         risks="dnsmasq/stubby version differences; IPv6 DoT blocking fixes in gnuton are a "
+               "userland/kernel mix.",
+         evidence="gnuton-feature (config/UI layer): `stubby` exists in BOTH rootfs, so the "
+                  "provider is stock; only the page/config is gnuton's — no Entware involved.",
          links=["www/Advanced_System_Content.asp"]),
 
     dict(id="dnsmasq-custom", title="Custom dnsmasq config", cat="DNS",
@@ -144,9 +149,11 @@ FEATURES = [
          what="Add custom dnsmasq options (hosts, upstreams, DHCP options).",
          gnuton="dnsmasq + `/jffs/configs/dnsmasq.conf.add`; web field.",
          deps="dnsmasq (stock), writable JFFS.",
-         franklin="Stock supports `/jffs/configs/dnsmasq.conf.add` (verify); otherwise start Entware dnsmasq.",
+         franklin="Stock `dnsmasq` with a Franklin-managed config fragment applied from the "
+                  "boot hook (Merlin's `/jffs/configs` path is not honored by stock — verify).",
          tested="dnsmasq present on stock; JFFS config path to verify.",
-         risks="Stock may not read `/jffs/configs` (Merlin feature) — verify.",
+         risks="Stock may not read `/jffs/configs` (Merlin feature) — verify before relying on it.",
+         evidence="stock: `usr/sbin/dnsmasq` present in BOTH rootfs; no Entware package needed.",
          links=["usr/sbin/dnsmasq"]),
 
     dict(id="firewall-custom", title="Custom firewall / NAT rules", cat="Network",
@@ -327,12 +334,18 @@ FEATURES = [
     dict(id="amtm", title="amtm (terminal menu)", cat="Tools",
          modes="all",
          status="planned",
-         what="Interactive terminal menu for add-ons (Entware, scripts, backups).",
-         gnuton="`amtm` binary/script; installs/manages Entware and add-ons.",
-         deps="Entware, shell, USB.",
-         franklin="Run gnuton `amtm` or a Franklin equivalent; expose via SSH.",
-         tested="gnuton has `amtm`.",
-         risks="Designed for Merlin paths; may need adaptation.",
+         what="Interactive terminal menu for add-ons: it can install/manage Entware, scripts "
+              "and backup jobs.",
+         gnuton="Ships the third-party `amtm` script (by thelonelycoder) in `/usr/sbin`. It is "
+                "not a gnuton/Merlin invention and it is not an Entware package either.",
+         deps="Shell + USB. Entware is something amtm *manages*, not something it needs.",
+         franklin="Ship the same `amtm` script from USB and run it over SSH. If Entware is "
+                  "absent, amtm still starts; installing Entware is one of its menu entries.",
+         tested="`usr/sbin/amtm` exists only in the gnuton rootfs (bundled third-party).",
+         risks="Assumes Merlin paths (`/jffs/scripts`, `cru`); some menu entries may need "
+               "adaptation on stock.",
+         evidence="gnuton-feature (bundled third-party): `amtm` is present ONLY in gnuton's "
+                  "rootfs, but it is a third-party script, not gnuton code.",
          links=["usr/sbin/amtm"]),
 
     dict(id="entware", title="Entware package ecosystem", cat="Packages",
@@ -341,16 +354,19 @@ FEATURES = [
          what="opkg package manager with thousands of prebuilt binaries. This is a "
               "separate third-party project (Entware), NOT part of gnuton/Merlin and "
               "NOT distributed with it.",
-         gnuton="gnuton does not bundle Entware. Merlin's docs only point users to it as an "
-                "optional add-on source; it is installed separately on a USB stick.",
-         deps="USB (not JFFS), `armv7sf-k3.2` repo.",
-         franklin="Optional provider/enabler: use Entware for generic tools (cron, "
-                  "smartmontools, stubby, aria2, snmpd, nfs, ...). It does NOT replace "
-                  "gnuton-specific binaries (httpd, libwebapi/libovpn, ...) nor kernel "
-                  "modules (those must be built from the ASUS GPL).",
-         tested="Not yet installed.",
+         gnuton="gnuton does not bundle Entware and ships no `opkg`. Merlin's docs only point "
+                "users to it as an optional add-on source, installed separately on USB.",
+         deps="USB (not JFFS), `armv7sf-k3.2` repo, boot hook to set up its paths.",
+         franklin="Franklin-specific provider. Packages that only exist there are tagged "
+                  "`entware-package` (smartmontools, aria2, tcpdump, ...), never "
+                  "`gnuton-feature`. It does NOT replace gnuton binaries (httpd, libwebapi, "
+                  "libovpn) nor kernel modules (built from the ASUS GPL).",
+         tested="Not yet installed. Verified that gnuton ships no opkg, no smartctl, no "
+                "hdparm, no aria2c and no tcpdump.",
          risks="Its binaries are built for its own toolchain/libc; use unset LD_LIBRARY_PATH. "
                "Cannot provide gnuton-patched binaries or kernel modules.",
+         evidence="franklin-feature: `opkg`, `smartctl`, `aria2c` and `tcpdump` are in NEITHER "
+                  "rootfs, so anything requiring them is an Entware package, not gnuton.",
          links=[]),
 
     dict(id="ipset", title="ipset", cat="Network",
@@ -377,13 +393,18 @@ FEATURES = [
 
     dict(id="cron", title="cron / scheduled tasks", cat="Automation",
          modes="all",
-         status="planned",
+         status="stock",
          what="Scheduled jobs (maintenance, watchdogs, reboots).",
-         gnuton="Entware cron or stock `cru`; `Reboot schedule` UI.",
-         deps="cron/cru, boot hook.",
-         franklin="Use Entware cron or stock `cru` from boot hook.",
-         tested="Not yet.",
-         risks="Entware LD_LIBRARY_PATH; re-add jobs at boot.",
+         gnuton="Uses the stock `crond`/`cru` and adds the `crontab` command; ships no cron "
+                "daemon of its own.",
+         deps="`crond`/`cru` (stock).",
+         franklin="Schedule jobs with stock `cru` from the boot hook and re-add them at boot "
+                  "(RAM-based). No Entware and no daemon to install.",
+         tested="`usr/sbin/crond` and `usr/sbin/cru` present in BOTH rootfs; gnuton adds only "
+                "`usr/bin/crontab`.",
+         risks="Jobs live in RAM and vanish on reboot; `/jffs/scripts` is not honored on stock.",
+         evidence="stock: `crond` and `cru` exist in BOTH rootfs (`crontab` is gnuton-only "
+                  "convenience), so cron is a stock feature.",
          links=[]),
 
     dict(id="custom-scripts", title="Custom scripts", cat="Automation",
@@ -438,12 +459,17 @@ FEATURES = [
     dict(id="disk-monitoring", title="Disk monitoring (smartmontools)", cat="Storage",
          modes="all",
          status="planned",
-         what="SMART health, disk temperature.",
-         gnuton="smartmontools via Entware.",
-         deps="Entware smartmontools.",
-         franklin="Entware; script + UI.",
-         tested="Not present on stock.",
-         risks="USB device path.",
+         what="SMART health and disk temperature for USB/attached drives.",
+         gnuton="Not provided: gnuton ships no `smartctl`. Merlin/gnuton users install "
+                "smartmontools from Entware.",
+         deps="Entware `smartmontools` (`smartctl`), USB storage, boot hook to schedule checks.",
+         franklin="Franklin-specific: install smartmontools from Entware, run `smartctl -H` "
+                  "from cron/boot hook and surface it on a page.",
+         tested="`smartctl` is in NEITHER rootfs, so neither stock nor gnuton can do SMART.",
+         risks="USB bridge must pass SMART through; Entware binaries need "
+               "`unset LD_LIBRARY_PATH`.",
+         evidence="entware-package: `smartctl` absent from BOTH rootfs; this is an Entware "
+                  "feature that Franklin integrates, not a gnuton feature.",
          links=[]),
 
     dict(id="temperature-monitoring", title="Temperature monitoring", cat="Monitoring",
@@ -459,24 +485,31 @@ FEATURES = [
 
     dict(id="ddns", title="DDNS (custom providers)", cat="Network",
          modes="Router",
-         status="planned",
-         what="Dynamic DNS updates, incl. custom providers.",
-         gnuton="inadyn/ddns-scripts; `Advanced_ASUSDDNS_Content.asp`.",
-         deps="DDNS client (inadyn/Entware), WAN.",
-         franklin="Stock DDNS or Entware ddns-scripts; gnuton page.",
-         tested="ASUS DDNS page present.",
-         risks="Router-mode.",
+         status="stock+",
+         what="Dynamic DNS updates, including custom providers.",
+         gnuton="Stock `inadyn` plus gnuton's `sbin/ddns_custom_updated` helper and the "
+                "`Advanced_ASUSDDNS_Content.asp` page.",
+         deps="`inadyn` (stock), WAN, provider credentials.",
+         franklin="Stock DDNS covers ASUS + provider list; add custom providers with gnuton's "
+                  "helper (gnuton-only binary) from the boot hook. No Entware needed.",
+         tested="`inadyn` present in BOTH rootfs; `ddns_custom_updated` is gnuton-only.",
+         risks="Router-mode only; credentials on USB/JFFS with tight permissions.",
+         evidence="stock + gnuton delta: `inadyn` is in BOTH rootfs (stock DDNS works); only "
+                  "`ddns_custom_updated` is gnuton-only, so custom providers are the delta.",
          links=["www/Advanced_ASUSDDNS_Content.asp"]),
 
     dict(id="ntp", title="NTP client/server", cat="System",
          modes="all",
          status="planned",
          what="Time sync and optional NTP server.",
-         gnuton="ntp/ntpd; `Advanced_System_Content.asp`.",
-         deps="ntpd (gnuton has ntp/ntpd; stock has ntpclient).",
-         franklin="Use stock ntpclient or run gnuton ntpd; expose UI.",
-         tested="Stock uses ntpclient; gnuton has ntpd.",
-         risks="Low.",
+         gnuton="Ships `ntpd` (gnuton-only) and `ntpd_synced`; stock only has `ntpclient`.",
+         deps="`ntpd` (gnuton binary), boot hook to start it.",
+         franklin="Use stock `ntpclient` for time sync, and run gnuton's `ntpd` from USB only "
+                  "if an NTP server is wanted.",
+         tested="`usr/sbin/ntpd` gnuton-only; `usr/sbin/ntpclient` and `sbin/ntp` stock-only.",
+         risks="Low. Two time daemons must not fight over the clock.",
+         evidence="gnuton-feature: `ntpd` exists ONLY in gnuton (stock has `ntpclient`), so the "
+                  "NTP *server* is a gnuton addition.",
          links=["usr/sbin/ntpd"]),
 
     dict(id="reboot-schedule", title="Reboot schedule", cat="Automation",
@@ -905,7 +938,8 @@ REQUIRED = {"boot-hook"}
 #   franklin-feature  Franklin addition that gnuton does not have at all
 #   stock             stock ASUSWRT already provides it (nothing to port)
 #   proprietary       closed/licensed component that cannot be re-created
-KINDS = ("gnuton-feature", "workaround", "franklin-feature", "stock", "proprietary")
+KINDS = ("gnuton-feature", "workaround", "franklin-feature", "entware-package", "stock",
+         "proprietary")
 
 KIND = {
     # workarounds: exist only because stock is not gnuton
@@ -915,8 +949,8 @@ KIND = {
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
     "entware": "franklin-feature",
-    "download-manager": "franklin-feature",
-    "disk-monitoring": "franklin-feature",
+    "download-manager": "entware-package",
+    "disk-monitoring": "entware-package",
     # stock ASUSWRT already provides these
     "jffs": "stock",
     "samba-ftp-webdav": "stock",
@@ -927,6 +961,7 @@ KIND = {
     "igmp-snooping": "stock",
     "dhcp-leases": "stock",
     "disk-spindown": "stock",
+    "cron": "stock",
     "ssh-access": "stock",
     "syslog": "stock",
     "ap-modes": "stock",
@@ -950,10 +985,12 @@ UPSTREAM = {
     "kernel-modules": "n/a — Franklin workaround (ASUS GPL 4.19.183, not gnuton)",
     "web-ui-overlay": "n/a — Franklin workaround (gnuton needs none: its httpd is in the image)",
     "networkmap": "gnuton networkmap daemon; Franklin needs a shm-size workaround",
+    "amtm": "third-party (thelonelycoder/amtm) — bundled by gnuton/Merlin, not gnuton code",
+    "cron": "stock ASUS (crond/cru); gnuton only adds the crontab command",
     "entware": "third-party (Entware project) - NOT gnuton",
     "cifs-client": "gnuton (ships fs/cifs/cifs.ko; stock kernel has no CIFS)",
-    "download-manager": "n/a — Franklin addition (aria2 is not shipped by gnuton)",
-    "disk-monitoring": "n/a — Franklin addition (smartmontools via Entware)",
+    "download-manager": "n/a - Entware package (aria2); gnuton ships none",
+    "disk-monitoring": "n/a - Entware package (smartmontools); neither stock nor gnuton",
     "aiprotection": "stock ASUS / Trend Micro (proprietary)",
     "cloud-sync": "stock ASUS (proprietary client)",
     "traffic-analyzer": "stock ASUS (proprietary DPI)",
@@ -1005,8 +1042,8 @@ DEPS = {
     "tor": ["boot-hook", "firewall-custom"],
     "nfs": ["boot-hook", "kernel-modules"],
     "aidisk-nfs": ["nfs", "web-ui"],
-    "amtm": ["entware"],
-    "cron": ["boot-hook"],
+    "amtm": ["boot-hook"],
+    "cron": [],
     "custom-scripts": ["boot-hook"],
     "nvram-tools": ["boot-hook"],
     "led-control": ["boot-hook"],
@@ -1070,12 +1107,14 @@ BUILD = {
     "adaptive-qos": "Build BCM_DPI.ko (modularizable per audit) + bwdpi userspace/signatures.",
     "firewall-custom": "iptables/nat rules applied from the USB boot hook.",
     "dns-director": "iptables REDIRECT + dnsmasq config from boot hook.",
-    "dns-over-tls": "Configure dnsmasq DoT or run Entware stubby.",
-    "dnsmasq-custom": "Add /jffs or Entware dnsmasq config (verify stock path).",
+    "dns-over-tls": "Configure the stock `stubby` with a Franklin-managed config (no Entware).",
+    "dnsmasq-custom": "Apply a dnsmasq config fragment from the boot hook (verify /jffs/configs).",
     "vpn-director": "ip rule/ip route rules from boot hook.",
     "vpn-killswitch": "prohibit ip rule from boot hook.",
     "entware": "Install Entware on USB (armv7sf-k3.2).",
-    "cron": "Entware cron or stock cru; re-add at boot.",
+    "cron": "Use stock `cru` from the boot hook; jobs are RAM-based, so re-add them at boot.",
+    "disk-monitoring": "`opkg install smartmontools` (Entware), then schedule `smartctl` checks.",
+    "download-manager": "`opkg install aria2` (Entware), then supervise it from the boot hook.",
     "custom-scripts": "Use USB asusware.arm (not /jffs/scripts on stock).",
 }
 
@@ -1184,6 +1223,9 @@ KIND_TITLES = [
     ("franklin-feature", "Franklin features (not in gnuton at all)",
      "Franklin additions. gnuton does not provide these; removing them changes nothing for "
      "any gnuton port."),
+    ("entware-package", "Entware packages (third-party binaries Franklin integrates)",
+     "The tool exists **only** in Entware: neither stock nor gnuton ships it. These depend on "
+     "the `entware` provider, are not gnuton features, and break if Entware is removed."),
     ("gnuton-feature", "gnuton / Merlin features (ported by Franklin)",
      "Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them."),
     ("stock", "Stock ASUSWRT features (nothing to port)",
@@ -1268,8 +1310,9 @@ def main():
         fh.write("| Kind | What it means |\n|---|---|\n")
         fh.write("| `workaround` | Franklin's own mechanism so gnuton userland runs on stock "
                  "(boot hook, kernel-module recipe, web UI overlay). **Not** gnuton features. |\n")
-        fh.write("| `franklin-feature` | Additions gnuton does not have at all (Entware, CIFS "
-                 "client, aria2, smartmontools). |\n")
+        fh.write("| `franklin-feature` | Franklin's own addition (the Entware provider itself). |\n")
+        fh.write("| `entware-package` | Third-party tool that exists only in Entware (smartctl, "
+                 "aria2, tcpdump). Not gnuton, not stock; depends on `entware`. |\n")
         fh.write("| `gnuton-feature` | Upstream gnuton/Merlin features Franklin ports. |\n")
         fh.write("| `stock` | Already in stock ASUSWRT; nothing to port, only \"don't break it\". |\n")
         fh.write("| `proprietary` | Closed/licensed (Trend Micro, ASUS cloud). |\n\n")

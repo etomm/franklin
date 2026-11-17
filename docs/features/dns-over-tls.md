@@ -14,35 +14,35 @@
 
 ## Build / install (separable)
 
-Configure dnsmasq DoT or run Entware stubby.
+Configure the stock `stubby` with a Franklin-managed config (no Entware).
 
 ## What it does
 
-Encrypt DNS queries to upstream resolvers using stubby/getdns or dnsmasq DoT.
+Encrypt DNS queries to upstream resolvers using stubby or dnsmasq DoT.
 
 ## How gnuton implements it
 
-stubby/getdns, dnsmasq integration, DoT server presets; page `Advanced_System_Content.asp`.
+Configures the stock `stubby` binary and exposes DoT presets on `Advanced_System_Content.asp`.
 
 ## Requirements
 
-stubby/getdns (stock may have), dnsmasq, cert bundle.
+`stubby` (present in BOTH stock and gnuton), dnsmasq (stock), cert bundle.
 
 ## Franklin approach
 
-Use Entware stubby/unbound or stock dnsmasq DoT; expose UI.
+Run the stock `stubby` with a Franklin-managed config from USB/JFFS and expose the gnuton page. No Entware and no extra binary needed.
 
 ## Tested / verified
 
-Not yet.
+`usr/sbin/stubby` confirmed in the stock rootfs; UI wiring not tested.
 
 ## Risks / notes
 
-dnsmasq version support; IPv6 DoT blocking fixes in gnuton are userland/kernel mix.
+dnsmasq/stubby version differences; IPv6 DoT blocking fixes in gnuton are a userland/kernel mix.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+gnuton-feature (config/UI layer): `stubby` exists in BOTH rootfs, so the provider is stock; only the page/config is gnuton's — no Entware involved.
 
 ## Links / sources
 

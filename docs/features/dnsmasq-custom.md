@@ -13,7 +13,7 @@
 
 ## Build / install (separable)
 
-Add /jffs or Entware dnsmasq config (verify stock path).
+Apply a dnsmasq config fragment from the boot hook (verify /jffs/configs).
 
 ## What it does
 
@@ -29,7 +29,7 @@ dnsmasq (stock), writable JFFS.
 
 ## Franklin approach
 
-Stock supports `/jffs/configs/dnsmasq.conf.add` (verify); otherwise start Entware dnsmasq.
+Stock `dnsmasq` with a Franklin-managed config fragment applied from the boot hook (Merlin's `/jffs/configs` path is not honored by stock — verify).
 
 ## Tested / verified
 
@@ -37,11 +37,11 @@ dnsmasq present on stock; JFFS config path to verify.
 
 ## Risks / notes
 
-Stock may not read `/jffs/configs` (Merlin feature) — verify.
+Stock may not read `/jffs/configs` (Merlin feature) — verify before relying on it.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+stock: `usr/sbin/dnsmasq` present in BOTH rootfs; no Entware package needed.
 
 ## Links / sources
 

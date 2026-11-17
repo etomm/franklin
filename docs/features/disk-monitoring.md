@@ -3,9 +3,9 @@
 **Category:** Storage  
 **Modes:** all  
 **Status:** `planned`  
-**Kind:** franklin-feature  
+**Kind:** entware-package  
 **Required:** no  
-**Upstream:** n/a — Franklin addition (smartmontools via Entware)
+**Upstream:** n/a - Entware package (smartmontools); neither stock nor gnuton
 
 ## Dependencies
 
@@ -13,35 +13,35 @@
 
 ## Build / install (separable)
 
-Franklin addition: install on USB and start from the boot hook.
+`opkg install smartmontools` (Entware), then schedule `smartctl` checks.
 
 ## What it does
 
-SMART health, disk temperature.
+SMART health and disk temperature for USB/attached drives.
 
 ## How gnuton implements it
 
-smartmontools via Entware.
+Not provided: gnuton ships no `smartctl`. Merlin/gnuton users install smartmontools from Entware.
 
 ## Requirements
 
-Entware smartmontools.
+Entware `smartmontools` (`smartctl`), USB storage, boot hook to schedule checks.
 
 ## Franklin approach
 
-Entware; script + UI.
+Franklin-specific: install smartmontools from Entware, run `smartctl -H` from cron/boot hook and surface it on a page.
 
 ## Tested / verified
 
-Not present on stock.
+`smartctl` is in NEITHER rootfs, so neither stock nor gnuton can do SMART.
 
 ## Risks / notes
 
-USB device path.
+USB bridge must pass SMART through; Entware binaries need `unset LD_LIBRARY_PATH`.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+entware-package: `smartctl` absent from BOTH rootfs; this is an Entware feature that Franklin integrates, not a gnuton feature.
 
 ## Links / sources
 

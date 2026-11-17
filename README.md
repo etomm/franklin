@@ -10,10 +10,12 @@
 # Feature plans (one detailed plan per feature, separated by kind)
 See [docs/features/README.md](docs/features/README.md): plans are grouped as
 `workaround` (Franklin mechanisms, not gnuton features), `franklin-feature`
-(additions gnuton does not have), `gnuton-feature` (ported upstream features),
-`stock` (already in stock firmware) and `proprietary`. Each plan declares its
-dependencies as links. The evidence behind each `Kind` is reproducible with
-`tools/parity-audit.py` (see [docs/parity-audit.md](docs/parity-audit.md)).
+(Franklin's own additions such as the Entware provider), `entware-package`
+(third-party tools that exist only in Entware), `gnuton-feature` (ported
+upstream features), `stock` (already in stock firmware) and `proprietary`.
+Each plan declares its dependencies as links. The evidence behind each `Kind`
+is reproducible with `tools/parity-audit.py` (see
+[docs/parity-audit.md](docs/parity-audit.md)).
 
 ## Project layout
 - core/        device-agnostic boot hooks, libraries, tools

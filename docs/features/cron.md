@@ -2,18 +2,18 @@
 
 **Category:** Automation  
 **Modes:** all  
-**Status:** `planned`  
-**Kind:** gnuton-feature  
+**Status:** `stock`  
+**Kind:** stock  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** stock ASUS (crond/cru); gnuton only adds the crontab command
 
 ## Dependencies
 
-- [boot-hook](boot-hook.md)
+- none
 
 ## Build / install (separable)
 
-Entware cron or stock cru; re-add at boot.
+Use stock `cru` from the boot hook; jobs are RAM-based, so re-add them at boot.
 
 ## What it does
 
@@ -21,27 +21,27 @@ Scheduled jobs (maintenance, watchdogs, reboots).
 
 ## How gnuton implements it
 
-Entware cron or stock `cru`; `Reboot schedule` UI.
+Uses the stock `crond`/`cru` and adds the `crontab` command; ships no cron daemon of its own.
 
 ## Requirements
 
-cron/cru, boot hook.
+`crond`/`cru` (stock).
 
 ## Franklin approach
 
-Use Entware cron or stock `cru` from boot hook.
+Schedule jobs with stock `cru` from the boot hook and re-add them at boot (RAM-based). No Entware and no daemon to install.
 
 ## Tested / verified
 
-Not yet.
+`usr/sbin/crond` and `usr/sbin/cru` present in BOTH rootfs; gnuton adds only `usr/bin/crontab`.
 
 ## Risks / notes
 
-Entware LD_LIBRARY_PATH; re-add jobs at boot.
+Jobs live in RAM and vanish on reboot; `/jffs/scripts` is not honored on stock.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+stock: `crond` and `cru` exist in BOTH rootfs (`crontab` is gnuton-only convenience), so cron is a stock feature.
 
 ## Links / sources
 

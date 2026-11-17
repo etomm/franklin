@@ -21,27 +21,27 @@ Time sync and optional NTP server.
 
 ## How gnuton implements it
 
-ntp/ntpd; `Advanced_System_Content.asp`.
+Ships `ntpd` (gnuton-only) and `ntpd_synced`; stock only has `ntpclient`.
 
 ## Requirements
 
-ntpd (gnuton has ntp/ntpd; stock has ntpclient).
+`ntpd` (gnuton binary), boot hook to start it.
 
 ## Franklin approach
 
-Use stock ntpclient or run gnuton ntpd; expose UI.
+Use stock `ntpclient` for time sync, and run gnuton's `ntpd` from USB only if an NTP server is wanted.
 
 ## Tested / verified
 
-Stock uses ntpclient; gnuton has ntpd.
+`usr/sbin/ntpd` gnuton-only; `usr/sbin/ntpclient` and `sbin/ntp` stock-only.
 
 ## Risks / notes
 
-Low.
+Low. Two time daemons must not fight over the clock.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+gnuton-feature: `ntpd` exists ONLY in gnuton (stock has `ntpclient`), so the NTP *server* is a gnuton addition.
 
 ## Links / sources
 

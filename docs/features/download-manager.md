@@ -3,9 +3,9 @@
 **Category:** Storage  
 **Modes:** all  
 **Status:** `planned`  
-**Kind:** franklin-feature  
+**Kind:** entware-package  
 **Required:** no  
-**Upstream:** n/a — Franklin addition (aria2 is not shipped by gnuton)
+**Upstream:** n/a - Entware package (aria2); gnuton ships none
 
 ## Dependencies
 
@@ -14,7 +14,7 @@
 
 ## Build / install (separable)
 
-Franklin addition: install on USB and start from the boot hook.
+`opkg install aria2` (Entware), then supervise it from the boot hook.
 
 ## What it does
 

@@ -5,11 +5,11 @@
 **Status:** `planned`  
 **Kind:** gnuton-feature  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** third-party (thelonelycoder/amtm) — bundled by gnuton/Merlin, not gnuton code
 
 ## Dependencies
 
-- [entware](entware.md)
+- [boot-hook](boot-hook.md)
 
 ## Build / install (separable)
 
@@ -17,31 +17,31 @@ See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 
-Interactive terminal menu for add-ons (Entware, scripts, backups).
+Interactive terminal menu for add-ons: it can install/manage Entware, scripts and backup jobs.
 
 ## How gnuton implements it
 
-`amtm` binary/script; installs/manages Entware and add-ons.
+Ships the third-party `amtm` script (by thelonelycoder) in `/usr/sbin`. It is not a gnuton/Merlin invention and it is not an Entware package either.
 
 ## Requirements
 
-Entware, shell, USB.
+Shell + USB. Entware is something amtm *manages*, not something it needs.
 
 ## Franklin approach
 
-Run gnuton `amtm` or a Franklin equivalent; expose via SSH.
+Ship the same `amtm` script from USB and run it over SSH. If Entware is absent, amtm still starts; installing Entware is one of its menu entries.
 
 ## Tested / verified
 
-gnuton has `amtm`.
+`usr/sbin/amtm` exists only in the gnuton rootfs (bundled third-party).
 
 ## Risks / notes
 
-Designed for Merlin paths; may need adaptation.
+Assumes Merlin paths (`/jffs/scripts`, `cru`); some menu entries may need adaptation on stock.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+gnuton-feature (bundled third-party): `amtm` is present ONLY in gnuton's rootfs, but it is a third-party script, not gnuton code.
 
 ## Links / sources
 

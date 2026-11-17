@@ -28,7 +28,6 @@
       "amtm",
       "ipset",
       "tee",
-      "cron",
       "custom-scripts",
       "nvram-tools",
       "led-control",
@@ -46,13 +45,16 @@
       "web-ui-overlay"
     ],
     "franklin-feature": [
-      "entware",
+      "entware"
+    ],
+    "entware-package": [
       "disk-monitoring",
       "download-manager"
     ],
     "stock": [
       "nat-acceleration",
       "samba-ftp-webdav",
+      "cron",
       "jffs",
       "aimesh",
       "guest-network",
@@ -412,7 +414,7 @@
       "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
-        "entware"
+        "boot-hook"
       ]
     },
     {
@@ -458,12 +460,10 @@
       "title": "cron / scheduled tasks",
       "category": "Automation",
       "modes": "all",
-      "status": "planned",
-      "kind": "gnuton-feature",
+      "status": "stock",
+      "kind": "stock",
       "required": false,
-      "depends_on": [
-        "boot-hook"
-      ]
+      "depends_on": []
     },
     {
       "id": "custom-scripts",
@@ -517,7 +517,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "planned",
-      "kind": "franklin-feature",
+      "kind": "entware-package",
       "required": false,
       "depends_on": [
         "entware"
@@ -540,7 +540,7 @@
       "title": "DDNS (custom providers)",
       "category": "Network",
       "modes": "Router",
-      "status": "planned",
+      "status": "stock+",
       "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
@@ -839,7 +839,7 @@
       "category": "Storage",
       "modes": "all",
       "status": "planned",
-      "kind": "franklin-feature",
+      "kind": "entware-package",
       "required": false,
       "depends_on": [
         "entware",
@@ -888,6 +888,7 @@
     "aiprotection",
     "ap-modes",
     "boot-hook",
+    "amtm",
     "bridge-management",
     "cloud-sync",
     "cron",
@@ -898,7 +899,6 @@
     "dhcp-leases",
     "dns-over-tls",
     "entware",
-    "amtm",
     "disk-monitoring",
     "download-manager",
     "firewall-custom",

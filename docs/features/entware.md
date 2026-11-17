@@ -21,19 +21,19 @@ opkg package manager with thousands of prebuilt binaries. This is a separate thi
 
 ## How gnuton implements it
 
-gnuton does not bundle Entware. Merlin's docs only point users to it as an optional add-on source; it is installed separately on a USB stick.
+gnuton does not bundle Entware and ships no `opkg`. Merlin's docs only point users to it as an optional add-on source, installed separately on USB.
 
 ## Requirements
 
-USB (not JFFS), `armv7sf-k3.2` repo.
+USB (not JFFS), `armv7sf-k3.2` repo, boot hook to set up its paths.
 
 ## Franklin approach
 
-Optional provider/enabler: use Entware for generic tools (cron, smartmontools, stubby, aria2, snmpd, nfs, ...). It does NOT replace gnuton-specific binaries (httpd, libwebapi/libovpn, ...) nor kernel modules (those must be built from the ASUS GPL).
+Franklin-specific provider. Packages that only exist there are tagged `entware-package` (smartmontools, aria2, tcpdump, ...), never `gnuton-feature`. It does NOT replace gnuton binaries (httpd, libwebapi, libovpn) nor kernel modules (built from the ASUS GPL).
 
 ## Tested / verified
 
-Not yet installed.
+Not yet installed. Verified that gnuton ships no opkg, no smartctl, no hdparm, no aria2c and no tcpdump.
 
 ## Risks / notes
 
@@ -41,7 +41,7 @@ Its binaries are built for its own toolchain/libc; use unset LD_LIBRARY_PATH. Ca
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+franklin-feature: `opkg`, `smartctl`, `aria2c` and `tcpdump` are in NEITHER rootfs, so anything requiring them is an Entware package, not gnuton.
 
 ## Links / sources
 

@@ -8,7 +8,8 @@ which modes it works in, what it needs, and what has been tested.
 | Kind | What it means |
 |---|---|
 | `workaround` | Franklin's own mechanism so gnuton userland runs on stock (boot hook, kernel-module recipe, web UI overlay). **Not** gnuton features. |
-| `franklin-feature` | Additions gnuton does not have at all (Entware, CIFS client, aria2, smartmontools). |
+| `franklin-feature` | Franklin's own addition (the Entware provider itself). |
+| `entware-package` | Third-party tool that exists only in Entware (smartctl, aria2, tcpdump). Not gnuton, not stock; depends on `entware`. |
 | `gnuton-feature` | Upstream gnuton/Merlin features Franklin ports. |
 | `stock` | Already in stock ASUSWRT; nothing to port, only "don't break it". |
 | `proprietary` | Closed/licensed (Trend Micro, ASUS cloud). |
@@ -33,17 +34,24 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | Kernel modules (build recipe) | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
 | Web UI overlay (bind-mount httpd + /www) — workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [networkmap](../features/networkmap.md), [boot-hook](../features/boot-hook.md) | [web-ui-overlay](web-ui-overlay.md) |
 
-### Franklin features (not in gnuton at all) (3)
+### Franklin features (not in gnuton at all) (1)
 
 Franklin additions. gnuton does not provide these; removing them changes nothing for any gnuton port.
 
 | Feature | Category | Modes | Status | Required | Requires | Plan |
 |---|---|---|---|---|---|---|
 | Entware package ecosystem | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
+
+### Entware packages (third-party binaries Franklin integrates) (2)
+
+The tool exists **only** in Entware: neither stock nor gnuton ships it. These depend on the `entware` provider, are not gnuton features, and break if Entware is removed.
+
+| Feature | Category | Modes | Status | Required | Requires | Plan |
+|---|---|---|---|---|---|---|
 | Disk monitoring (smartmontools) | Storage | all | `planned` | no | [entware](../features/entware.md) | [disk-monitoring](disk-monitoring.md) |
 | Download manager (aria2) | Storage | all | `planned` | no | [entware](../features/entware.md), [boot-hook](../features/boot-hook.md) | [download-manager](download-manager.md) |
 
-### gnuton / Merlin features (ported by Franklin) (37)
+### gnuton / Merlin features (ported by Franklin) (36)
 
 Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 
@@ -73,21 +81,20 @@ Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 | Tor | Services | Router | `planned` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [tor](tor.md) |
 | NFS server | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md), [kernel-modules](../features/kernel-modules.md) | [nfs](nfs.md) |
 | AiDisk NFS | Storage | all | `planned` | no | [nfs](../features/nfs.md), [web-ui](../features/web-ui.md) | [aidisk-nfs](aidisk-nfs.md) |
-| amtm (terminal menu) | Tools | all | `planned` | no | [entware](../features/entware.md) | [amtm](amtm.md) |
+| amtm (terminal menu) | Tools | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [amtm](amtm.md) |
 | ipset | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [ipset](ipset.md) |
 | TEE (packet duplication) | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [tee](tee.md) |
-| cron / scheduled tasks | Automation | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [cron](cron.md) |
 | Custom scripts | Automation | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [custom-scripts](custom-scripts.md) |
 | NVRAM tools / config export | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [nvram-tools](nvram-tools.md) |
 | LED control | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [led-control](led-control.md) |
 | Temperature monitoring | Monitoring | all | `stock+` | no | [web-ui](../features/web-ui.md) | [temperature-monitoring](temperature-monitoring.md) |
-| DDNS (custom providers) | Network | Router | `planned` | no | [boot-hook](../features/boot-hook.md) | [ddns](ddns.md) |
+| DDNS (custom providers) | Network | Router | `stock+` | no | [boot-hook](../features/boot-hook.md) | [ddns](ddns.md) |
 | NTP client/server | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [ntp](ntp.md) |
 | Reboot schedule | Automation | all | `planned` | no | [cron](../features/cron.md) | [reboot-schedule](reboot-schedule.md) |
 | VLAN / IPTV port tagging (ethswctl, softswitch) | Network | Router / AP (wired switch config) | `planned` | no | [boot-hook](../features/boot-hook.md) | [vlan-iptv](vlan-iptv.md) |
 | CIFS mount (client) | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md), [kernel-modules](../features/kernel-modules.md) | [cifs-client](cifs-client.md) |
 
-### Stock ASUSWRT features (nothing to port) (21)
+### Stock ASUSWRT features (nothing to port) (22)
 
 Already in stock firmware. gnuton inherits them too; the plan exists so the parity table has a real link and so Franklin knows what not to break.
 
@@ -95,6 +102,7 @@ Already in stock firmware. gnuton inherits them too; the plan exists so the pari
 |---|---|---|---|---|---|---|
 | NAT acceleration (CTF/FA) | Network | Router | `out-of-scope` | no | — | [nat-acceleration](nat-acceleration.md) |
 | Samba / FTP / WebDAV (stock USB apps) | Storage | all | `stock` | no | — | [samba-ftp-webdav](samba-ftp-webdav.md) |
+| cron / scheduled tasks | Automation | all | `stock` | no | — | [cron](cron.md) |
 | JFFS partition | Storage | all | `stock` | no | — | [jffs](jffs.md) |
 | AiMesh | Wireless | Mesh (AiMesh router/node) | `stock` | no | — | [aimesh](aimesh.md) |
 | Guest network | Wireless | Router / AP / Mesh | `stock` | no | — | [guest-network](guest-network.md) |
@@ -132,19 +140,19 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 2. aiprotection  (proprietary)
 3. ap-modes  (stock)
 4. boot-hook [required]  (workaround)
-5. bridge-management  (stock)
-6. cloud-sync  (proprietary)
-7. cron  (gnuton-feature)
-8. custom-scripts  (gnuton-feature)
-9. ddns  (gnuton-feature)
-10. disk-spindown  (stock)
-11. dnsmasq-custom  (gnuton-feature)
-12. dhcp-leases  (stock)
-13. dns-over-tls  (gnuton-feature)
-14. entware  (franklin-feature)
-15. amtm  (gnuton-feature)
-16. disk-monitoring  (franklin-feature)
-17. download-manager  (franklin-feature)
+5. amtm  (gnuton-feature)
+6. bridge-management  (stock)
+7. cloud-sync  (proprietary)
+8. cron  (stock)
+9. custom-scripts  (gnuton-feature)
+10. ddns  (gnuton-feature)
+11. disk-spindown  (stock)
+12. dnsmasq-custom  (gnuton-feature)
+13. dhcp-leases  (stock)
+14. dns-over-tls  (gnuton-feature)
+15. entware  (franklin-feature)
+16. disk-monitoring  (entware-package)
+17. download-manager  (entware-package)
 18. firewall-custom  (gnuton-feature)
 19. dns-director  (gnuton-feature)
 20. firmware-upgrade  (stock)
@@ -313,13 +321,12 @@ graph TD
   kernel_modules --> nfs
   nfs --> aidisk_nfs
   web_ui --> aidisk_nfs
-  entware --> amtm
+  boot_hook --> amtm
   boot_hook --> entware
   kernel_modules --> ipset
   boot_hook --> ipset
   kernel_modules --> tee
   boot_hook --> tee
-  boot_hook --> cron
   boot_hook --> custom_scripts
   boot_hook --> nvram_tools
   boot_hook --> led_control

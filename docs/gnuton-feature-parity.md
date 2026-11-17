@@ -14,7 +14,8 @@ Each plan declares a `Kind`, so three different things stay separated:
 |---|---|
 | `gnuton-feature` | Upstream gnuton/Merlin provides it; Franklin ports it. |
 | `workaround` | Franklin-only mechanism needed because stock is not gnuton (boot hook, kernel-module recipe, web UI overlay). **Not** a gnuton feature. |
-| `franklin-feature` | Franklin addition that gnuton does not have at all (Entware, CIFS client, aria2, smartmontools). |
+| `franklin-feature` | Franklin's own addition (the Entware provider itself). |
+| `entware-package` | Third-party tool that exists only in Entware (smarttools, aria2, tcpdump). Neither stock nor gnuton ships it. |
 | `stock` | Stock ASUSWRT already provides it; nothing to port, only "don't break it". |
 | `proprietary` | Closed/licensed (Trend Micro DPI, ASUS cloud). |
 
