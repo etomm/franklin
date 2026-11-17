@@ -6,13 +6,11 @@ enabled_by_default: true
 requires: [boot-hook]
 provides:
   - kernel modules for 4.19.183
-artifacts:
-  - build/kernel-modules
 payload: payload
 hooks:
   start: start.sh
   stop: stop.sh
 build: build.sh
 notes: >
-  Modules must come from the ASUS GPL tree for the exact kernel version; this
-  feature only stages them under franklin/kmod/<uname -r>/.
+  A recipe, not a payload: each kernel feature builds its own module into its
+  own payload/ folder.

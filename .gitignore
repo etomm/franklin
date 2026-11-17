@@ -4,6 +4,10 @@ vendor/
 release/
 build/
 dist/
+# Generated feature payloads (staged by build.sh; not source)
+features/web-ui/payload/
+features/*/payload/*.ko
+features/*/payload/*.so
 *.log
 *.tmp
 /tmp

@@ -6,13 +6,11 @@ enabled_by_default: false
 requires: [kernel-modules]
 provides:
   - sch_cake.ko
-artifacts:
-  - build/cake-qos/sch_cake.ko
-files:
-  - src: build/cake-qos/sch_cake.ko
-    dst: franklin/kmod/4.19.183/sch_cake.ko
 payload: payload
 hooks:
   start: start.sh
   stop: stop.sh
 build: build.sh
+notes: >
+  payload/sch_cake.ko is produced by build.sh (ASUS GPL, kernel 4.19.183) and
+  loaded from this feature's own folder.

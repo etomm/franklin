@@ -8,15 +8,9 @@ provides:
   - gnuton httpd
   - gnuton /www tree
   - gnuton-only shared libraries
-files:
-  - src: build/web-ui/httpd
-    dst: franklin/webui/httpd
-  - src: build/web-ui/www
-    dst: franklin/webui/www
-  - src: build/web-ui/lib
-    dst: franklin/webui/lib
+payload: payload
 build: build.sh
 notes: >
-  Data-only feature: it ships gnuton's httpd, its /www tree and the 220 libs
-  that differ from stock. Nothing runs until web-ui-overlay starts it, so
-  removing the overlay leaves the stock UI untouched.
+  Data-only feature. build.sh stages gnuton's httpd, /www and the libraries
+  that differ from stock directly into payload/, so the folder layout is the
+  layout on the stick: payload/httpd, payload/www/, payload/lib/.

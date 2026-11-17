@@ -1,6 +1,6 @@
 #!/bin/sh
-# Kernel modules are loadable only in dependency order and only once.
-# Each feature below loads its own .ko files; nothing is loaded here.
+# A recipe, not a payload: every kernel feature owns and loads its own .ko.
 set -u
-echo "kernel-modules: $(ls "${FRANKLIN_ROOT:?}/kmod"/*/*.ko 2>/dev/null | wc -l) module(s) staged"
+count=$(ls "${FRANKLIN_ROOT:?}"/features/*/*.ko 2>/dev/null | wc -l)
+echo "kernel-modules: $count module(s) staged across features"
 exit 0

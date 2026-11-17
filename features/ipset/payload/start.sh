@@ -1,8 +1,8 @@
 #!/bin/sh
-# Load ip_set core + hash:ip, then make the gnuton `ipset` tool usable.
+# Load ip_set core + hash:ip from this feature's own folder, then expose the
+# gnuton `ipset` tool if it was staged.
 set -u
-kver=$(uname -r)
-dir="${FRANKLIN_ROOT:?}/kmod/$kver"
+dir="${FRANKLIN_ROOT:?}/features/ipset"
 load() {
     mod="$1"
     grep -q "^$mod " /proc/modules && return 0
@@ -11,5 +11,5 @@ load() {
 }
 load ip_set || { echo "ipset: ip_set failed"; exit 1; }
 load ip_set_hash_ip || { echo "ipset: ip_set_hash_ip failed"; exit 1; }
-[ -x "${FRANKLIN_ROOT}/bin/ipset" ] && ln -sf "${FRANKLIN_ROOT}/bin/ipset" /tmp/ipset 2>/dev/null
+[ -x "$dir/ipset" ] && ln -sf "$dir/ipset" /tmp/ipset 2>/dev/null
 echo "ipset: loaded"

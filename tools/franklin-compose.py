@@ -82,8 +82,6 @@ def load_features():
         if data["kind"] not in KINDS:
             raise Fail("%s: unknown kind '%s'" % (path, data["kind"]))
         data.setdefault("requires", [])
-        data.setdefault("files", [])
-        data.setdefault("artifacts", [])
         data.setdefault("hooks", {})
         data.setdefault("enabled_by_default", False)
         data["_dir"] = os.path.join(FEATURES, name)
@@ -128,16 +126,6 @@ def order_of(selected, feats):
     for fid in sorted(selected):
         visit(fid)
     return order
-
-
-def safe_dst(dst):
-    norm = os.path.normpath(dst).replace("\\", "/")
-    if norm.startswith("../") or os.path.isabs(norm) or norm.startswith("/"):
-        raise Fail("destination escapes the USB root: %s" % dst)
-    if norm != "franklin" and not norm.startswith("franklin/"):
-        if not (norm.startswith("asusware.arm/") or norm == "asusware.arm"):
-            raise Fail("destination must live under franklin/ (got %s)" % dst)
-    return norm
 
 
 def hook_path(feat, rel):
@@ -186,26 +174,14 @@ def check_catalog_drift(feats, strict, problems):
 
 def verify(feats, selected, order, strict):
     problems, warnings = [], []
-    seen_dst = {}
     for fid in order:
         feat = feats[fid]
         for hook, rel in sorted(feat["hooks"].items()):
             if not os.path.isfile(hook_path(feat, rel)):
                 problems.append("%s: hook '%s' missing (%s)" % (fid, hook, rel))
-        for entry in feat["files"]:
-            if "src" not in entry or "dst" not in entry:
-                problems.append("%s: file entry needs src and dst" % fid)
-                continue
-            dst = safe_dst(entry["dst"])
-            if dst in seen_dst:
-                problems.append("%s: destination %s already provided by %s"
-                                % (fid, dst, seen_dst[dst]))
-            seen_dst[dst] = fid
-            if entry.get("optional"):
-                continue
-            if not os.path.exists(os.path.join(ROOT, entry["src"])):
-                warnings.append("%s: %s not built yet (%s); run its build.sh"
-                                % (fid, entry["src"], entry["src"]))
+        payload = os.path.join(feat["_dir"], "payload")
+        if not os.path.isdir(payload) and not feat["hooks"]:
+            warnings.append("%s: no payload and no hooks (nothing to compose)" % fid)
     check_catalog_drift(feats, strict, problems)
     if strict:
         problems.extend(warnings)
@@ -310,19 +286,13 @@ def compose(args, feats, order, cfg):
         os.makedirs(os.path.join(franklin, name), exist_ok=True)
 
     written = []
-    # payload per feature
+    # Each feature folder is copied verbatim: features/<id>/payload ->
+    # franklin/features/<id>. The folder layout *is* the destination layout,
+    # so there is no src/dst mapping to maintain.
     for fid in order:
-        feat = feats[fid]
-        payload = os.path.join(feat["_dir"], "payload")
+        payload = os.path.join(feats[fid]["_dir"], "payload")
         if os.path.isdir(payload):
             copy_tree(payload, os.path.join(franklin, "features", fid), written)
-        for entry in feat["files"]:
-            src = os.path.join(ROOT, entry["src"])
-            if not os.path.exists(src):
-                if entry.get("optional"):
-                    continue
-                raise Fail("%s: missing %s (run its build.sh)" % (fid, entry["src"]))
-            copy_tree(src, os.path.join(out, safe_dst(entry["dst"])), written)
 
     # runtime driver + registry
     copy_tree(os.path.join(ROOT, "core", "boot", "franklin-boot"),

@@ -9,7 +9,7 @@
 set -u
 PORT="${FRANKLIN_WEBUI_PORT:-8088}"
 root="${FRANKLIN_ROOT:?}"
-base="$root/webui"
+base="$root/features/web-ui"
 www="$base/www"
 lib="$base/lib"
 httpd="$base/httpd"

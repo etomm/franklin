@@ -8,4 +8,4 @@ exec sh "$ROOT/tools/build-kernel-modules.sh" \
   --gpl "$GPL" --config "$CONFIG" \
   --enable "NET_SCH_CAKE=m" \
   --modules "net/sched/sch_cake.ko" \
-  --out "$ROOT/build/cake-qos" "$@"
+  --out "$ROOT/features/cake-qos/payload" "$@"

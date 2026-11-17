@@ -1,21 +1,21 @@
 #!/bin/sh
-# Stage gnuton's web UI into build/web-ui/ so the composer can copy it.
+# Stage gnuton's web UI into this feature's payload/ folder.
+#
+# The folder layout *is* the layout on the stick:
+#   payload/httpd      gnuton /usr/sbin/httpd
+#   payload/www/       gnuton /www tree
+#   payload/lib/       every lib that is missing or different in stock
 #
 # Inputs (both extracted per docs/firmware-comparison.md):
-#   STOCK_ROOTFS   firmware/xt8/rootfs          (stock XT8)
-#   GNUTON_ROOTFS  firmware/gnuton-xt8/rootfs   (gnuton XT8)
-#
-# Outputs:
-#   build/web-ui/httpd        gnuton /usr/sbin/httpd
-#   build/web-ui/www/         gnuton /www tree
-#   build/web-ui/lib/         every lib that is missing or different in stock
+#   STOCK_ROOTFS   firmware/xt8/rootfs
+#   GNUTON_ROOTFS  firmware/gnuton-xt8/rootfs
 #
 # Determinism: files copied in sorted order, mtimes set to 0.
 set -eu
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 STOCK_ROOTFS="${STOCK_ROOTFS:-$ROOT/firmware/xt8/rootfs}"
 GNUTON_ROOTFS="${GNUTON_ROOTFS:-$ROOT/firmware/gnuton-xt8/rootfs}"
-OUT="${OUT:-$ROOT/build/web-ui}"
+OUT="${OUT:-$ROOT/features/web-ui/payload}"
 
 [ -x "$GNUTON_ROOTFS/usr/sbin/httpd" ] || {
     echo "missing $GNUTON_ROOTFS/usr/sbin/httpd (extract the gnuton firmware first)" >&2

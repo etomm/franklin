@@ -8,4 +8,4 @@ exec sh "$ROOT/tools/build-kernel-modules.sh" \
   --gpl "$GPL" --config "$CONFIG" \
   --enable "IP_SET=m IP_SET_HASH_IP=m IP_SET_HASH_NET=m" \
   --modules "net/netfilter/ipset/ip_set.ko net/netfilter/ipset/ip_set_hash_ip.ko" \
-  --out "$ROOT/build/ipset" "$@"
+  --out "$ROOT/features/ipset/payload" "$@"

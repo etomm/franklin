@@ -6,11 +6,16 @@ features into a complete, runnable stick. Nothing at runtime reads the repo.
 ```
 franklin.yaml                    <- what goes on the stick (composition)
 features/<id>/feature.yaml       <- what each feature is and needs
-features/<id>/payload/           <- files copied into franklin/features/<id>/
-features/<id>/build.sh           <- how to produce its artifacts (optional)
+features/<id>/payload/           <- the feature's own files, ready to run
+features/<id>/build.sh           <- stages generated files into payload/
 tools/franklin-compose.py        <- the composer; verifies, then writes
 core/boot/franklin-boot          <- runtime driver, copied into the stick
 ```
+
+**No file mapping.** A feature's `payload/` folder *is* the folder it gets on
+the stick (`franklin/features/<id>/`). If something has to come from outside
+the repo (gnuton binaries, a `.ko` built from the GPL), `build.sh` puts it in
+`payload/`; the composer never needs to know where it came from.
 
 ## What the composer writes
 
@@ -22,9 +27,7 @@ core/boot/franklin-boot          <- runtime driver, copied into the stick
   franklin/
     bin/franklin-boot           discovers its USB base, runs the registry
     registry.d/NN-<id>.env      generated, dependency-ordered
-    features/<id>/              payload/ copied verbatim (hooks live here)
-    kmod/<uname -r>/            .ko files staged per feature
-    bin/                        optional feature binaries (e.g. ipset)
+    features/<id>/              payload/ copied verbatim, hooks live here
     opt/  state/  log/          preserved state (see below)
     BUILD-INFO                  git sha + feature list (no timestamps)
     SHA256SUMS                  hash of every composed file
@@ -80,25 +83,22 @@ required: false              # true => cannot be removed
 enabled_by_default: false    # runtime flag, overridable in franklin/state/
 requires: [kernel-modules]   # feature ids, resolved transitively
 provides: [sch_cake.ko]      # documentation of what it makes available
-artifacts: [build/cake-qos/sch_cake.ko]   # produced by build.sh
-files:                       # copied into the composition
-  - src: build/cake-qos/sch_cake.ko
-    dst: franklin/kmod/4.19.183/sch_cake.ko
-    optional: false          # optional = skip if not built yet
-payload: payload             # copied to franklin/features/<id>/
+payload: payload             # copied verbatim to franklin/features/<id>/
 hooks:
   start: start.sh            # run at boot when enabled
   stop: stop.sh              # run on disable/uninstall
-build: build.sh              # optional build entrypoint
+build: build.sh              # optional: stages generated files into payload/
 ```
+
+That is the whole manifest — there is no table of source and destination
+paths. `payload/sch_cake.ko` lands as
+`franklin/features/cake-qos/sch_cake.ko`, and `start.sh` loads it from there.
 
 Rules enforced by `--check`:
 
 - `id` matches the folder, ids are unique, `kind` is known;
 - `requires` closes transitively, no cycles, no unknown ids;
-- every destination stays under `franklin/` (plus the two shim files);
-- no two features write the same destination;
-- declared hooks exist;
+- declared hooks exist (looked up in `payload/`);
 - the dependency closure and `kind` agree with the documented catalog
   (`docs/features/manifest.json`) — drift is an error.
 
@@ -167,30 +167,34 @@ wsl sh features/web-ui/build.sh     # or: build.sh inside Docker
 python tools/franklin-compose.py
 ```
 
-`build.sh` needs both extracted rootfs trees (stock + gnuton) and stages:
+`build.sh` needs both extracted rootfs trees (stock + gnuton) and writes
+straight into the feature's own payload folder:
 
 ```
-build/web-ui/httpd      gnuton /usr/sbin/httpd
-build/web-ui/www/       gnuton /www (broken extraction symlinks skipped)
-build/web-ui/lib/       every .so that stock lacks or builds differently
+features/web-ui/payload/httpd          gnuton /usr/sbin/httpd
+features/web-ui/payload/www/           gnuton /www (broken links skipped)
+features/web-ui/payload/lib/           every .so stock lacks or builds differently
 ```
+
+Those generated files are gitignored; the folder is the whole contract.
 
 At boot `web-ui-overlay/start.sh` runs that httpd on `:8088` with
-`cwd=franklin/webui/www` and `LD_LIBRARY_PATH=franklin/webui/lib`, after
-fixing `acc_num=0` (without it `Advanced_System_Content.asp` segfaults). Stock
-`:80` keeps serving the stock UI, so the overlay is always reversible.
+`cwd=franklin/features/web-ui/www` and
+`LD_LIBRARY_PATH=franklin/features/web-ui/lib`, after fixing `acc_num=0`
+(without it `Advanced_System_Content.asp` segfaults). Stock `:80` keeps serving
+the stock UI, so the overlay is always reversible.
 
 Bind mode (gnuton pages served by the *stock* httpd) is opt-in and reversible:
 
 ```
-touch  franklin/state/web-ui-overlay.bindwww   # then run start.sh
+touch  franklin/state/web-ui-overlay.bindwww      # then run start.sh
 sh     franklin/features/web-ui-overlay/stop.sh   # unmounts /www, restores stock
 ```
 
 ## Adding a feature
 
 1. `features/<id>/feature.yaml` (schema above), `payload/start.sh` (+ `stop.sh`),
-2. `build.sh` if it needs artifacts,
+2. `build.sh` if files must be staged from outside the repo (it writes into `payload/`),
 3. add the id to `franklin.yaml`,
 4. `python tools/franklin-compose.py --check`,
 5. `python tools/franklin-compose.py`, then deploy.
