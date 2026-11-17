@@ -264,29 +264,33 @@ Prefer testing pages that are mostly client-side (VPN Director, DNS Director,
 QoS Stats, Traffic Monitor, WiFi Insight, Wireless Survey) before the
 Administration/System pages, which are more likely to call backend functions.
 
-### Concrete segfault: `Advanced_System_Content.asp` / `get_all_accounts()`
+### Concrete segfault: `Advanced_System_Content.asp` (`get_account_list`)
 
-Disassembly of the crash (`PC=0x2d80c`) shows a loop doing
-`ldr r1, [r3, r5, lsl #2]` where `r3 = [sp,#4]` is a 2-D list pointer and it is
-**NULL** → segfault. gnuton's `get_all_accounts()` builds that list from NVRAM
-`acc_list`; on stock `acc_list` is empty, so gnuton returns NULL and the page
-handler iterates it without a guard. Stock's own httpd tolerates the empty
-case.
-
-Page-level workaround (revertable, text file on USB): remove the crashing
-server-side call from the page. In
-`/tmp/mnt/FRANKEN/gnuton-www/www/Advanced_System_Content.asp` replace
-
+Disassembly of the crash (`PC=0x2d80c`) shows:
 ```
-var accounts = [<% get_all_accounts(); %>][0];
+ldr r3, [sp,#4]            ; list pointer (initialised to 0)
+ldr r1, [r3, r5, lsl #2]   ; <-- segfault: r3 == NULL
 ```
+The page calls `get_all_accounts()` → `get_account_list()` (a function in
+**`libdisk.so`**). The real cause was a **library version mismatch**, not empty
+`acc_list`:
 
-with
+| libdisk.so | size | md5 |
+|---|---|---|
+| gnuton (XT8 388_24814) | 92,124 | `19150C06…` |
+| stock XT8 (388_24814) | 92,124 | `19150C06…` (identical to gnuton) |
+| stock XT9 (388_24854) | 96,208 | `f34d4f24…` (different) |
 
-```
-var accounts = [[]][0];
-```
+gnuton's httpd was resolving `get_account_list` from the **XT9's newer
+liter `libdisk.so`**, whose ABI differs: it returns success but does not
+populate the list the way gnuton's caller expects, leaving the pointer NULL →
+segfault. The empty `acc_list` was a red herring.
 
-(empty list). The account list then simply shows empty on that page, but httpd
-no longer segfaults. Same idea applies to any other page that calls a gnuton
-backend function returning NULL on stock.
+Proper fix: copy gnuton's `lib/disk.so` (== stock XT8's) into the
+`LD_LIBRARY_PATH` dir and restart httpd; verify with
+`grep libdisk /proc/<pid>/maps` that it maps the gnuton one. The page needs no
+patch then.
+
+Lesson: segfaults are almost always a version-mismatched shared library
+(especially `libdisk.so`, which differs between ASUS firmware builds), not a
+page bug. Supply the matching gnuton library rather than patching the page.
