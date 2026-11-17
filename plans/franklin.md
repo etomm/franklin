@@ -363,7 +363,10 @@ Watch out for:
 
 ### Phase 4 — Custom control panel
 
-Preferred: a separate web server on another port, e.g. `:8080`.
+Preferred: **integrated** — modify existing stock pages in place via the `/www`
+overlay (bind mount), so the stock UI stays the UI and Franklin only adds/
+adjusts pages and menu entries. A separate web server on another port (e.g.
+`:8080`) is the fallback, not the default.
 
 Minimum actions:
 
@@ -375,9 +378,10 @@ Minimum actions:
 
 Implementation options:
 
-1. `lighttpd` + CGI shell scripts.
-2. A small static Go binary with an HTTP server.
-3. `uhttpd` + Lua/CGI if available.
+1. Overlay `/www` (preferred): copy to `/tmp/www`, edit ASP pages and
+   `/tmp/www/require/modules/menuTree.js`, bind-mount over `/www`.
+2. Separate `lighttpd`/`uhttpd` on another port (fallback) with CGI scripts.
+3. A small static Go binary with an HTTP server (fallback).
 
 Do not patch `httpd` unless the goal is specifically to integrate with the
 stock UI.
@@ -465,8 +469,9 @@ Board-specific modules and calibration data are out of scope.
 4. Which Entware packages work cleanly under this firmware’s glibc?
 5. Is a compatible `sch_cake.ko` available from a donor build with the same
    vermagic?
-6. Should Franklin use the stock UI overlay at all, or only a separate `:8080`
-   panel?
+6. Franklin prefers the stock UI overlay (modifying existing pages in place);
+   a separate `:8080` panel is only a fallback. Does the overlay survive a
+   firmware update?
 7. How should Franklin be packaged for other ASUSWRT devices?
    - USB bootstrap folder
    - one-shot installer
