@@ -55,20 +55,35 @@ layer applies to both. Franklin's stock-handled classifications in
 XT8 rootfs under `firmware/xt8/rootfs/` can be grepped/diffed locally to
 verify any specific file.
 
-## gnuton firmware (downloaded, extraction failed)
+## gnuton firmware (extracted successfully)
 - gnuton 3004.388.11_1-gnuton1 for RT-AX95Q/XT8 was downloaded into
   `firmware/gnuton-xt8/RT-AX95Q_3004_388.11_1-gnuton1_puresqubi.w` (gitignored).
   MD5 verified against the release's `.md5` file
   (`03a7940f5486dd8c5ca310356956b0c5`).
-- Extraction of the squashfs rootfs failed with all available tooling:
-  - `unsquashfs` 4.5.1 and 4.7.5 (built from source), `sasquatch`
-    (recraft/sasquatch docker), `7z`, `binwalk -e -M`, loop mount.
-  - Root cause: the squashfs id table metadata block at `id_table_start`
-    (offset 0x02dc25c5) has an invalid size field (0x3a62 = 14946, far
-    exceeding the 8-byte remainder), so the id table cannot be read. This
-    indicates a non-standard squashfs layout in the gnuton image.
-  - Tested on both the latest (3004.388.11_1) and an older
-    (3004.388.10_2) gnuton release - both fail identically, confirming
-    this is a systematic gnuton build characteristic, not a corrupt download.
-  - The image is available locally for manual extraction with specialized
-    tooling (e.g. patching the id table or using a custom extractor).
+- Extraction method: `ubireader_extract_images` to strip the UBI layer (stitching
+  logical blocks in order), then `unsquashfs` on the resulting
+  `vol-rootfs_ubifs.ubifs` file (which starts with the `hsqs` squashfs magic).
+  The rootfs is extracted into `firmware/gnuton-xt8/rootfs/`.
+- Comparison with stock XT8 (3.0.0.4.388_24814):
+  - `/www`: gnuton has 349 files vs 310 stock. gnuton adds Merlin features:
+    `VPNDirector.asp`, `DNSDirector.asp`, `Advanced_SNMP_Content.asp`,
+    `Advanced_TOR_Content.asp`, `Advanced_OpenVPNClient_Content.asp`,
+    `Tools_Sysinfo.asp`, `WiFi_Insight.asp`, `QoS_Stats.asp`,
+    `Main_TrafficMonitor_monthly.asp`, `Main_TrafficMonitor_settings.asp`,
+    `ajax_conntrack.asp`, `ajax_sysinfo.asp`, `ajax_wificlients.asp`,
+    `ajax_gettcdata.asp`, `ajax_vpn_status.asp`, and `user1.asp`..`user20.asp`.
+    Stock has `Advanced_Feedback.asp`, `Captive_Portal_*_template.js.new`,
+    `client.ovpn`, `Main_Security_Change_Notification.asp` (removed by gnuton).
+  - `/usr/sbin`: gnuton adds `amtm`, `chroot`, `ethtool`, `exportfs`,
+    `gettunnelip.sh`, `haveged`, `helper.sh`, `ipset`, `lanauth`, `mountd`,
+    `nfsd`, `ntp`, `ntpd`, `portmap`, `sendmail`, `showmount`, `snmpd`,
+    `statd`, `Tor`, `tune2fs`. Stock has `ahs`, `colog`, `dblog`, `dblogcmd`,
+    `dhd`, `epi_ttcp`, `jitterentropy-rngd`, `lighttpd`, `lighttpd-arpping`,
+    `lighttpd-monitor`, `ntpclient`, `telnetd`, `tftpd`, `uamsrv`,
+    `webs_upgrade.sh`, `wl_server_socket`.
+  - Both share the same kernel (4.19.183), lighttpd, minidlna, openvpn, wg,
+    dnsmasq, smbd/nmbd, iperf3, jq, curl, wget, bash, tc, brctl.
+- Conclusion: gnuton adds Merlin userland features (VPN Director, SNMP, Tor,
+  NFS, QoS stats, WiFi insight, amtm, etc.) on top of the same stock base.
+  Franklin's stock-handled classifications remain valid; gnuton's additions
+  are the reference for Franklin's planned features.
