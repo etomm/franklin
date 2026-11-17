@@ -1,0 +1,39 @@
+# Kernel feature list for the audit script.
+# Format: CONFIG_SYMBOL|Human description
+# Lines starting with # are ignored.
+#
+# QoS / traffic shaping
+NET_SCH_CAKE|Cake QoS qdisc
+NET_SCH_FQ_CODEL|fq_codel qdisc
+NET_SCH_FQ|fq qdisc
+NET_SCH_HTB|HTB qdisc
+NET_SCH_TBF|TBF qdisc
+NET_SCH_SFQ|SFQ qdisc
+IFB|Intermediate Functional Block (SQM)
+NET_CLS_ACT|Traffic-control actions
+NET_ACT_MIRRED|TC mirred action
+NET_ACT_POLICE|TC police action
+NET_ACT_GACT|TC gact action
+NET_CLS_FW|fw classifier
+NET_CLS_U32|u32 classifier
+NET_EMATCH|Extended match
+#
+# VPN / netfilter
+WIREGUARD|WireGuard
+NF_NAT|Netfilter NAT
+NF_CONNTRACK|Netfilter conntrack
+NETFILTER_XT_TARGET_TEE|TEE target (packet duplication)
+NF_DUP_IPV4|nf_dup IPv4 (TEE dependency)
+NF_DUP_IPV6|nf_dup IPv6 (TEE dependency)
+IP_SET|ipset core
+IP_SET_HASH_IP|ipset hash:ip
+IP_SET_HASH_NET|ipset hash:net
+#
+# Broadcom offload / DPI (typically built-in / driver level)
+BCM_DPI|Broadcom DPI engine
+BCM_INGQOS|Broadcom ingress QoS
+BCM_KF_SKB_EXT|Broadcom skb extension (struct layout)
+BCM_KF_NETDEV_EXT|Broadcom netdev extension
+BCM_KF_NETFILTER|Broadcom netfilter framework
+BCM_KF_BLOG|Broadcom blog
+BCM_KF_NBUFF|Broadcom nbuf
