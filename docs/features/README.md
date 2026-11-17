@@ -23,7 +23,7 @@ Status: `tested` = verified on the XT9; `stock` = stock-provided; `planned`/`mod
 
 ## Index by kind
 
-### Workarounds (Franklin mechanisms, only because stock is not gnuton) (4)
+### Workarounds (Franklin mechanisms, only because stock is not gnuton) (6)
 
 These are **not gnuton features**. They exist so gnuton userland can run on unmodified stock firmware.
 
@@ -32,7 +32,9 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | Network Map / client list | Monitoring | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [networkmap](networkmap.md) |
 | Boot hook (asusware.arm) | System | all | `tested` | **yes** | — | [boot-hook](boot-hook.md) |
 | Kernel modules (build recipe) | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
-| Web UI overlay (bind-mount httpd + /www) — workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [web-ui-overlay](web-ui-overlay.md) |
+| franklin-mount (mount(2) helper) — workaround | System | all | `tested` | no | — | [franklin-mount](franklin-mount.md) |
+| overlayfs modules (overlay.ko + exportfs.ko) — workaround | Kernel | all | `tested` | no | [kernel-modules](../features/kernel-modules.md) | [overlayfs](overlayfs.md) |
+| Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md), [franklin-mount](../features/franklin-mount.md) | [web-ui-overlay](web-ui-overlay.md) |
 
 ### Franklin features (not in gnuton at all) (1)
 
@@ -156,54 +158,56 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 18. firewall-custom  (gnuton-feature)
 19. dns-director  (gnuton-feature)
 20. firmware-upgrade  (stock)
-21. guest-network  (stock)
-22. igmp-snooping  (stock)
-23. ipsec-vpn  (gnuton-feature)
-24. ipv6  (stock)
-25. jffs  (stock)
-26. kernel-modules  (workaround)
-27. cake-qos  (gnuton-feature)
-28. cifs-client  (gnuton-feature)
-29. ipset  (gnuton-feature)
-30. adaptive-qos  (gnuton-feature)
-31. led-control  (gnuton-feature)
-32. mac-filter  (stock)
-33. media-server  (stock)
-34. nat-acceleration  (stock)
-35. nfs  (gnuton-feature)
-36. ntp  (gnuton-feature)
-37. nvram-tools  (gnuton-feature)
-38. openvpn-client  (gnuton-feature)
-39. openvpn-server  (gnuton-feature)
-40. parental-controls  (stock)
-41. port-forwarding  (stock)
-42. reboot-schedule  (gnuton-feature)
-43. samba-ftp-webdav  (stock)
-44. snmp  (gnuton-feature)
-45. ssh-access  (stock)
-46. syslog  (stock)
-47. tee  (gnuton-feature)
-48. time-machine  (stock)
-49. tor  (gnuton-feature)
-50. traffic-analyzer  (proprietary)
-51. usb-modem  (stock)
-52. vlan-iptv  (gnuton-feature)
-53. vpn-director  (gnuton-feature)
-54. vpn-killswitch  (gnuton-feature)
-55. web-ui  (gnuton-feature)
-56. aidisk-nfs  (gnuton-feature)
-57. network-tools  (gnuton-feature)
-58. networkmap  (workaround)
-59. qos-classification  (gnuton-feature)
-60. sysinfo  (gnuton-feature)
-61. temperature-monitoring  (gnuton-feature)
-62. traffic-monitor  (gnuton-feature)
-63. web-ui-overlay  (workaround)
-64. wifi-insight  (gnuton-feature)
-65. wireguard-client  (gnuton-feature)
-66. wireguard-server  (gnuton-feature)
-67. wireless-survey  (gnuton-feature)
-68. wireless-tuning  (stock)
+21. franklin-mount  (workaround)
+22. guest-network  (stock)
+23. igmp-snooping  (stock)
+24. ipsec-vpn  (gnuton-feature)
+25. ipv6  (stock)
+26. jffs  (stock)
+27. kernel-modules  (workaround)
+28. cake-qos  (gnuton-feature)
+29. cifs-client  (gnuton-feature)
+30. ipset  (gnuton-feature)
+31. adaptive-qos  (gnuton-feature)
+32. led-control  (gnuton-feature)
+33. mac-filter  (stock)
+34. media-server  (stock)
+35. nat-acceleration  (stock)
+36. nfs  (gnuton-feature)
+37. ntp  (gnuton-feature)
+38. nvram-tools  (gnuton-feature)
+39. openvpn-client  (gnuton-feature)
+40. openvpn-server  (gnuton-feature)
+41. overlayfs  (workaround)
+42. parental-controls  (stock)
+43. port-forwarding  (stock)
+44. reboot-schedule  (gnuton-feature)
+45. samba-ftp-webdav  (stock)
+46. snmp  (gnuton-feature)
+47. ssh-access  (stock)
+48. syslog  (stock)
+49. tee  (gnuton-feature)
+50. time-machine  (stock)
+51. tor  (gnuton-feature)
+52. traffic-analyzer  (proprietary)
+53. usb-modem  (stock)
+54. vlan-iptv  (gnuton-feature)
+55. vpn-director  (gnuton-feature)
+56. vpn-killswitch  (gnuton-feature)
+57. web-ui  (gnuton-feature)
+58. aidisk-nfs  (gnuton-feature)
+59. network-tools  (gnuton-feature)
+60. networkmap  (workaround)
+61. qos-classification  (gnuton-feature)
+62. sysinfo  (gnuton-feature)
+63. temperature-monitoring  (gnuton-feature)
+64. traffic-monitor  (gnuton-feature)
+65. web-ui-overlay  (workaround)
+66. wifi-insight  (gnuton-feature)
+67. wireguard-client  (gnuton-feature)
+68. wireguard-server  (gnuton-feature)
+69. wireless-survey  (gnuton-feature)
+70. wireless-tuning  (stock)
 ```
 
 ## Dependency graph
@@ -281,6 +285,8 @@ graph TD
   download_manager["download-manager"]
   media_server["media-server"]
   time_machine["time-machine"]
+  franklin_mount["franklin-mount"]
+  overlayfs["overlayfs"]
   web_ui_overlay["web-ui-overlay"]
   boot_hook --> web_ui
   firewall_custom --> vpn_director
@@ -350,6 +356,8 @@ graph TD
   entware --> download_manager
   boot_hook --> download_manager
   samba_ftp_webdav --> time_machine
+  kernel_modules --> overlayfs
   web_ui --> web_ui_overlay
   boot_hook --> web_ui_overlay
+  franklin_mount --> web_ui_overlay
 ```

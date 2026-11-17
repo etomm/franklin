@@ -909,7 +909,44 @@ FEATURES = [
          evidence="stock: `Advanced_TimeMachine.asp` exists in BOTH rootfs.",
          links=[]),
 
-    dict(id="web-ui-overlay", title="Web UI overlay (bind-mount httpd + /www) — workaround", cat="UI",
+    dict(id="franklin-mount", title="franklin-mount (mount(2) helper) — workaround", cat="System",
+         modes="all",
+         status="tested",
+         what="A ~20 line static binary that performs mount(2)/umount(2) directly, used to "
+              "mount over paths on the read-only squashfs root.",
+         gnuton="n/a: gnuton ships its own httpd in the image, so it never has to mount over "
+                "the stock rootfs.",
+         deps="Cross compiler at build time (arm-linux-gnueabi-gcc); nothing at runtime.",
+         franklin="Workaround for an ASUS restriction: busybox `mount` rejects any target on "
+                  "the read-only squashfs (/www, /usr/sbin/httpd) with "
+                  "\"Invalid mount path\". The kernel allows it; this helper proves it.",
+         tested="Verified on the XT9: bind over /www, bind over /usr/sbin/httpd, and the full "
+                "overlay + bind chain, each umounted back to stock.",
+         risks="Static ARM binary; must be rebuilt with the same cross compiler. Only used for "
+               "mounts Franklin owns.",
+         evidence="workaround: needed because the stock mount tool refuses rootfs targets; the "
+                  "kernel accepts them (tested).",
+         links=["docs/build-architecture.md"]),
+
+    dict(id="overlayfs", title="overlayfs modules (overlay.ko + exportfs.ko) — workaround", cat="Kernel",
+         modes="all",
+         status="tested",
+         what="Adds overlayfs to stock, so gnuton's pages can be layered over the stock /www "
+              "instead of replacing the whole tree.",
+         gnuton="n/a: gnuton's kernel ships overlayfs-capable config and never needs it for the "
+                "UI, because its /www is simply part of the firmware.",
+         deps="`exportfs.ko` and `overlay.ko` built from the ASUS GPL for 4.19.183.",
+         franklin="Build both modules with the kernel-module recipe; load at boot; the web UI "
+                  "overlay uses a lowerdir stack (gnuton tree over stock) with the upper on USB.",
+         tested="Built from the ASUS GPL (121 KB + 7.6 KB) and verified on the XT9: overlay over "
+                "the read-only /www, copy-up on write, whiteouts, clean umount.",
+         risks="Stock has CONFIG_OVERLAY_FS unset, so this is an out-of-tree addition; upperdir "
+               "lives on the USB and receives runtime writes.",
+         evidence="workaround: kernel capability stock lacks (CONFIG_OVERLAY_FS not set), added "
+                  "the same way as cake/TEE; verified end-to-end on the device.",
+         links=["docs/build-architecture.md", "docs/xt9-kernel-notes.md"]),
+
+    dict(id="web-ui-overlay", title="Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround", cat="UI",
          modes="all",
          status="tested",
          what="Franklin's mechanism for presenting the gnuton UI on unmodified stock firmware: "
@@ -948,6 +985,8 @@ KIND = {
     "boot-hook": "workaround",
     "kernel-modules": "workaround",
     "web-ui-overlay": "workaround",
+    "franklin-mount": "workaround",
+    "overlayfs": "workaround",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
     "entware": "franklin-feature",
@@ -987,6 +1026,8 @@ UPSTREAM = {
     "kernel-modules": "n/a — Franklin workaround (ASUS GPL 4.19.183, not gnuton)",
     "web-ui-overlay": "n/a — Franklin workaround (gnuton needs none: its httpd is in the image)",
     "networkmap": "gnuton networkmap daemon; Franklin needs a shm-size workaround",
+    "franklin-mount": "n/a — Franklin workaround (ASUS busybox mount refuses rootfs targets)",
+    "overlayfs": "n/a — Franklin workaround (CONFIG_OVERLAY_FS unset on stock)",
     "amtm": "third-party (thelonelycoder/amtm) — bundled by gnuton/Merlin, not gnuton code",
     "cron": "stock ASUS (crond/cru); gnuton only adds the crontab command",
     "entware": "third-party (Entware project) - NOT gnuton",
@@ -1025,7 +1066,7 @@ DEPS = {
     "jffs": [],
     # workarounds
     "kernel-modules": ["boot-hook"],
-    "web-ui-overlay": ["web-ui", "boot-hook"],
+    "web-ui-overlay": ["web-ui", "boot-hook", "franklin-mount"],
     "networkmap": ["web-ui", "boot-hook"],
     # gnuton features
     "web-ui": ["boot-hook"],
@@ -1046,6 +1087,8 @@ DEPS = {
     "aidisk-nfs": ["nfs", "web-ui"],
     "amtm": ["boot-hook"],
     "cron": [],
+    "franklin-mount": [],
+    "overlayfs": ["kernel-modules"],
     "custom-scripts": ["boot-hook"],
     "nvram-tools": ["boot-hook"],
     "led-control": ["boot-hook"],
@@ -1101,6 +1144,8 @@ BUILD = {
     "jffs": "Nothing to build (stock). Enable JFFS if needed; Franklin only writes configs/logs there.",
     "boot-hook": "Copy usb/asusware.arm to the USB root; boot hook runs S* scripts.",
     "web-ui": "Deploy gnuton httpd + /www + differing libs to USB; start on :8088 (see docs/xt9-kernel-notes.md).",
+    "franklin-mount": "Run features/franklin-mount/build.sh (static ARM binary via cross compiler).",
+    "overlayfs": "Run features/overlayfs/build.sh -> builds exportfs.ko + overlay.ko from the ASUS GPL.",
     "kernel-modules": "Run features/kernel-modules/build.sh (calls tools/build-kernel-modules.sh with the ASUS GPL + device config).",
     "cake-qos": "Run features/cake-qos/build.sh -> builds sch_cake.ko from the ASUS GPL.",
     "tee": "Run features/tee/build.sh -> builds xt_TEE.ko + nf_dup_ipv4/6.ko.",

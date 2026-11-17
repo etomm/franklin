@@ -3,7 +3,7 @@ title: Web UI overlay (gnuton httpd on :8088, optional /www bind)
 kind: workaround
 required: false
 enabled_by_default: true
-requires: [web-ui, boot-hook]
+requires: [web-ui, boot-hook, franklin-mount]
 provides:
   - gnuton UI reachable on :8088
   - optional bind-mount of gnuton /www over stock /www

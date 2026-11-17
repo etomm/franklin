@@ -1,4 +1,4 @@
-# Web UI overlay (bind-mount httpd + /www) — workaround
+# Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround
 
 **Category:** UI  
 **Modes:** all  
@@ -11,6 +11,7 @@
 
 - [web-ui](web-ui.md)
 - [boot-hook](boot-hook.md)
+- [franklin-mount](franklin-mount.md)
 
 ## Build / install (separable)
 

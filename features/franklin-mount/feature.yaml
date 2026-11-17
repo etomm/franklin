@@ -1,0 +1,18 @@
+id: franklin-mount
+title: franklin-mount (mount(2) helper)
+kind: workaround
+required: false
+enabled_by_default: true
+requires: []
+provides:
+  - mount/umount helper that bypasses the busybox restriction
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+build: build.sh
+notes: >
+  ASUS's busybox `mount` refuses any target on the read-only squashfs root
+  ("Invalid mount path(/www)"), although the kernel allows it. This tiny static
+  binary calls mount(2)/umount2(2) directly, which is what makes bind-mounting
+  over /www and /usr/sbin/httpd possible. Verified on the XT9.

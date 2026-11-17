@@ -177,9 +177,56 @@ Deployment options, best first:
 3. Docker for the build step only: `docker run --rm -v "$PWD:/src" -w /src
    python:3-slim sh -c "pip install pyyaml && python tools/franklin-compose.py"`.
 
-Format guidance: **ext4** (or the existing ext3) — permissions, symlinks,
-journal. Avoid exFAT/vfat: no modes, no symlinks, and every `S*`/hook then has
-to be invoked through `sh` explicitly.
+Format guidance: **ext4** (reformat — see below). Avoid exFAT/vfat: no modes, no
+symlinks, no xattrs, and overlayfs cannot use it as an upper layer.
+
+## Filesystem: switch the stick to ext4
+
+Checked on the XT9: the stock kernel has `CONFIG_EXT4_FS=y` (ext4 is built in),
+so an ext4 stick mounts natively; the router only ships `mkfs.ext2`/`mkfs.ext3`,
+so format it from WSL/PC. Overlayfs needs `d_type` and xattrs on the upper
+layer; ext3 happens to work today (verified), ext4 guarantees it and adds
+extents + journal checksums.
+
+```powershell
+# from WSL (stick unplugged from the router, attached to the PC)
+wsl -d Debian -u root --mount \\.\PHYSICALDRIVE<N> --bare
+wsl -d Debian -u root sh -c "mkfs.ext4 -L FRANKLIN /dev/sdX"
+```
+
+Then copy the composition back and re-plug. Nothing in Franklin hardcodes the
+mount point or the label (the shim derives the USB base from its own path), so
+a new label/`/tmp/mnt/<name>` needs no code change.
+
+## Mounts: overlay first, bind as fallback
+
+The stock rootfs is a read-only squashfs, and ASUS's busybox `mount` refuses
+any target on it (`Invalid mount path(/www)`), even though the kernel allows it.
+
+So Franklin does two things:
+
+1. **`overlayfs` feature** builds `overlay.ko` + `exportfs.ko` from the ASUS
+   GPL (stock has `CONFIG_OVERLAY_FS` unset) and loads them at boot;
+2. **`franklin-mount` feature** is a ~20 line static binary that calls
+   `mount(2)`/`umount(2)` directly, sidestepping the busybox restriction.
+
+Verified on the device: bind over `/www`, bind over `/usr/sbin/httpd`, and the
+overlay chain (`overlay` at a scratch dir with `lowerdir=<gnuton www>:/www`,
+`upperdir`/`workdir` on the USB, then bind that over `/www`) — copy-up on write,
+whiteouts, and `umount` restores the stock tree bit-for-bit.
+
+Replace-mode mechanics:
+
+```
+/www             <- overlay(gnuton tree : stock /www)   [fallback: single bind]
+/usr/sbin/httpd  <- wrapper script (LD_LIBRARY_PATH + exec gnuton-httpd)
+/sbin/rc restart_httpd
+```
+
+Why the split: `/www` is a tree (overlay is the right tool, and stock pages stay
+reachable as the lower layer), while the daemon is a single file that `rc`
+restarts by absolute path (a wrapper is the only way to inject the library
+path). Everything is a mount, so `stop.sh` — or a reboot — restores stock.
 
 ## Worked example: the gnuton UI
 

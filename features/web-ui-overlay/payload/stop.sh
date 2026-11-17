@@ -1,9 +1,21 @@
 #!/bin/sh
-# Stop the spare httpd, and undo any httpd//www replacement.
+# Stop the spare httpd and undo any /www or /usr/sbin/httpd replacement.
 set -u
 root="${FRANKLIN_ROOT:?}"
 pidfile="$root/state/web-ui-overlay.pid"
 wrapper="$root/state/httpd-wrapper.sh"
+mnt="$root/state/overlay/www-mnt"
+helper="$root/opt/bin/franklin-mount"
+
+umount_path() {
+    path="$1"
+    grep -q " $path " /proc/mounts 2>/dev/null || return 1
+    if [ -x "$helper" ]; then
+        "$helper" umount "$path" 2>/dev/null || umount "$path" 2>/dev/null
+    else
+        umount "$path" 2>/dev/null
+    fi
+}
 
 if [ -f "$pidfile" ]; then
     pid=$(cat "$pidfile" 2>/dev/null)
@@ -16,14 +28,10 @@ if [ -f "$pidfile" ]; then
     rm -f "$pidfile"
 fi
 
-# Restore the stock binary and pages if we were the ones who mounted over them.
 changed=0
-if grep -q ' /www ' /proc/mounts 2>/dev/null; then
-    umount /www 2>/dev/null && { echo "web-ui-overlay: /www restored to stock"; changed=1; }
-fi
-if grep -q ' /usr/sbin/httpd ' /proc/mounts 2>/dev/null; then
-    umount /usr/sbin/httpd 2>/dev/null && { echo "web-ui-overlay: /usr/sbin/httpd restored to stock"; changed=1; }
-fi
+umount_path /www && { echo "web-ui-overlay: /www restored to stock"; changed=1; }
+umount_path /usr/sbin/httpd && { echo "web-ui-overlay: /usr/sbin/httpd restored to stock"; changed=1; }
+umount_path "$mnt" && echo "web-ui-overlay: overlay detached"
 rm -f "$wrapper"
 
 if [ "$changed" = "1" ] && [ -x /sbin/rc ]; then

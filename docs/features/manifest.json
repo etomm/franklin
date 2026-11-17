@@ -42,6 +42,8 @@
       "networkmap",
       "boot-hook",
       "kernel-modules",
+      "franklin-mount",
+      "overlayfs",
       "web-ui-overlay"
     ],
     "franklin-feature": [
@@ -869,8 +871,30 @@
       ]
     },
     {
+      "id": "franklin-mount",
+      "title": "franklin-mount (mount(2) helper) \u2014 workaround",
+      "category": "System",
+      "modes": "all",
+      "status": "tested",
+      "kind": "workaround",
+      "required": false,
+      "depends_on": []
+    },
+    {
+      "id": "overlayfs",
+      "title": "overlayfs modules (overlay.ko + exportfs.ko) \u2014 workaround",
+      "category": "Kernel",
+      "modes": "all",
+      "status": "tested",
+      "kind": "workaround",
+      "required": false,
+      "depends_on": [
+        "kernel-modules"
+      ]
+    },
+    {
       "id": "web-ui-overlay",
-      "title": "Web UI overlay (bind-mount httpd + /www) \u2014 workaround",
+      "title": "Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround",
       "category": "UI",
       "modes": "all",
       "status": "tested",
@@ -878,7 +902,8 @@
       "required": false,
       "depends_on": [
         "web-ui",
-        "boot-hook"
+        "boot-hook",
+        "franklin-mount"
       ]
     }
   ],
@@ -903,6 +928,7 @@
     "firewall-custom",
     "dns-director",
     "firmware-upgrade",
+    "franklin-mount",
     "guest-network",
     "igmp-snooping",
     "ipsec-vpn",
@@ -922,6 +948,7 @@
     "nvram-tools",
     "openvpn-client",
     "openvpn-server",
+    "overlayfs",
     "parental-controls",
     "port-forwarding",
     "reboot-schedule",

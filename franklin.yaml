@@ -18,6 +18,8 @@ features:
   - cake-qos
   - tee
   - ipset
+  - overlayfs
+  - franklin-mount
   - entware
   - web-ui
   - web-ui-overlay

@@ -1,0 +1,20 @@
+id: overlayfs
+title: overlayfs modules (overlay.ko + exportfs.ko)
+kind: workaround
+required: false
+enabled_by_default: true
+requires: [kernel-modules]
+provides:
+  - overlay.ko
+  - exportfs.ko
+  - overlayfs support in /proc/filesystems
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+build: build.sh
+notes: >
+  Stock has CONFIG_OVERLAY_FS unset, so overlayfs is built from the ASUS GPL
+  like any other module. Verified on the XT9: overlay over the read-only
+  squashfs /www with the upper on the USB works, including copy-up and
+  whiteouts.
