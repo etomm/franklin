@@ -4,6 +4,12 @@
 - Kernel 4.19.183, armv7l, read-only squashfs root, persistent /jffs.
 - asusware.arm app-folder hook runs at boot (verified log: "S99xt9-log start").
 - NVRAM script_boot/script_usbmount/etc. do NOT run at boot on this firmware.
+- `/jffs/scripts/*` hooks do NOT run on stock: the `jffs2_scripts` NVRAM toggle
+  is a gnuton/Merlin-only feature (the stock web UI has no such toggle and the
+  variable is not settable/persisted). The stock `/sbin/rc` binary contains
+  leftover "checking for user scripts" code strings, but it is not enabled.
+  Tested with `init-start`/`services-start`/`firewall-start`/`nat-start` — none
+  ran. So the **USB `asusware.arm` app folder remains the reliable boot hook**.
 - ethswctl switch sequence (order matters):
   1. ethswctl -c hw-switching -o enable
   2. ethswctl -c softswitch -i eth0 -o enable
