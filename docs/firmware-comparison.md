@@ -264,33 +264,37 @@ Prefer testing pages that are mostly client-side (VPN Director, DNS Director,
 QoS Stats, Traffic Monitor, WiFi Insight, Wireless Survey) before the
 Administration/System pages, which are more likely to call backend functions.
 
-### Concrete segfault: `Advanced_System_Content.asp` (`get_account_list`)
+### Concrete segfault: `Advanced_System_Content.asp` / `get_account_list`
 
-Disassembly of the crash (`PC=0x2d80c`) shows:
+Disassembly of gnuton's `libdisk.so:get_account_list`:
+
 ```
-ldr r3, [sp,#4]            ; list pointer (initialised to 0)
-ldr r1, [r3, r5, lsl #2]   ; <-- segfault: r3 == NULL
+count = nvram_get_int("acc_num")     ; XT9 had 1
+*out = count
+if (count <= 0) return 0             ; returns WITHOUT setting the list
+acc_list = nvram_get("acc_list")     ; XT9 = "" (empty)
+if (empty) return 0                  ; returns success, list pointer unset
 ```
-The page calls `get_all_accounts()` → `get_account_list()` (a function in
-**`libdisk.so`**). The real cause was a **library version mismatch**, not empty
-`acc_list`:
 
-| libdisk.so | size | md5 |
-|---|---|---|
-| gnuton (XT8 388_24814) | 92,124 | `19150C06…` |
-| stock XT8 (388_24814) | 92,124 | `19150C06…` (identical to gnuton) |
-| stock XT9 (388_24854) | 96,208 | `f34d4f24…` (different) |
+Parser format: accounts split by `<`, fields split by `>` (2 fields) →
+`name>perm<name2>perm2`.
 
-gnuton's httpd was resolving `get_account_list` from the **XT9's newer
-liter `libdisk.so`**, whose ABI differs: it returns success but does not
-populate the list the way gnuton's caller expects, leaving the pointer NULL →
-segfault. The empty `acc_list` was a red herring.
+The XT9 had **`acc_num=1` but `acc_list=""`** (inconsistent). The caller trusts
+`acc_num` (count=1) and reads `list[0]`, but the list was never populated →
+`ldr r1,[r3,r5,lsl#2]` with `r3=0` → segfault. Stock httpd tolerates this; the
+gnuton build does not.
 
-Proper fix: copy gnuton's `lib/disk.so` (== stock XT8's) into the
-`LD_LIBRARY_PATH` dir and restart httpd; verify with
-`grep libdisk /proc/<pid>/maps` that it maps the gnuton one. The page needs no
-patch then.
+Fix (revertable): make the two consistent — set `acc_num=0` (matches the empty
+`acc_list`) so `count=0` and the caller skips the loop:
 
-Lesson: segfaults are almost always a version-mismatched shared library
-(especially `libdisk.so`, which differs between ASUS firmware builds), not a
-page bug. Supply the matching gnuton library rather than patching the page.
+```
+busybox sh -c 'nvram set acc_num=0'
+```
+
+(Note: `/bin/nvram` is a custom ASUS tool and `sh` resolves to
+`/usr/sbin/sh`, an unrelated ASUS debug tool — use `busybox sh`, and the
+`nvram set name=value` form.) Alternatively, populate `acc_list` with a valid
+entry like `admin>1` so `acc_num=1` is consistent.
+
+This was not a library or rc problem — it was the firmware's account NVRAM being
+inconsistent, which the stock httpd guards against and gnuton's does not.
