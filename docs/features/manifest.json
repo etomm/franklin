@@ -878,7 +878,6 @@
       "required": false,
       "depends_on": [
         "web-ui",
-        "networkmap",
         "boot-hook"
       ]
     }

@@ -10,7 +10,6 @@
 ## Dependencies
 
 - [web-ui](web-ui.md)
-- [networkmap](networkmap.md)
 - [boot-hook](boot-hook.md)
 
 ## Build / install (separable)
@@ -27,7 +26,7 @@ gnuton does not need this: its `httpd` and `/www` are simply part of the firmwar
 
 ## Requirements
 
-gnuton httpd + /www + differing libs (see web-ui); gnuton networkmap (shm size 198168) for the client list; `acc_num`/`acc_list` consistency.
+gnuton httpd + /www + differing libs (see web-ui); `acc_num` consistency; optional: the networkmap feature for a populated client list.
 
 ## Franklin approach
 
@@ -35,7 +34,7 @@ Workaround that exists only because stock is not gnuton: run gnuton httpd from U
 
 ## Tested / verified
 
-gnuton httpd + /www run on stock XT9 on :8088 with stock UI untouched; `acc_num=0` fix makes Advanced_System_Content load.
+gnuton httpd + /www run on stock XT9 on :8088 with stock UI untouched; `acc_num=0` fix makes Advanced_System_Content load. Bind mode is opt-in via state/web-ui-overlay.bindwww and untested on the device yet.
 
 ## Risks / notes
 

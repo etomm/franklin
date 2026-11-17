@@ -157,6 +157,36 @@ Format guidance: **ext4** (or the existing ext3) — permissions, symlinks,
 journal. Avoid exFAT/vfat: no modes, no symlinks, and every `S*`/hook then has
 to be invoked through `sh` explicitly.
 
+## Worked example: the gnuton UI
+
+`web-ui` is data only (gnuton `httpd`, its `/www`, the differing libs);
+`web-ui-overlay` is the mechanism that runs it.
+
+```
+wsl sh features/web-ui/build.sh     # or: build.sh inside Docker
+python tools/franklin-compose.py
+```
+
+`build.sh` needs both extracted rootfs trees (stock + gnuton) and stages:
+
+```
+build/web-ui/httpd      gnuton /usr/sbin/httpd
+build/web-ui/www/       gnuton /www (broken extraction symlinks skipped)
+build/web-ui/lib/       every .so that stock lacks or builds differently
+```
+
+At boot `web-ui-overlay/start.sh` runs that httpd on `:8088` with
+`cwd=franklin/webui/www` and `LD_LIBRARY_PATH=franklin/webui/lib`, after
+fixing `acc_num=0` (without it `Advanced_System_Content.asp` segfaults). Stock
+`:80` keeps serving the stock UI, so the overlay is always reversible.
+
+Bind mode (gnuton pages served by the *stock* httpd) is opt-in and reversible:
+
+```
+touch  franklin/state/web-ui-overlay.bindwww   # then run start.sh
+sh     franklin/features/web-ui-overlay/stop.sh   # unmounts /www, restores stock
+```
+
 ## Adding a feature
 
 1. `features/<id>/feature.yaml` (schema above), `payload/start.sh` (+ `stop.sh`),

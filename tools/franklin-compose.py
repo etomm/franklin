@@ -230,6 +230,8 @@ def copy_tree(src, dst, out_files):
         for name in sorted(os.listdir(src)):
             copy_tree(os.path.join(src, name), os.path.join(dst, name), out_files)
         return
+    if not os.path.isfile(src):
+        raise Fail("not a regular file (broken symlink?): %s" % src)
     os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
     shutil.copyfile(src, dst)
     os.utime(dst, (0, 0))

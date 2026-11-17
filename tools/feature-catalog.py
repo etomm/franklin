@@ -19,7 +19,8 @@ FEATURES = [
               "Traffic Monitor, Sysinfo, VPN pages, etc., served by gnuton's rebuilt httpd.",
          gnuton="A rebuilt `httpd` (larger than stock, different hash) plus the full `/www` "
                 "tree and its shared libraries (`libovpn`, `libshared`, `libdisk`, `libwebapi`, ...).",
-         deps="gnuton `httpd`, gnuton `/www`, all differing gnuton libs (308 files), `libovpn.so`, "
+         deps="gnuton `httpd`, gnuton `/www`, and every gnuton lib that differs from stock "
+              "(220 files, measured with features/web-ui/build.sh), `libovpn.so`, "
               "`libshared.so`, `libdisk.so`; `cwd=/www`; consistent `acc_num`/`acc_list`.",
          franklin="Bind-mount or run gnuton's httpd from USB on a separate port (:8088) serving "
                   "gnuton's `/www`, with all gnuton libs in `LD_LIBRARY_PATH`. Long-term: bind-mount "
@@ -916,13 +917,14 @@ FEATURES = [
               "the fallback.",
          gnuton="gnuton does not need this: its `httpd` and `/www` are simply part of the "
                 "firmware image.",
-         deps="gnuton httpd + /www + differing libs (see web-ui); gnuton networkmap (shm size "
-              "198168) for the client list; `acc_num`/`acc_list` consistency.",
+         deps="gnuton httpd + /www + differing libs (see web-ui); `acc_num` consistency; "
+              "optional: the networkmap feature for a populated client list.",
          franklin="Workaround that exists only because stock is not gnuton: run gnuton httpd from "
                   "USB on :8088 while testing, then bind-mount over stock for the 95%-gnuton "
                   "experience. Must be reversible at runtime (unmount restores stock).",
          tested="gnuton httpd + /www run on stock XT9 on :8088 with stock UI untouched; "
-                "`acc_num=0` fix makes Advanced_System_Content load.",
+                "`acc_num=0` fix makes Advanced_System_Content load. Bind mode is opt-in via "
+                "state/web-ui-overlay.bindwww and untested on the device yet.",
          risks="httpd/lib ABI coupling; a failed bind-mount can leave no UI — always keep the "
                "stock httpd running and the overlay reversible.",
          evidence="workaround: verified by running gnuton binaries on stock. Stock has no "
@@ -1023,7 +1025,7 @@ DEPS = {
     "jffs": [],
     # workarounds
     "kernel-modules": ["boot-hook"],
-    "web-ui-overlay": ["web-ui", "networkmap", "boot-hook"],
+    "web-ui-overlay": ["web-ui", "boot-hook"],
     "networkmap": ["web-ui", "boot-hook"],
     # gnuton features
     "web-ui": ["boot-hook"],

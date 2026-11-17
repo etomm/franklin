@@ -1,0 +1,22 @@
+id: web-ui
+title: Web UI (gnuton httpd + /www)
+kind: gnuton-feature
+required: false
+enabled_by_default: false
+requires: [boot-hook]
+provides:
+  - gnuton httpd
+  - gnuton /www tree
+  - gnuton-only shared libraries
+files:
+  - src: build/web-ui/httpd
+    dst: franklin/webui/httpd
+  - src: build/web-ui/www
+    dst: franklin/webui/www
+  - src: build/web-ui/lib
+    dst: franklin/webui/lib
+build: build.sh
+notes: >
+  Data-only feature: it ships gnuton's httpd, its /www tree and the 220 libs
+  that differ from stock. Nothing runs until web-ui-overlay starts it, so
+  removing the overlay leaves the stock UI untouched.

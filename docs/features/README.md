@@ -32,7 +32,7 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | Network Map / client list | Monitoring | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [networkmap](networkmap.md) |
 | Boot hook (asusware.arm) | System | all | `tested` | **yes** | — | [boot-hook](boot-hook.md) |
 | Kernel modules (build recipe) | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
-| Web UI overlay (bind-mount httpd + /www) — workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [networkmap](../features/networkmap.md), [boot-hook](../features/boot-hook.md) | [web-ui-overlay](web-ui-overlay.md) |
+| Web UI overlay (bind-mount httpd + /www) — workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [web-ui-overlay](web-ui-overlay.md) |
 
 ### Franklin features (not in gnuton at all) (1)
 
@@ -351,6 +351,5 @@ graph TD
   boot_hook --> download_manager
   samba_ftp_webdav --> time_machine
   web_ui --> web_ui_overlay
-  networkmap --> web_ui_overlay
   boot_hook --> web_ui_overlay
 ```

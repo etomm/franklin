@@ -19,6 +19,8 @@ features:
   - tee
   - ipset
   - entware
+  - web-ui
+  - web-ui-overlay
 
 # Optional per-device profile applied over the composition.
 profile: xt9
