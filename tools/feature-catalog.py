@@ -1156,14 +1156,6 @@ def topo_order():
     return order
 
 
-KIND_COLORS = {
-    "workaround": "#ffd9b3",
-    "franklin-feature": "#c8e6c9",
-    "gnuton-feature": "#d6e4ff",
-    "stock": "#eeeeee",
-    "proprietary": "#f3d1f4",
-}
-
 KIND_TITLES = [
     ("workaround", "Workarounds (Franklin mechanisms, only because stock is not gnuton)",
      "These are **not gnuton features**. They exist so gnuton userland can run on unmodified "
@@ -1212,7 +1204,7 @@ def main():
         path = os.path.join(OUT, f["id"] + ".md")
         links = "\n".join("- `%s`" % l for l in f["links"]) or "- (none yet)"
         build = BUILD.get(f["id"], default_build(f["id"]))
-        with open(path, "w", encoding="utf-8") as fh:
+        with open(path, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(TEMPLATE.format(
                 links=links,
                 required="yes" if f["id"] in REQUIRED else "no",
@@ -1241,12 +1233,12 @@ def main():
         ],
         "build_order": order,
     }
-    with open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8") as fh:
+    with open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(manifest, fh, indent=2)
 
     # index
     idx = os.path.join(OUT, "README.md")
-    with open(idx, "w", encoding="utf-8") as fh:
+    with open(idx, "w", encoding="utf-8", newline="\n") as fh:
         fh.write("# Franklin feature plans\n\n")
         fh.write("One plan per feature in [`docs/gnuton-feature-parity.md`]"
                  "(../gnuton-feature-parity.md). Each plan states what the feature does,\n")
@@ -1281,21 +1273,18 @@ def main():
             req = " [required]" if fid in REQUIRED else ""
             fh.write("%d. %s%s  (%s)\n" % (i, fid, req, kind_of(fid)))
         fh.write("```\n\n")
-        fh.write("## Dependency graph\n\n```mermaid\ngraph TD\n")
+        fh.write("## Dependency graph\n\n")
+        fh.write("Plain nodes/edges only: no `classDef`/`class` lines, which some Mermaid\n")
+        fh.write("renderers choke on. Node colours are not needed — the sections above\n")
+        fh.write("already group every plan by kind.\n\n")
+        fh.write("```mermaid\ngraph TD\n")
         # Mermaid cannot parse hyphens in node ids, so use underscore aliases.
         alias = {i: i.replace("-", "_") for i in ids}
         for f in FEATURES:
-            a = alias[f["id"]]
-            fh.write('  %s["%s"]\n' % (a, f["id"]))
+            fh.write('  %s["%s"]\n' % (alias[f["id"]], f["id"]))
         for f in FEATURES:
             for d in DEPS.get(f["id"], []):
                 fh.write("  %s --> %s\n" % (alias[d], alias[f["id"]]))
-        for kind in KINDS:
-            sub = [alias[i] for i in ids if kind_of(i) == kind]
-            if sub:
-                fh.write("  classDef %s fill:%s,stroke:#555,color:#111\n"
-                         % (kind.replace("-", "_"), KIND_COLORS[kind]))
-                fh.write("  class %s %s\n" % (",".join(sub), kind.replace("-", "_")))
         fh.write("```\n")
     print("wrote %d feature files + README + manifest.json" % len(rows))
 

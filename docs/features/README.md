@@ -200,6 +200,10 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 
 ## Dependency graph
 
+Plain nodes/edges only: no `classDef`/`class` lines, which some Mermaid
+renderers choke on. Node colours are not needed — the sections above
+already group every plan by kind.
+
 ```mermaid
 graph TD
   web_ui["web-ui"]
@@ -341,14 +345,4 @@ graph TD
   web_ui --> web_ui_overlay
   networkmap --> web_ui_overlay
   boot_hook --> web_ui_overlay
-  classDef gnuton_feature fill:#d6e4ff,stroke:#555,color:#111
-  class web_ui,vpn_director,vpn_killswitch,openvpn_client,openvpn_server,wireguard_client,wireguard_server,ipsec_vpn,dns_director,dns_over_tls,dnsmasq_custom,firewall_custom,cake_qos,adaptive_qos,traffic_monitor,qos_classification,sysinfo,wifi_insight,wireless_survey,network_tools,snmp,tor,nfs,aidisk_nfs,amtm,ipset,tee,cron,custom_scripts,nvram_tools,led_control,temperature_monitoring,ddns,ntp,reboot_schedule,vlan_iptv gnuton_feature
-  classDef workaround fill:#ffd9b3,stroke:#555,color:#111
-  class networkmap,boot_hook,kernel_modules,web_ui_overlay workaround
-  classDef franklin_feature fill:#c8e6c9,stroke:#555,color:#111
-  class entware,disk_monitoring,cifs_client,download_manager franklin_feature
-  classDef stock fill:#eeeeee,stroke:#555,color:#111
-  class nat_acceleration,samba_ftp_webdav,jffs,aimesh,guest_network,bridge_management,igmp_snooping,dhcp_leases,disk_spindown,ssh_access,syslog,ap_modes,firmware_upgrade,ipv6,mac_filter,parental_controls,port_forwarding,usb_modem,wireless_tuning,media_server,time_machine stock
-  classDef proprietary fill:#f3d1f4,stroke:#555,color:#111
-  class aiprotection,cloud_sync,traffic_analyzer proprietary
 ```
