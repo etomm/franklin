@@ -11,6 +11,8 @@ provides:
 payload: payload
 build: build.sh
 notes: >
-  Data-only feature. build.sh stages gnuton's httpd, /www and the libraries
-  that differ from stock directly into payload/, so the folder layout is the
-  layout on the stick: payload/httpd, payload/www/, payload/lib/.
+  Data-only feature. build.sh stages gnuton's httpd, the /www *delta* (only
+  the 427 files that are new or differ from stock) plus a WHITEOUTS list, and
+  the libs that differ from stock. At boot the delta is the top layer of an
+  overlayfs stack whose lower layer is the stock /www, so unchanged ASUS pages
+  remain as fallback and dropped pages are hidden with whiteouts.

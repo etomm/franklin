@@ -25,7 +25,7 @@ A rebuilt `httpd` (larger than stock, different hash) plus the full `/www` tree 
 
 ## Requirements
 
-gnuton `httpd`, gnuton `/www`, and every gnuton lib that differs from stock (220 files, measured with features/web-ui/build.sh), `libovpn.so`, `libshared.so`, `libdisk.so`; `cwd=/www`; consistent `acc_num`/`acc_list`.
+gnuton `httpd`, the `/www` delta (427 of 956 pages/JS differ or are new), the 220 gnuton libs that differ from stock, `libovpn.so`, `libshared.so`, `libdisk.so`; `cwd=/www`; consistent `acc_num`/`acc_list`.
 
 ## Franklin approach
 

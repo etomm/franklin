@@ -27,11 +27,11 @@ gnuton does not need this: its `httpd` and `/www` are simply part of the firmwar
 
 ## Requirements
 
-gnuton httpd + /www + differing libs (see web-ui); `acc_num` consistency; optional: the networkmap feature for a populated client list.
+the `web-ui` delta, `franklin-mount` (busybox mount refuses rootfs targets) and `overlayfs` (stock has no CONFIG_OVERLAY_FS); `acc_num` consistency.
 
 ## Franklin approach
 
-Workaround that exists only because stock is not gnuton: run gnuton httpd from USB on :8088 while testing, then bind-mount over stock for the 95%-gnuton experience. Must be reversible at runtime (unmount restores stock).
+Workaround that exists only because stock is not gnuton: overlay the gnuton `/www` delta over the stock tree with overlayfs, bind a wrapper over `/usr/sbin/httpd`, restart the stock httpd, and verify :80 before keeping the swap. A :8088 instance of the merged tree remains available for testing, and everything is a mount, so removal restores stock exactly.
 
 ## Tested / verified
 

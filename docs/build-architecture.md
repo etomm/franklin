@@ -243,19 +243,33 @@ straight into the feature's own payload folder:
 
 ```
 features/web-ui/payload/opt/bin/gnuton-httpd      gnuton /usr/sbin/httpd
-features/web-ui/payload/opt/share/gnuton-www/     gnuton /www (broken links skipped)
-features/web-ui/payload/opt/lib/gnuton/           every .so stock lacks or differs
+features/web-ui/payload/opt/share/gnuton-www/     /www DELTA (427 of 956 files) + WHITEOUTS
+features/web-ui/payload/opt/lib/gnuton/           every .so stock lacks or differs (220)
 ```
 
+The delta is computed at build time: a gnuton page is shipped only if it is new
+or its content differs from stock. Unchanged ASUS pages stay in the stock tree
+and are reached through the overlay's lower layer; stock pages gnuton dropped
+are listed in `WHITEOUTS` and turned into overlayfs whiteouts at boot
+(verified on the XT9: `Advanced_Feedback.asp` and
+`Main_Security_Change_Notification.asp` are hidden, gnuton-only pages appear,
+stock-only-unchanged pages still resolve).
+
 Namespaced on purpose: `gnuton-httpd` will not shadow `httpd`, and
-`opt/lib/gnuton` keeps gnuton's 219 libraries away from Entware's `opt/lib`.
-
+`opt/lib/gnuton` keeps gnuton's libraries away from Entware's `opt/lib`.
 Those generated files are gitignored; the folder is the whole contract.
+Payload after switching to the delta: 676 files instead of 1209.
 
-At boot `web-ui-overlay/start.sh` runs that httpd on `:8088` with
-`cwd=/opt/share/gnuton-www` and `LD_LIBRARY_PATH=/opt/lib/gnuton`, after
-fixing `acc_num=0` (without it `Advanced_System_Content.asp` segfaults). Stock
-`:80` keeps serving the stock UI, so this mode is always safe.
+At boot `web-ui-overlay/start.sh` mounts that delta once:
+
+```
+overlay(lowerdir=<delta>:/www, upperdir=<usb>/state/overlay/upper, workdir=...)
+```
+
+and both modes serve the merged tree: `:8088` with `cwd=<mount>` (stock `:80`
+untouched), or `:80` in replace mode. `LD_LIBRARY_PATH=/opt/lib/gnuton` and
+`acc_num=0` are applied either way (without `acc_num=0`,
+`Advanced_System_Content.asp` segfaults).
 
 ### Replace mode: making `:80` *be* gnuton
 
@@ -264,12 +278,12 @@ touch franklin/state/web-ui-overlay.replace
 sh    franklin/features/web-ui-overlay/start.sh
 ```
 
-Stock runs httpd from a **read-only squashfs**, so `cp` is not an option; the
-swap is done with bind mounts over the files:
+Stock runs httpd from a **read-only squashfs**, and ASUS's busybox `mount`
+refuses targets on it, so the swap uses `franklin-mount` (mount(2) directly):
 
 ```
+/www             <- the merged overlay mount
 /usr/sbin/httpd  <- franklin/state/httpd-wrapper.sh   (sets LD_LIBRARY_PATH, execs gnuton-httpd)
-/www             <- /opt/share/gnuton-www
 /sbin/rc restart_httpd
 ```
 

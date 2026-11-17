@@ -19,8 +19,8 @@ FEATURES = [
               "Traffic Monitor, Sysinfo, VPN pages, etc., served by gnuton's rebuilt httpd.",
          gnuton="A rebuilt `httpd` (larger than stock, different hash) plus the full `/www` "
                 "tree and its shared libraries (`libovpn`, `libshared`, `libdisk`, `libwebapi`, ...).",
-         deps="gnuton `httpd`, gnuton `/www`, and every gnuton lib that differs from stock "
-              "(220 files, measured with features/web-ui/build.sh), `libovpn.so`, "
+         deps="gnuton `httpd`, the `/www` delta (427 of 956 pages/JS differ or are new), "
+              "the 220 gnuton libs that differ from stock, `libovpn.so`, "
               "`libshared.so`, `libdisk.so`; `cwd=/www`; consistent `acc_num`/`acc_list`.",
          franklin="Bind-mount or run gnuton's httpd from USB on a separate port (:8088) serving "
                   "gnuton's `/www`, with all gnuton libs in `LD_LIBRARY_PATH`. Long-term: bind-mount "
@@ -954,11 +954,13 @@ FEATURES = [
               "the fallback.",
          gnuton="gnuton does not need this: its `httpd` and `/www` are simply part of the "
                 "firmware image.",
-         deps="gnuton httpd + /www + differing libs (see web-ui); `acc_num` consistency; "
-              "optional: the networkmap feature for a populated client list.",
-         franklin="Workaround that exists only because stock is not gnuton: run gnuton httpd from "
-                  "USB on :8088 while testing, then bind-mount over stock for the 95%-gnuton "
-                  "experience. Must be reversible at runtime (unmount restores stock).",
+         deps="the `web-ui` delta, `franklin-mount` (busybox mount refuses rootfs targets) and "
+              "`overlayfs` (stock has no CONFIG_OVERLAY_FS); `acc_num` consistency.",
+         franklin="Workaround that exists only because stock is not gnuton: overlay the gnuton "
+                  "`/www` delta over the stock tree with overlayfs, bind a wrapper over "
+                  "`/usr/sbin/httpd`, restart the stock httpd, and verify :80 before keeping the "
+                  "swap. A :8088 instance of the merged tree remains available for testing, and "
+                  "everything is a mount, so removal restores stock exactly.",
          tested="gnuton httpd + /www run on stock XT9 on :8088 with stock UI untouched; "
                 "`acc_num=0` fix makes Advanced_System_Content load. Bind mode is opt-in via "
                 "state/web-ui-overlay.bindwww and untested on the device yet.",

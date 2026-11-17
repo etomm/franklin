@@ -1,14 +1,14 @@
 #!/bin/sh
-# Stage gnuton's web UI into this feature's payload/, using the shared /opt
-# prefix (merged with the other features) but namespaced where collisions with
-# Entware are likely:
+# Stage the gnuton web UI *delta* into this feature's payload, using the shared
+# /opt prefix:
 #
-#   payload/opt/bin/gnuton-httpd       gnuton /usr/sbin/httpd
-#   payload/opt/share/gnuton-www/      gnuton /www tree
-#   payload/opt/lib/gnuton/            every lib missing or different in stock
+#   payload/opt/share/gnuton-www/          only files that are new or differ
+#   payload/opt/share/gnuton-www/WHITEOUTS stock pages gnuton dropped
+#   payload/opt/bin/gnuton-httpd           gnuton /usr/sbin/httpd
+#   payload/opt/lib/gnuton/                libs missing or different in stock
 #
-# Which becomes /opt/bin/gnuton-httpd, /opt/share/gnuton-www, /opt/lib/gnuton
-# on the device, because /tmp/opt points at franklin/opt.
+# At boot the UI is mounted as overlay(lowerdir=<delta>:/www), so stock pages
+# stay reachable as the fallback layer and only the delta is shipped.
 #
 # Inputs (both extracted per docs/firmware-comparison.md):
 #   STOCK_ROOTFS   firmware/xt8/rootfs
@@ -31,32 +31,50 @@ OUT="${OUT:-$ROOT/features/web-ui/payload}"
 }
 
 rm -rf "$OUT"
-mkdir -p "$OUT/opt/bin" "$OUT/opt/lib/gnuton" "$OUT/opt/share"
+DELTA="$OUT/opt/share/gnuton-www"
+mkdir -p "$OUT/opt/bin" "$OUT/opt/lib/gnuton" "$DELTA"
 
-# 1. httpd (namespaced: stock has its own /opt/bin/httpd once Entware exists)
+# 1. httpd (namespaced: does not shadow a stock or Entware `httpd`)
 cp "$GNUTON_ROOTFS/usr/sbin/httpd" "$OUT/opt/bin/gnuton-httpd"
 chmod 755 "$OUT/opt/bin/gnuton-httpd"
 
-# 2. /www tree
-# The extracted rootfs can contain dangling symlinks (extraction artefacts), so
-# copy regular files and resolve symlinks, skipping broken ones.
-WWW="$OUT/opt/share/gnuton-www"
-mkdir -p "$WWW"
+# 2. /www delta: new files + files whose content differs from stock.
+copy=0
+skip=0
 (
     cd "$GNUTON_ROOTFS/www" || exit 1
-    find . -type d -exec mkdir -p "$WWW/{}" \;
-    find . \( -type f -o -type l \) -print | while IFS= read -r f; do
-        if [ -f "$f" ]; then
-            cp "$f" "$WWW/$f"
-        else
-            echo "  skipping broken link: www/${f#./}" >&2
+    find . -type f -print | LC_ALL=C sort | while IFS= read -r f; do
+        rel=${f#./}
+        dst="$DELTA/$rel"
+        stock="$STOCK_ROOTFS/www/$rel"
+        if [ -f "$stock" ] && cmp -s "$f" "$stock"; then
+            skip=$((skip + 1))
+            continue
         fi
+        mkdir -p "$(dirname "$dst")"
+        cp "$f" "$dst"
+        copy=$((copy + 1))
     done
 )
+# The counters above run in a subshell, so recount for the summary.
+delta_files=$(find "$DELTA" -type f | wc -l)
 
-# 3. libs that stock does not have (or has a different build of)
+# 3. /www removals: stock pages gnuton does not ship. They become overlayfs
+#    whiteouts, so the merged view matches gnuton rather than showing stale
+#    ASUS pages next to gnuton ones.
+(
+    cd "$STOCK_ROOTFS/www" || exit 1
+    find . -maxdepth 1 -name '*.asp' -type f -print | LC_ALL=C sort | while IFS= read -r f; do
+        rel=${f#./}
+        [ -e "$GNUTON_ROOTFS/www/$rel" ] && continue
+        echo "$rel"
+    done
+) >"$DELTA/WHITEOUTS"
+whiteouts=$(wc -l <"$DELTA/WHITEOUTS")
+
+# 4. libs that stock does not have (or has a different build of)
 LIB="$OUT/opt/lib/gnuton"
-count=0
+libs=0
 for lib in $(cd "$GNUTON_ROOTFS" && find usr/lib lib -name '*.so*' -type f | sort); do
     src="$GNUTON_ROOTFS/$lib"
     rel=${lib#usr/}
@@ -67,10 +85,12 @@ for lib in $(cd "$GNUTON_ROOTFS" && find usr/lib lib -name '*.so*' -type f | sor
     fi
     mkdir -p "$LIB/$(dirname "$rel")"
     cp "$src" "$LIB/$rel"
-    count=$((count + 1))
+    libs=$((libs + 1))
 done
 
-# 4. reproducible metadata
+# 5. reproducible metadata
 find "$OUT" -exec touch -d '@0' {} + 2>/dev/null || true
-printf 'gnuton httpd + www + %d differing lib(s)\n' "$count" > "$OUT/opt/share/gnuton-www/SOURCE"
-echo "staged $OUT ($count libs)"
+printf 'gnuton httpd + www delta + %d lib(s)\n' "$libs" > "$DELTA/SOURCE"
+echo "staged $OUT"
+echo "  www delta: $delta_files file(s) (stock fallback: the rest), $whiteouts whiteout(s)"
+echo "  libs: $libs"
