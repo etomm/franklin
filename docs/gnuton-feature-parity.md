@@ -173,26 +173,39 @@ is only fully ported when both Backend and UI are ✅.
 gnuton (and ASUSWRT-Merlin) carry firmware-level fixes and optimizations that
 Franklin cannot replicate, because Franklin is a userland layer and does not
 patch the kernel, drivers, `httpd`, `rc`, or ASUSWRT's compiled backend.
-These are marked ⛔ in the "Unportable (gnuton fixes)" column. Examples:
+These are marked ⛔ in the "Unportable (gnuton fixes)" column. Each item
+links to the relevant gnuton commits (search):
 
 - **httpd optimizations** — gnuton reworked `httpd` apply paths (e.g.
   replacing switch blocks with string formatting) for speed; Franklin cannot
   patch `httpd`.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=httpd+optimization&type=commits)
 - **Adaptive QoS / QoS engine** — gnuton's QoS improvements live in the
   firmware's QoS daemon and kernel qdisc integration.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=adaptive+qos&type=commits)
 - **VPN stack (OpenVPN, WireGuard, IPSec)** — gnuton ships VPN fixes in
   the firmware's VPN daemons and kernel modules.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=vpn+killswitch&type=commits)
 - **AiMesh / mesh stability** — mesh coordination is handled by the firmware
   and radio drivers.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=aimesh&type=commits)
 - **USB apps (Samba, FTP, WebDAV, DLNA, Time Machine)** — gnuton updates
   these compiled daemons and their firmware integration.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=webdav&type=commits)
 - **NAT acceleration (CTF/FA)** — hardware NAT offload is firmware/driver level.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=nat+acceleration&type=commits)
 - **Wireless tuning** — band steering, smart connect, and WPS live in the
   radio firmware/drivers.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=wireless+tuning&type=commits)
 - **Kernel and network stack** — gnuton's kernel fixes, module updates, and
   netfilter optimizations are not portable to a stock kernel.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=kernel+fix&type=commits)
 - **Memory and boot optimizations** — gnuton tunes startup and memory usage
   in `rc`/init.
+  [search commits](https://github.com/gnuton/asuswrt-merlin.ng/search?q=boot+optimization&type=commits)
+
+Full gnuton changelog (all releases):
+[Changelog-NG.txt](https://github.com/gnuton/asuswrt-merlin.ng/blob/master/Changelog-NG.txt)
 
 Franklin's approach is to provide equivalent functionality via Entware and
 userland scripts where possible, and to document the gap honestly.

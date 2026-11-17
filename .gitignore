@@ -1,6 +1,6 @@
-# Gitignored / generated
+# Firmware images (large, not committed)
+firmware/
 vendor/
-vendor/gnuton/
 release/
 build/
 dist/
