@@ -61,31 +61,62 @@ CONFIG_LOCALVERSION=""
    `insmod /tmp/sch_cake.ko`; check `dmesg`; `tc qdisc add dev br0 root cake`.
    `rmmod` to roll back. Only persist via a boot hook after verification.
 
-## Experimental result (vanilla 4.19.183 build)
+## Experimental result
 
-Built from **vanilla** `linux-4.19.183` + the XT9's `/proc/config.gz`, cross-compiled
-with `arm-linux-gnueabi-gcc`:
+### Vanilla 4.19.183 (failed at runtime)
+Built from kernel.org `linux-4.19.183` + the XT9 config:
 
-| Module | Build | Loads (`insmod`) | Usable |
-|---|---|---|---|
-| `sch_cake.ko` | ✅ | ✅ (lsmod shows it) | ❌ crashed kernel on `tc qdisc add ... cake` → router rebooted |
-| `xt_TEE.ko` | ✅ | not reached | — |
-| `ip_set.ko` / `ip_set_hash_ip.ko` | ✅ | not reached | — |
+| Module | Loads (`insmod`) | Usable |
+|---|---|---|
+| `sch_cake.ko` | ✅ | ❌ crashed kernel on `tc qdisc add … cake` |
 
-Vermagic matched exactly: `4.19.183 SMP preempt mod_unload ARMv7 p2v8`.
+Vanilla matches vermagic but not the ASUS/Broadcom patches (struct layouts), so
+it loads and then crashes at runtime. Not usable.
 
-**Conclusion:** a vanilla-built module **loads** (vermagic + no MODVERSIONS/SIG
-makes that possible) but is **not runtime-safe** — using Cake caused a kernel
-crash/reboot, because the ASUS/Broadcom kernel patches change struct layouts /
-APIs relative to vanilla.
+### ASUS GPL 4.19.183 (works)
+Built from the **ASUS GPL tree** (`GPL_ZENWIFI_XT9_300438821963.zip` →
+`asuswrt/release/src-rt-5.04axhnd.675x/kernel/linux-4.19/`, which is exactly
+`4.19.183`), with the device `/proc/config.gz`, the `bcmkernel` include overlay,
+and `MODEL=XT9`.
 
-Therefore, to get modules that actually work you must build against the **exact
-ASUS GPL 4.19.183 tree** for the XT9 (not vanilla), with the device config and
-the Buildroot GCC 9.2.0 toolchain. Vanilla is fine for proving loadability, not
-for production use.
+| Module | Loads | Functionally verified |
+|---|---|---|
+| `sch_cake.ko` | ✅ | ✅ `tc qdisc add dev br0 root cake` + `show` + `del` (no crash) |
+| `xt_TEE.ko` | ✅ (after `nf_dup_ipv4/6`) | ✅ `iptables -t mangle -A … -j TEE --gateway …` add/list/del |
+| `nf_dup_ipv4.ko` / `nf_dup_ipv6.ko` | ✅ | needed by TEE (stock lacks `CONFIG_NF_DUP_IPV4/6`) |
+| `ip_set.ko` / `ip_set_hash_ip.ko` | ✅ | ✅ with gnuton's userspace `ipset`: create/add/list/destroy |
 
-The test rebooted the router (recovered cleanly; stock UI back up). Modules were
-run from `/tmp` and not persisted, so nothing survived the reboot.
+### Build recipe that worked
+1. Extract the ASUS GPL (kernel + `bcmkernel` + `bcmdrivers`):
+   ```
+   tar xzf xt9-gpl.tgz -C /root/xt9-gpl \
+     asuswrt/release/src-rt-5.04axhnd.675x/kernel/linux-4.19/ \
+     asuswrt/release/src-rt-5.04axhnd.675x/kernel/bcmkernel/ \
+     asuswrt/release/src-rt-5.04axhnd.675x/bcmdrivers/
+   ```
+2. Device config: `zcat /proc/config.gz > .config` (convert from UTF-16 if copied
+   via PowerShell).
+3. Enable wanted modules with `scripts/config --module …`.
+4. Patch the two GPL gaps that block `make`:
+   - comment `source "net/netfilter/fltr/Kconfig"` in `net/netfilter/Kconfig`
+     (symlink target `router/fltr` is absent),
+   - comment `source "../../bcmdrivers/Kconfig.autogen"` in `Kconfig.bcm`.
+5. Build with the `bcmkernel` include path and `MODEL` set:
+   ```
+   make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- MODEL=XT9 WERROR=0 \
+     KCFLAGS="-I.../kernel/bcmkernel/include -I.../kernel/bcmkernel/include/uapi" \
+     net/sched/sch_cake.ko ...
+   ```
+   (`MODEL=XT9` avoids the bare `-D` from `KBUILD_CFLAGS += -D$(MODEL)`.)
+6. Verify vermagic `4.19.183 SMP preempt mod_unload ARMv7 p2v8`; `insmod`; test.
+
+### Caveats
+- The GPL here is **388_21963**, the device runs **388_24854**; both 4.19.183, but
+  for production use the GPL matching the installed firmware should be used.
+- Modules built from this GPL are not automatically persistent — load via a boot
+  hook after verification, and keep `rmmod`/reboot as rollback.
+- `ipset` needs its **userspace tool** (taken from gnuton's `/usr/sbin/ipset`).
+- `xt_TEE` needs `nf_dup_ipv4/6` modules (stock kernel has them disabled).
 
 ## Risks
 - ASUS/Broadcom kernel patches could change struct layouts used by a module
