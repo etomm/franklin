@@ -1,7 +1,8 @@
 # gnuton / Merlin feature parity
 
 Franklin cannot become gnuton/Merlin firmware, but it can port **userland**
-features. This document tracks parity.
+features. This document tracks parity. A sortable (click-to-sort) version of
+the table is available in [`gnuton-feature-parity.html`](gnuton-feature-parity.html).
 
 Version legend (reference builds used in the table below):
 - **gnuton 3006.102.9** — gnuton master, pinned in `GNUTON_REF` (commit
