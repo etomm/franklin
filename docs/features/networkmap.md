@@ -42,7 +42,7 @@ Stock allocates a smaller struct, so mixing binaries breaks the list; the old sh
 
 ## Why this kind (evidence)
 
-workaround: stock's networkmap cannot produce the gnuton UI's layout, and gnuton's rc (which would) is not available on stock.
+workaround: stock's networkmap allocates the smaller struct (197916 vs 198168), so the gnuton UI cannot read its client table; replacing the daemon binary is the only fix that keeps the UI's layout.
 
 ## Links / sources
 

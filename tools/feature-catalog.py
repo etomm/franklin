@@ -572,8 +572,9 @@ FEATURES = [
                 "`/jffs/nmp_cl_json.js` rewritten with 14 KB of clients.",
          risks="Stock allocates a smaller struct, so mixing binaries breaks the list; the old "
                "shm segment must be removed or the daemon reuses the wrong size.",
-         evidence="workaround: stock's networkmap cannot produce the gnuton UI's layout, and "
-                  "gnuton's rc (which would) is not available on stock.",
+         evidence="workaround: stock's networkmap allocates the smaller struct (197916 vs "
+                  "198168), so the gnuton UI cannot read its client table; replacing the "
+                  "daemon binary is the only fix that keeps the UI's layout.",
          links=["docs/firmware-comparison.md"]),
 
     dict(id="boot-hook", title="Boot hook (asusware.arm)", cat="System",
