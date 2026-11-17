@@ -3,6 +3,7 @@
 **Category:** Storage  
 **Modes:** all  
 **Status:** `stock`  
+**Kind:** stock  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

@@ -3,6 +3,7 @@
 **Category:** DNS  
 **Modes:** Router (DHCP/DNS server)  
 **Status:** `planned`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

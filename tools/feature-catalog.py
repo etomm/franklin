@@ -328,12 +328,19 @@ FEATURES = [
     dict(id="entware", title="Entware package ecosystem", cat="Packages",
          modes="all",
          status="planned",
-         what="opkg package manager with thousands of binaries.",
-         gnuton="Not bundled; users install Entware on USB.",
+         what="opkg package manager with thousands of prebuilt binaries. This is a "
+              "separate third-party project (Entware), NOT part of gnuton/Merlin and "
+              "NOT distributed with it.",
+         gnuton="gnuton does not bundle Entware. Merlin's docs only point users to it as an "
+                "optional add-on source; it is installed separately on a USB stick.",
          deps="USB (not JFFS), `armv7sf-k3.2` repo.",
-         franklin="Install Entware on USB; unset LD_LIBRARY_PATH for its binaries.",
+         franklin="Optional provider/enabler: use Entware for generic tools (cron, "
+                  "smartmontools, stubby, aria2, snmpd, nfs, ...). It does NOT replace "
+                  "gnuton-specific binaries (httpd, libwebapi/libovpn, ...) nor kernel "
+                  "modules (those must be built from the ASUS GPL).",
          tested="Not yet installed.",
-         risks="glibc conflicts; use unset LD_LIBRARY_PATH.",
+         risks="Its binaries are built for its own toolchain/libc; use unset LD_LIBRARY_PATH. "
+               "Cannot provide gnuton-patched binaries or kernel modules.",
          links=[]),
 
     dict(id="ipset", title="ipset", cat="Network",
@@ -526,6 +533,19 @@ FEATURES = [
 
 REQUIRED = {"boot-hook", "jffs"}
 
+# kind: gnuton-feature (default) | provider | stock | out-of-scope
+KIND = {
+    "entware": "provider",
+    "samba-ftp-webdav": "stock",
+    "aimesh": "stock",
+    "guest-network": "stock",
+    "jffs": "stock",
+    "nat-acceleration": "out-of-scope",
+}
+UPSTREAM = {
+    "entware": "third-party (Entware project) - NOT gnuton",
+}
+
 # id -> list of feature ids it depends on (runtime and/or build)
 DEPS = {
     "boot-hook": ["jffs"],
@@ -602,8 +622,9 @@ TEMPLATE = """# {title}
 **Category:** {cat}  
 **Modes:** {modes}  
 **Status:** `{status}`  
+**Kind:** {kind}  
 **Required:** {required}  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** {upstream}
 
 ## Dependencies
 
@@ -683,6 +704,8 @@ def main():
             fh.write(TEMPLATE.format(
                 links=links,
                 required="yes" if f["id"] in REQUIRED else "no",
+                kind=KIND.get(f["id"], "gnuton-feature"),
+                upstream=UPSTREAM.get(f["id"], "gnuton / Asuswrt-Merlin"),
                 dependencies=dep_links(f["id"]),
                 build=build,
                 **{k: f[k] for k in
@@ -721,13 +744,14 @@ def main():
         fh.write("Status: `tested` = verified on the XT9; `stock` = handled by stock\n")
         fh.write("firmware; `modular`/`planned` = buildable/planned; `research` =\n")
         fh.write("needs investigation; `out-of-scope` = firmware-level only.\n\n")
-        fh.write("| Feature | Category | Modes | Status | Required | Requires | Plan |\n")
-        fh.write("|---|---|---|---|---|---|---|\n")
+        fh.write("| Feature | Kind | Category | Modes | Status | Required | Requires | Plan |\n")
+        fh.write("|---|---|---|---|---|---|---|---|\n")
         for f in rows:
             req = "**yes**" if f["id"] in REQUIRED else "no"
+            kind = KIND.get(f["id"], "gnuton-feature")
             deps = ", ".join("[%s](../features/%s.md)" % (d, d) for d in DEPS.get(f["id"], [])) or "—"
-            fh.write("| %s | %s | %s | `%s` | %s | %s | [%s](%s.md) |\n" % (
-                f["title"], f["cat"], f["modes"], f["status"], req, deps, f["id"], f["id"]))
+            fh.write("| %s | %s | %s | %s | `%s` | %s | %s | [%s](%s.md) |\n" % (
+                f["title"], kind, f["cat"], f["modes"], f["status"], req, deps, f["id"], f["id"]))
         fh.write("\n## Build order (dependency-resolved)\n\n")
         for i, fid in enumerate(order, 1):
             req = " (required)" if fid in REQUIRED else ""

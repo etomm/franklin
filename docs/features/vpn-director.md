@@ -3,6 +3,7 @@
 **Category:** VPN  
 **Modes:** Router (needs WAN + routing)  
 **Status:** `planned`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

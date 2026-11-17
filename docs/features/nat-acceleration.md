@@ -3,6 +3,7 @@
 **Category:** Network  
 **Modes:** Router  
 **Status:** `out-of-scope`  
+**Kind:** out-of-scope  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

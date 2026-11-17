@@ -3,6 +3,7 @@
 **Category:** Services  
 **Modes:** Router  
 **Status:** `planned`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

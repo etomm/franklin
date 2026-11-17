@@ -3,6 +3,7 @@
 **Category:** Monitoring  
 **Modes:** Router (WAN stats); AP limited  
 **Status:** `stock+`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

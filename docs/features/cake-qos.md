@@ -3,6 +3,7 @@
 **Category:** QoS  
 **Modes:** Router (WAN shaping)  
 **Status:** `tested`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

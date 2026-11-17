@@ -3,6 +3,7 @@
 **Category:** QoS  
 **Modes:** Router  
 **Status:** `research`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

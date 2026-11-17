@@ -3,6 +3,7 @@
 **Category:** DNS  
 **Modes:** Router / AP  
 **Status:** `stock+`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

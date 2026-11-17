@@ -3,6 +3,7 @@
 **Category:** Wireless  
 **Modes:** all (mesh/AP)  
 **Status:** `stock+`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

@@ -3,6 +3,7 @@
 **Category:** System  
 **Modes:** all  
 **Status:** `tested`  
+**Kind:** gnuton-feature  
 **Required:** yes  
 **Upstream:** gnuton / Asuswrt-Merlin
 

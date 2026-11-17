@@ -14,53 +14,53 @@ Status: `tested` = verified on the XT9; `stock` = handled by stock
 firmware; `modular`/`planned` = buildable/planned; `research` =
 needs investigation; `out-of-scope` = firmware-level only.
 
-| Feature | Category | Modes | Status | Required | Requires | Plan |
-|---|---|---|---|---|---|---|
-| Web UI (gnuton httpd + /www) | UI | all (AP / Router / Mesh) | `tested` | no | [boot-hook](../features/boot-hook.md) | [web-ui](web-ui.md) |
-| VPN Director | VPN | Router (needs WAN + routing) | `planned` | no | [firewall-custom](../features/firewall-custom.md), [boot-hook](../features/boot-hook.md) | [vpn-director](vpn-director.md) |
-| VPN Killswitch | VPN | Router (WAN + VPN client) | `planned` | no | [firewall-custom](../features/firewall-custom.md), [boot-hook](../features/boot-hook.md) | [vpn-killswitch](vpn-killswitch.md) |
-| OpenVPN Client | VPN | Router (WAN + VPN client) | `stock+` | no | [boot-hook](../features/boot-hook.md) | [openvpn-client](openvpn-client.md) |
-| OpenVPN Server | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [openvpn-server](openvpn-server.md) |
-| WireGuard Client | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md) | [wireguard-client](wireguard-client.md) |
-| WireGuard Server | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [wireguard-server](wireguard-server.md) |
-| IPSec VPN | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [ipsec-vpn](ipsec-vpn.md) |
-| DNS Director (DNSFilter) | DNS | Router (DHCP/DNS server) | `planned` | no | [firewall-custom](../features/firewall-custom.md), [dnsmasq-custom](../features/dnsmasq-custom.md), [boot-hook](../features/boot-hook.md) | [dns-director](dns-director.md) |
-| DNS-over-TLS (DoT) | DNS | Router / AP | `planned` | no | [dnsmasq-custom](../features/dnsmasq-custom.md), [boot-hook](../features/boot-hook.md) | [dns-over-tls](dns-over-tls.md) |
-| Custom dnsmasq config | DNS | Router / AP | `stock+` | no | [boot-hook](../features/boot-hook.md) | [dnsmasq-custom](dnsmasq-custom.md) |
-| Custom firewall / NAT rules | Network | Router | `planned` | no | [boot-hook](../features/boot-hook.md) | [firewall-custom](firewall-custom.md) |
-| NAT acceleration (CTF/FA) | Network | Router | `out-of-scope` | no | — | [nat-acceleration](nat-acceleration.md) |
-| Cake QoS | QoS | Router (WAN shaping) | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [cake-qos](cake-qos.md) |
-| Adaptive QoS / DPI | QoS | Router | `research` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md), [ipset](../features/ipset.md) | [adaptive-qos](adaptive-qos.md) |
-| Traffic Monitor | Monitoring | Router (WAN stats); AP limited | `stock+` | no | [web-ui](../features/web-ui.md) | [traffic-monitor](traffic-monitor.md) |
-| QoS Classification / Stats | QoS | Router | `research` | no | [adaptive-qos](../features/adaptive-qos.md), [web-ui](../features/web-ui.md) | [qos-classification](qos-classification.md) |
-| Tools / Sysinfo | Monitoring | all | `stock+` | no | [web-ui](../features/web-ui.md) | [sysinfo](sysinfo.md) |
-| WiFi Insight | Wireless | all (mesh/AP) | `stock+` | no | [web-ui](../features/web-ui.md) | [wifi-insight](wifi-insight.md) |
-| Wireless Survey | Wireless | all | `stock+` | no | [web-ui](../features/web-ui.md) | [wireless-survey](wireless-survey.md) |
-| Network Tools | Diagnostics | all | `stock+` | no | [web-ui](../features/web-ui.md) | [network-tools](network-tools.md) |
-| SNMP | Services | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [snmp](snmp.md) |
-| Tor | Services | Router | `planned` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [tor](tor.md) |
-| NFS server | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [nfs](nfs.md) |
-| Samba / FTP / WebDAV (stock USB apps) | Storage | all | `stock` | no | — | [samba-ftp-webdav](samba-ftp-webdav.md) |
-| AiDisk NFS | Storage | all | `planned` | no | [nfs](../features/nfs.md), [web-ui](../features/web-ui.md) | [aidisk-nfs](aidisk-nfs.md) |
-| amtm (terminal menu) | Tools | all | `planned` | no | [entware](../features/entware.md) | [amtm](amtm.md) |
-| Entware package ecosystem | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
-| ipset | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [ipset](ipset.md) |
-| TEE (packet duplication) | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [tee](tee.md) |
-| cron / scheduled tasks | Automation | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [cron](cron.md) |
-| Custom scripts | Automation | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [custom-scripts](custom-scripts.md) |
-| JFFS partition | Storage | all | `stock` | **yes** | — | [jffs](jffs.md) |
-| NVRAM tools / config export | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [nvram-tools](nvram-tools.md) |
-| LED control | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [led-control](led-control.md) |
-| Disk monitoring (smartmontools) | Storage | all | `planned` | no | [entware](../features/entware.md) | [disk-monitoring](disk-monitoring.md) |
-| Temperature monitoring | Monitoring | all | `stock+` | no | [web-ui](../features/web-ui.md) | [temperature-monitoring](temperature-monitoring.md) |
-| DDNS (custom providers) | Network | Router | `planned` | no | [boot-hook](../features/boot-hook.md) | [ddns](ddns.md) |
-| NTP client/server | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [ntp](ntp.md) |
-| Reboot schedule | Automation | all | `planned` | no | [cron](../features/cron.md) | [reboot-schedule](reboot-schedule.md) |
-| AiMesh | Wireless | Mesh (AiMesh router/node) | `stock` | no | — | [aimesh](aimesh.md) |
-| Guest network | Wireless | Router / AP / Mesh | `stock` | no | — | [guest-network](guest-network.md) |
-| Network Map / client list | Monitoring | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [networkmap](networkmap.md) |
-| Boot hook (asusware.arm) | System | all | `tested` | **yes** | [jffs](../features/jffs.md) | [boot-hook](boot-hook.md) |
-| Kernel modules (build recipe) | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
+| Feature | Kind | Category | Modes | Status | Required | Requires | Plan |
+|---|---|---|---|---|---|---|---|
+| Web UI (gnuton httpd + /www) | gnuton-feature | UI | all (AP / Router / Mesh) | `tested` | no | [boot-hook](../features/boot-hook.md) | [web-ui](web-ui.md) |
+| VPN Director | gnuton-feature | VPN | Router (needs WAN + routing) | `planned` | no | [firewall-custom](../features/firewall-custom.md), [boot-hook](../features/boot-hook.md) | [vpn-director](vpn-director.md) |
+| VPN Killswitch | gnuton-feature | VPN | Router (WAN + VPN client) | `planned` | no | [firewall-custom](../features/firewall-custom.md), [boot-hook](../features/boot-hook.md) | [vpn-killswitch](vpn-killswitch.md) |
+| OpenVPN Client | gnuton-feature | VPN | Router (WAN + VPN client) | `stock+` | no | [boot-hook](../features/boot-hook.md) | [openvpn-client](openvpn-client.md) |
+| OpenVPN Server | gnuton-feature | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [openvpn-server](openvpn-server.md) |
+| WireGuard Client | gnuton-feature | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md) | [wireguard-client](wireguard-client.md) |
+| WireGuard Server | gnuton-feature | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [wireguard-server](wireguard-server.md) |
+| IPSec VPN | gnuton-feature | VPN | Router | `stock+` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [ipsec-vpn](ipsec-vpn.md) |
+| DNS Director (DNSFilter) | gnuton-feature | DNS | Router (DHCP/DNS server) | `planned` | no | [firewall-custom](../features/firewall-custom.md), [dnsmasq-custom](../features/dnsmasq-custom.md), [boot-hook](../features/boot-hook.md) | [dns-director](dns-director.md) |
+| DNS-over-TLS (DoT) | gnuton-feature | DNS | Router / AP | `planned` | no | [dnsmasq-custom](../features/dnsmasq-custom.md), [boot-hook](../features/boot-hook.md) | [dns-over-tls](dns-over-tls.md) |
+| Custom dnsmasq config | gnuton-feature | DNS | Router / AP | `stock+` | no | [boot-hook](../features/boot-hook.md) | [dnsmasq-custom](dnsmasq-custom.md) |
+| Custom firewall / NAT rules | gnuton-feature | Network | Router | `planned` | no | [boot-hook](../features/boot-hook.md) | [firewall-custom](firewall-custom.md) |
+| NAT acceleration (CTF/FA) | out-of-scope | Network | Router | `out-of-scope` | no | — | [nat-acceleration](nat-acceleration.md) |
+| Cake QoS | gnuton-feature | QoS | Router (WAN shaping) | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [cake-qos](cake-qos.md) |
+| Adaptive QoS / DPI | gnuton-feature | QoS | Router | `research` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md), [ipset](../features/ipset.md) | [adaptive-qos](adaptive-qos.md) |
+| Traffic Monitor | gnuton-feature | Monitoring | Router (WAN stats); AP limited | `stock+` | no | [web-ui](../features/web-ui.md) | [traffic-monitor](traffic-monitor.md) |
+| QoS Classification / Stats | gnuton-feature | QoS | Router | `research` | no | [adaptive-qos](../features/adaptive-qos.md), [web-ui](../features/web-ui.md) | [qos-classification](qos-classification.md) |
+| Tools / Sysinfo | gnuton-feature | Monitoring | all | `stock+` | no | [web-ui](../features/web-ui.md) | [sysinfo](sysinfo.md) |
+| WiFi Insight | gnuton-feature | Wireless | all (mesh/AP) | `stock+` | no | [web-ui](../features/web-ui.md) | [wifi-insight](wifi-insight.md) |
+| Wireless Survey | gnuton-feature | Wireless | all | `stock+` | no | [web-ui](../features/web-ui.md) | [wireless-survey](wireless-survey.md) |
+| Network Tools | gnuton-feature | Diagnostics | all | `stock+` | no | [web-ui](../features/web-ui.md) | [network-tools](network-tools.md) |
+| SNMP | gnuton-feature | Services | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [snmp](snmp.md) |
+| Tor | gnuton-feature | Services | Router | `planned` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [tor](tor.md) |
+| NFS server | gnuton-feature | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [nfs](nfs.md) |
+| Samba / FTP / WebDAV (stock USB apps) | stock | Storage | all | `stock` | no | — | [samba-ftp-webdav](samba-ftp-webdav.md) |
+| AiDisk NFS | gnuton-feature | Storage | all | `planned` | no | [nfs](../features/nfs.md), [web-ui](../features/web-ui.md) | [aidisk-nfs](aidisk-nfs.md) |
+| amtm (terminal menu) | gnuton-feature | Tools | all | `planned` | no | [entware](../features/entware.md) | [amtm](amtm.md) |
+| Entware package ecosystem | provider | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
+| ipset | gnuton-feature | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [ipset](ipset.md) |
+| TEE (packet duplication) | gnuton-feature | Network | all | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [tee](tee.md) |
+| cron / scheduled tasks | gnuton-feature | Automation | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [cron](cron.md) |
+| Custom scripts | gnuton-feature | Automation | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [custom-scripts](custom-scripts.md) |
+| JFFS partition | stock | Storage | all | `stock` | **yes** | — | [jffs](jffs.md) |
+| NVRAM tools / config export | gnuton-feature | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [nvram-tools](nvram-tools.md) |
+| LED control | gnuton-feature | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [led-control](led-control.md) |
+| Disk monitoring (smartmontools) | gnuton-feature | Storage | all | `planned` | no | [entware](../features/entware.md) | [disk-monitoring](disk-monitoring.md) |
+| Temperature monitoring | gnuton-feature | Monitoring | all | `stock+` | no | [web-ui](../features/web-ui.md) | [temperature-monitoring](temperature-monitoring.md) |
+| DDNS (custom providers) | gnuton-feature | Network | Router | `planned` | no | [boot-hook](../features/boot-hook.md) | [ddns](ddns.md) |
+| NTP client/server | gnuton-feature | System | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [ntp](ntp.md) |
+| Reboot schedule | gnuton-feature | Automation | all | `planned` | no | [cron](../features/cron.md) | [reboot-schedule](reboot-schedule.md) |
+| AiMesh | stock | Wireless | Mesh (AiMesh router/node) | `stock` | no | — | [aimesh](aimesh.md) |
+| Guest network | stock | Wireless | Router / AP / Mesh | `stock` | no | — | [guest-network](guest-network.md) |
+| Network Map / client list | gnuton-feature | Monitoring | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md) | [networkmap](networkmap.md) |
+| Boot hook (asusware.arm) | gnuton-feature | System | all | `tested` | **yes** | [jffs](../features/jffs.md) | [boot-hook](boot-hook.md) |
+| Kernel modules (build recipe) | gnuton-feature | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
 
 ## Build order (dependency-resolved)
 

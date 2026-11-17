@@ -3,6 +3,7 @@
 **Category:** System  
 **Modes:** all  
 **Status:** `planned`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

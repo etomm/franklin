@@ -3,6 +3,7 @@
 **Category:** Wireless  
 **Modes:** Mesh (AiMesh router/node)  
 **Status:** `stock`  
+**Kind:** stock  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

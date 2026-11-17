@@ -3,6 +3,7 @@
 **Category:** VPN  
 **Modes:** Router  
 **Status:** `stock+`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 

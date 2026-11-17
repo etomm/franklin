@@ -3,6 +3,7 @@
 **Category:** UI  
 **Modes:** all (AP / Router / Mesh)  
 **Status:** `tested`  
+**Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 
