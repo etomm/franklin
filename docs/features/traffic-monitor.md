@@ -1,0 +1,34 @@
+# Traffic Monitor
+
+**Category:** Monitoring  
+**Modes:** Router (WAN stats); AP limited  
+**Status:** `stock+`  
+**Upstream:** gnuton / Asuswrt-Merlin
+
+## What it does
+
+Realtime/history WAN traffic graphs, per-client stats.
+
+## How gnuton implements it
+
+Redesigned pages using Chart.js; stats stored in JFFS.
+
+## Requirements
+
+httpd + www; nvram/stats DB.
+
+## Franklin approach
+
+gnuton Traffic Monitor pages via bind-mounted httpd; data from stock daemons.
+
+## Tested / verified
+
+gnuton pages load via :8088.
+
+## Risks / notes
+
+Needs gnuton data paths; AP mode limited.
+
+## Links / sources
+
+- `www/Main_TrafficMonitor_realtime.asp`

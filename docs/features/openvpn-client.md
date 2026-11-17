@@ -1,0 +1,35 @@
+# OpenVPN Client
+
+**Category:** VPN  
+**Modes:** Router (WAN + VPN client)  
+**Status:** `stock+`  
+**Upstream:** gnuton / Asuswrt-Merlin
+
+## What it does
+
+Connect the router (or selected clients via VPN Director) to an OpenVPN server.
+
+## How gnuton implements it
+
+Firmware VPN daemon (`openvpn`), web page `Advanced_OpenVPNClient_Content.asp`, routing via VPN Director.
+
+## Requirements
+
+`openvpn` binary (present on stock), certs/configs in JFFS, routing rules.
+
+## Franklin approach
+
+Stock already has openvpn; expose gnuton's client page via bind-mounted httpd, or run gnuton's openvpn with generated configs.
+
+## Tested / verified
+
+openvpn binary present on stock; page loads via gnuton UI.
+
+## Risks / notes
+
+Routing/killswitch logic lives in rc; VPN page may depend on rc helpers.
+
+## Links / sources
+
+- `www/Advanced_OpenVPNClient_Content.asp`
+- `usr/sbin/openvpn`

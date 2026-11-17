@@ -1,0 +1,34 @@
+# DNS-over-TLS (DoT)
+
+**Category:** DNS  
+**Modes:** Router / AP  
+**Status:** `planned`  
+**Upstream:** gnuton / Asuswrt-Merlin
+
+## What it does
+
+Encrypt DNS queries to upstream resolvers using stubby/getdns or dnsmasq DoT.
+
+## How gnuton implements it
+
+stubby/getdns, dnsmasq integration, DoT server presets; page `Advanced_System_Content.asp`.
+
+## Requirements
+
+stubby/getdns (stock may have), dnsmasq, cert bundle.
+
+## Franklin approach
+
+Use Entware stubby/unbound or stock dnsmasq DoT; expose UI.
+
+## Tested / verified
+
+Not yet.
+
+## Risks / notes
+
+dnsmasq version support; IPv6 DoT blocking fixes in gnuton are userland/kernel mix.
+
+## Links / sources
+
+- `www/Advanced_System_Content.asp`

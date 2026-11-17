@@ -7,6 +7,9 @@
 # Reference to upstream gnuton is pinned in GNUTON_REF and fetched on demand
 # by tools/fetch-gnuton.sh (see docs/gnuton-feature-parity.md).
 
+# Feature plans (one detailed plan per gnuton feature)
+See [docs/features/README.md](docs/features/README.md).
+
 ## Project layout
 - core/        device-agnostic boot hooks, libraries, tools
 - devices/     per-model profiles (switch sequences, Entware arch, notes)

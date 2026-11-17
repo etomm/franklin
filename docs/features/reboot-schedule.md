@@ -1,0 +1,34 @@
+# Reboot schedule
+
+**Category:** Automation  
+**Modes:** all  
+**Status:** `planned`  
+**Upstream:** gnuton / Asuswrt-Merlin
+
+## What it does
+
+Scheduled automatic reboots.
+
+## How gnuton implements it
+
+cron + nvram `reboot_schedule`; UI on System page.
+
+## Requirements
+
+cron, boot hook.
+
+## Franklin approach
+
+Stock `reboot_schedule` or cron job from boot hook.
+
+## Tested / verified
+
+Page present.
+
+## Risks / notes
+
+Low.
+
+## Links / sources
+
+- `www/Advanced_System_Content.asp`
