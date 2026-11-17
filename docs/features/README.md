@@ -202,85 +202,153 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 
 ```mermaid
 graph TD
-  boot-hook --> web-ui
-  firewall-custom --> vpn-director
-  boot-hook --> vpn-director
-  firewall-custom --> vpn-killswitch
-  boot-hook --> vpn-killswitch
-  boot-hook --> openvpn-client
-  boot-hook --> openvpn-server
-  firewall-custom --> openvpn-server
-  boot-hook --> wireguard-client
-  boot-hook --> wireguard-server
-  firewall-custom --> wireguard-server
-  boot-hook --> ipsec-vpn
-  firewall-custom --> ipsec-vpn
-  firewall-custom --> dns-director
-  dnsmasq-custom --> dns-director
-  boot-hook --> dns-director
-  dnsmasq-custom --> dns-over-tls
-  boot-hook --> dns-over-tls
-  boot-hook --> dnsmasq-custom
-  boot-hook --> firewall-custom
-  kernel-modules --> cake-qos
-  boot-hook --> cake-qos
-  kernel-modules --> adaptive-qos
-  boot-hook --> adaptive-qos
-  ipset --> adaptive-qos
-  web-ui --> traffic-monitor
-  adaptive-qos --> qos-classification
-  web-ui --> qos-classification
-  web-ui --> sysinfo
-  web-ui --> wifi-insight
-  web-ui --> wireless-survey
-  web-ui --> network-tools
-  boot-hook --> snmp
-  boot-hook --> tor
-  firewall-custom --> tor
-  boot-hook --> nfs
-  nfs --> aidisk-nfs
-  web-ui --> aidisk-nfs
+  web_ui["web-ui"]
+  vpn_director["vpn-director"]
+  vpn_killswitch["vpn-killswitch"]
+  openvpn_client["openvpn-client"]
+  openvpn_server["openvpn-server"]
+  wireguard_client["wireguard-client"]
+  wireguard_server["wireguard-server"]
+  ipsec_vpn["ipsec-vpn"]
+  dns_director["dns-director"]
+  dns_over_tls["dns-over-tls"]
+  dnsmasq_custom["dnsmasq-custom"]
+  firewall_custom["firewall-custom"]
+  nat_acceleration["nat-acceleration"]
+  cake_qos["cake-qos"]
+  adaptive_qos["adaptive-qos"]
+  traffic_monitor["traffic-monitor"]
+  qos_classification["qos-classification"]
+  sysinfo["sysinfo"]
+  wifi_insight["wifi-insight"]
+  wireless_survey["wireless-survey"]
+  network_tools["network-tools"]
+  snmp["snmp"]
+  tor["tor"]
+  nfs["nfs"]
+  samba_ftp_webdav["samba-ftp-webdav"]
+  aidisk_nfs["aidisk-nfs"]
+  amtm["amtm"]
+  entware["entware"]
+  ipset["ipset"]
+  tee["tee"]
+  cron["cron"]
+  custom_scripts["custom-scripts"]
+  jffs["jffs"]
+  nvram_tools["nvram-tools"]
+  led_control["led-control"]
+  disk_monitoring["disk-monitoring"]
+  temperature_monitoring["temperature-monitoring"]
+  ddns["ddns"]
+  ntp["ntp"]
+  reboot_schedule["reboot-schedule"]
+  aimesh["aimesh"]
+  guest_network["guest-network"]
+  networkmap["networkmap"]
+  boot_hook["boot-hook"]
+  kernel_modules["kernel-modules"]
+  vlan_iptv["vlan-iptv"]
+  bridge_management["bridge-management"]
+  igmp_snooping["igmp-snooping"]
+  cifs_client["cifs-client"]
+  dhcp_leases["dhcp-leases"]
+  disk_spindown["disk-spindown"]
+  ssh_access["ssh-access"]
+  syslog["syslog"]
+  aiprotection["aiprotection"]
+  ap_modes["ap-modes"]
+  cloud_sync["cloud-sync"]
+  firmware_upgrade["firmware-upgrade"]
+  ipv6["ipv6"]
+  mac_filter["mac-filter"]
+  parental_controls["parental-controls"]
+  port_forwarding["port-forwarding"]
+  traffic_analyzer["traffic-analyzer"]
+  usb_modem["usb-modem"]
+  wireless_tuning["wireless-tuning"]
+  download_manager["download-manager"]
+  media_server["media-server"]
+  time_machine["time-machine"]
+  web_ui_overlay["web-ui-overlay"]
+  boot_hook --> web_ui
+  firewall_custom --> vpn_director
+  boot_hook --> vpn_director
+  firewall_custom --> vpn_killswitch
+  boot_hook --> vpn_killswitch
+  boot_hook --> openvpn_client
+  boot_hook --> openvpn_server
+  firewall_custom --> openvpn_server
+  boot_hook --> wireguard_client
+  boot_hook --> wireguard_server
+  firewall_custom --> wireguard_server
+  boot_hook --> ipsec_vpn
+  firewall_custom --> ipsec_vpn
+  firewall_custom --> dns_director
+  dnsmasq_custom --> dns_director
+  boot_hook --> dns_director
+  dnsmasq_custom --> dns_over_tls
+  boot_hook --> dns_over_tls
+  boot_hook --> dnsmasq_custom
+  boot_hook --> firewall_custom
+  kernel_modules --> cake_qos
+  boot_hook --> cake_qos
+  kernel_modules --> adaptive_qos
+  boot_hook --> adaptive_qos
+  ipset --> adaptive_qos
+  web_ui --> traffic_monitor
+  adaptive_qos --> qos_classification
+  web_ui --> qos_classification
+  web_ui --> sysinfo
+  web_ui --> wifi_insight
+  web_ui --> wireless_survey
+  web_ui --> network_tools
+  boot_hook --> snmp
+  boot_hook --> tor
+  firewall_custom --> tor
+  boot_hook --> nfs
+  nfs --> aidisk_nfs
+  web_ui --> aidisk_nfs
   entware --> amtm
-  boot-hook --> entware
-  kernel-modules --> ipset
-  boot-hook --> ipset
-  kernel-modules --> tee
-  boot-hook --> tee
-  boot-hook --> cron
-  boot-hook --> custom-scripts
-  boot-hook --> nvram-tools
-  boot-hook --> led-control
-  entware --> disk-monitoring
-  web-ui --> temperature-monitoring
-  boot-hook --> ddns
-  boot-hook --> ntp
-  cron --> reboot-schedule
-  web-ui --> networkmap
-  boot-hook --> networkmap
-  boot-hook --> kernel-modules
-  boot-hook --> vlan-iptv
-  boot-hook --> bridge-management
-  boot-hook --> cifs-client
-  kernel-modules --> cifs-client
-  dnsmasq-custom --> dhcp-leases
-  boot-hook --> syslog
-  firewall-custom --> parental-controls
-  firewall-custom --> port-forwarding
-  adaptive-qos --> traffic-analyzer
-  entware --> download-manager
-  boot-hook --> download-manager
-  samba-ftp-webdav --> time-machine
-  web-ui --> web-ui-overlay
-  networkmap --> web-ui-overlay
-  boot-hook --> web-ui-overlay
-  classDef gnuton_feature fill:#eef,stroke:#88a
-  class web-ui,vpn-director,vpn-killswitch,openvpn-client,openvpn-server,wireguard-client,wireguard-server,ipsec-vpn,dns-director,dns-over-tls,dnsmasq-custom,firewall-custom,cake-qos,adaptive-qos,traffic-monitor,qos-classification,sysinfo,wifi-insight,wireless-survey,network-tools,snmp,tor,nfs,aidisk-nfs,amtm,ipset,tee,cron,custom-scripts,nvram-tools,led-control,temperature-monitoring,ddns,ntp,reboot-schedule,vlan-iptv gnuton_feature
-  classDef workaround fill:#eef,stroke:#88a
-  class networkmap,boot-hook,kernel-modules,web-ui-overlay workaround
-  classDef franklin_feature fill:#eef,stroke:#88a
-  class entware,disk-monitoring,cifs-client,download-manager franklin_feature
-  classDef stock fill:#eef,stroke:#88a
-  class nat-acceleration,samba-ftp-webdav,jffs,aimesh,guest-network,bridge-management,igmp-snooping,dhcp-leases,disk-spindown,ssh-access,syslog,ap-modes,firmware-upgrade,ipv6,mac-filter,parental-controls,port-forwarding,usb-modem,wireless-tuning,media-server,time-machine stock
-  classDef proprietary fill:#eef,stroke:#88a
-  class aiprotection,cloud-sync,traffic-analyzer proprietary
+  boot_hook --> entware
+  kernel_modules --> ipset
+  boot_hook --> ipset
+  kernel_modules --> tee
+  boot_hook --> tee
+  boot_hook --> cron
+  boot_hook --> custom_scripts
+  boot_hook --> nvram_tools
+  boot_hook --> led_control
+  entware --> disk_monitoring
+  web_ui --> temperature_monitoring
+  boot_hook --> ddns
+  boot_hook --> ntp
+  cron --> reboot_schedule
+  web_ui --> networkmap
+  boot_hook --> networkmap
+  boot_hook --> kernel_modules
+  boot_hook --> vlan_iptv
+  boot_hook --> bridge_management
+  boot_hook --> cifs_client
+  kernel_modules --> cifs_client
+  dnsmasq_custom --> dhcp_leases
+  boot_hook --> syslog
+  firewall_custom --> parental_controls
+  firewall_custom --> port_forwarding
+  adaptive_qos --> traffic_analyzer
+  entware --> download_manager
+  boot_hook --> download_manager
+  samba_ftp_webdav --> time_machine
+  web_ui --> web_ui_overlay
+  networkmap --> web_ui_overlay
+  boot_hook --> web_ui_overlay
+  classDef gnuton_feature fill:#d6e4ff,stroke:#555,color:#111
+  class web_ui,vpn_director,vpn_killswitch,openvpn_client,openvpn_server,wireguard_client,wireguard_server,ipsec_vpn,dns_director,dns_over_tls,dnsmasq_custom,firewall_custom,cake_qos,adaptive_qos,traffic_monitor,qos_classification,sysinfo,wifi_insight,wireless_survey,network_tools,snmp,tor,nfs,aidisk_nfs,amtm,ipset,tee,cron,custom_scripts,nvram_tools,led_control,temperature_monitoring,ddns,ntp,reboot_schedule,vlan_iptv gnuton_feature
+  classDef workaround fill:#ffd9b3,stroke:#555,color:#111
+  class networkmap,boot_hook,kernel_modules,web_ui_overlay workaround
+  classDef franklin_feature fill:#c8e6c9,stroke:#555,color:#111
+  class entware,disk_monitoring,cifs_client,download_manager franklin_feature
+  classDef stock fill:#eeeeee,stroke:#555,color:#111
+  class nat_acceleration,samba_ftp_webdav,jffs,aimesh,guest_network,bridge_management,igmp_snooping,dhcp_leases,disk_spindown,ssh_access,syslog,ap_modes,firmware_upgrade,ipv6,mac_filter,parental_controls,port_forwarding,usb_modem,wireless_tuning,media_server,time_machine stock
+  classDef proprietary fill:#f3d1f4,stroke:#555,color:#111
+  class aiprotection,cloud_sync,traffic_analyzer proprietary
 ```

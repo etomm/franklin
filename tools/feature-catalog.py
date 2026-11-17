@@ -1156,6 +1156,14 @@ def topo_order():
     return order
 
 
+KIND_COLORS = {
+    "workaround": "#ffd9b3",
+    "franklin-feature": "#c8e6c9",
+    "gnuton-feature": "#d6e4ff",
+    "stock": "#eeeeee",
+    "proprietary": "#f3d1f4",
+}
+
 KIND_TITLES = [
     ("workaround", "Workarounds (Franklin mechanisms, only because stock is not gnuton)",
      "These are **not gnuton features**. They exist so gnuton userland can run on unmodified "
@@ -1274,14 +1282,20 @@ def main():
             fh.write("%d. %s%s  (%s)\n" % (i, fid, req, kind_of(fid)))
         fh.write("```\n\n")
         fh.write("## Dependency graph\n\n```mermaid\ngraph TD\n")
+        # Mermaid cannot parse hyphens in node ids, so use underscore aliases.
+        alias = {i: i.replace("-", "_") for i in ids}
+        for f in FEATURES:
+            a = alias[f["id"]]
+            fh.write('  %s["%s"]\n' % (a, f["id"]))
         for f in FEATURES:
             for d in DEPS.get(f["id"], []):
-                fh.write("  %s --> %s\n" % (d, f["id"]))
+                fh.write("  %s --> %s\n" % (alias[d], alias[f["id"]]))
         for kind in KINDS:
-            sub = [i for i in ids if kind_of(i) == kind]
+            sub = [alias[i] for i in ids if kind_of(i) == kind]
             if sub:
-                fh.write("  classDef %s fill:#eef,stroke:#88a\n" % kind.replace('-', '_'))
-                fh.write("  class %s %s\n" % (",".join(sub), kind.replace('-', '_')))
+                fh.write("  classDef %s fill:%s,stroke:#555,color:#111\n"
+                         % (kind.replace("-", "_"), KIND_COLORS[kind]))
+                fh.write("  class %s %s\n" % (",".join(sub), kind.replace("-", "_")))
         fh.write("```\n")
     print("wrote %d feature files + README + manifest.json" % len(rows))
 
