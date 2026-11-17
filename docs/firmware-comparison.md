@@ -120,10 +120,19 @@ Deployed on the XT9 at `http://192.168.0.4:8088` (stock UI stays on port 80):
 - `/tmp/mnt/FRANKEN/gnuton-httpd` — gnuton httpd
 - `/tmp/mnt/FRANKEN/gnuton-www/www/` — gnuton `/www` tree
 - `/tmp/mnt/FRANKEN/gnuton-www/libovpn.so`
+- `/tmp/mnt/FRANKEN/gnuton-www/libshared.so` (exports `replace_char`; without it
+  some pages such as Tools_Sysinfo crash httpd with
+  `undefined symbol: replace_char`)
 - Started with `cd .../www && LD_LIBRARY_PATH=.../gnuton-www gnuton-httpd -p 8088`.
 - gnuton-specific pages return 200: `Advanced_VPNDirector.asp`,
-  `Tools_Sysinfo.asp`, `WiFi_Insight.asp`, `DNSDirector.asp`, etc.
+  `Tools_Sysinfo.asp`, `Tools_OtherSettings.asp`, `WiFi_Insight.asp`,
+  `DNSDirector.asp`, etc.
 - Helper: `tools/start-gnuton-webui.sh [port]`.
+
+Note: other gnuton pages may call additional gnuton-only library symbols or
+backend services that stock lacks; if httpd dies with `undefined symbol`, copy
+the exporting gnuton library (find it with `strings lib/*.so usr/lib/*.so`)
+into the LD_LIBRARY_PATH directory and restart.
 
 This confirms most of gnuton's userland software can be run on stock
 firmware by supplying its binaries + libraries + `/www`, without flashing.
