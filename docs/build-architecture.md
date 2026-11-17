@@ -207,11 +207,43 @@ Those generated files are gitignored; the folder is the whole contract.
 
 At boot `web-ui-overlay/start.sh` runs that httpd on `:8088` with
 `cwd=/opt/share/gnuton-www` and `LD_LIBRARY_PATH=/opt/lib/gnuton`, after
-fixing `acc_num=0`
+fixing `acc_num=0` (without it `Advanced_System_Content.asp` segfaults). Stock
+`:80` keeps serving the stock UI, so this mode is always safe.
+
+### Replace mode: making `:80` *be* gnuton
+
+```
+touch franklin/state/web-ui-overlay.replace
+sh    franklin/features/web-ui-overlay/start.sh
+```
+
+Stock runs httpd from a **read-only squashfs**, so `cp` is not an option; the
+swap is done with bind mounts over the files:
+
+```
+/usr/sbin/httpd  <- franklin/state/httpd-wrapper.sh   (sets LD_LIBRARY_PATH, execs gnuton-httpd)
+/www             <- /opt/share/gnuton-www
+/sbin/rc restart_httpd
+```
+
+The wrapper is not cosmetic: `rc` restarts `/usr/sbin/httpd` by itself, so the
+replacement has to work when *stock* starts it, not just when we do — and the
+gnuton-only libs need `LD_LIBRARY_PATH`.
+
+Safety: before touching anything, `start.sh` runs the gnuton binary on `:8089`
+and requires it to answer; after the swap it requires `:80` to answer, otherwise
+it unmounts both and restarts the stock httpd. `stop.sh` performs the same
+rollback at any time.
+
+Why `gnuton-httpd` and not `httpd`: in the merged `/opt/bin` a file literally
+named `httpd` would shadow the stock binary in `PATH` while doing nothing for
+`rc` (which uses the absolute path), giving the illusion of a replacement. The
+name is namespaced; the *replacement* is the bind mount.
 (without it `Advanced_System_Content.asp` segfaults). Stock `:80` keeps serving
 the stock UI, so the overlay is always reversible.
 
-Bind mode (gnuton pages served by the *stock* httpd) is opt-in and reversible:
+Lightweight variant, when you only want gnuton's pages on top of the stock
+daemon (no restart, no binary swap) — parallel mode with `bindwww`:
 
 ```
 touch  franklin/state/web-ui-overlay.bindwww      # then run start.sh

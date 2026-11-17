@@ -1,8 +1,9 @@
 #!/bin/sh
-# Stop the spare httpd and undo the optional /www bind mount.
+# Stop the spare httpd, and undo any httpd//www replacement.
 set -u
 root="${FRANKLIN_ROOT:?}"
 pidfile="$root/state/web-ui-overlay.pid"
+wrapper="$root/state/httpd-wrapper.sh"
 
 if [ -f "$pidfile" ]; then
     pid=$(cat "$pidfile" 2>/dev/null)
@@ -15,8 +16,18 @@ if [ -f "$pidfile" ]; then
     rm -f "$pidfile"
 fi
 
-# Restore the stock /www if we were the ones who mounted over it.
+# Restore the stock binary and pages if we were the ones who mounted over them.
+changed=0
 if grep -q ' /www ' /proc/mounts 2>/dev/null; then
-    umount /www 2>/dev/null && echo "web-ui-overlay: /www restored to stock"
+    umount /www 2>/dev/null && { echo "web-ui-overlay: /www restored to stock"; changed=1; }
+fi
+if grep -q ' /usr/sbin/httpd ' /proc/mounts 2>/dev/null; then
+    umount /usr/sbin/httpd 2>/dev/null && { echo "web-ui-overlay: /usr/sbin/httpd restored to stock"; changed=1; }
+fi
+rm -f "$wrapper"
+
+if [ "$changed" = "1" ] && [ -x /sbin/rc ]; then
+    /sbin/rc restart_httpd >/dev/null 2>&1
+    echo "web-ui-overlay: httpd restarted on the stock binary"
 fi
 exit 0

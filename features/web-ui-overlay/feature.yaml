@@ -12,7 +12,11 @@ hooks:
   start: start.sh
   stop: stop.sh
 notes: >
-  Stock has no way to replace its own UI, so this workaround runs gnuton's
-  httpd from USB on a spare port (verified on the XT9) and can optionally
-  bind-mount gnuton's /www over the stock one. Enable the bind mode with
-  franklin/state/web-ui-overlay.bindwww; disable it with stop.sh.
+  Stock has no way to replace its own UI, so this workaround has two modes.
+  Default: run gnuton's httpd from USB on a spare port (:8088), stock :80
+  untouched. Replace mode (state/web-ui-overlay.replace): pre-flight the
+  binary on :8089, then bind-mount a wrapper over /usr/sbin/httpd and gnuton's
+  /www over /www, restart the stock httpd and verify :80 — rolling back to the
+  stock binary if it does not answer. Rootfs is a read-only squashfs, so a bind
+  mount is the only way to replace the binary; the wrapper exists because rc
+  restarts /usr/sbin/httpd itself and the gnuton libs need LD_LIBRARY_PATH.
