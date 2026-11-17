@@ -23,7 +23,7 @@ ported (won't port), — = handled by stock firmware (not a porting target).
 | 2 | Entware / opkg package ecosystem | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | `armv7sf-k3.2` repo |
 | 3 | cron / scheduled tasks | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | Entware cron or shell loop |
 | 4 | Integrated web UI (modify existing stock pages) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | bind-mount overlay of `/www`, edit existing pages; preferred over separate :8080 |
-| 5 | Diagnostics (tcpdump, iperf3, ethtool, mtr) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | via Entware |
+| 5 | Diagnostics (tcpdump, iperf3, ethtool, mtr) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | stock has iperf3, ethtool, tc, brctl, jq, curl, wget; tcpdump via Entware |
 | 6 | VLAN / switch control (ethswctl, softswitch) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Ported) | ✅ | XT9 verified sequence |
 | 7 | Bridge management (brctl) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | wrappers |
 | 8 | SQM with fq_codel / ifb | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Research) | 🔄 | kernel has IFB + fq_codel |
@@ -56,7 +56,7 @@ ported (won't port), — = handled by stock firmware (not a porting target).
 | 35 | NFS (server/export) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | via Entware nfs-utils |
 | 36 | WebDAV | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | — | stock firmware handles |
 | 37 | Download manager (aria2) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | via Entware aria2 |
-| 38 | Media server (minidlna) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | via Entware minidlna |
+| 38 | Media server (minidlna) | Merlin 388.2 / gnuton 3006.102.9 | n/a (Stock handles) | — | stock provides minidlna (`/usr/sbin/minidlna`) |
 | 39 | Disk monitoring (smartmontools) | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | via Entware smartmontools |
 | 40 | Temperature monitoring | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | via sysfs/Entware |
 | 41 | LED control | Merlin 388.2 / gnuton 3006.102.9 | 0.1 (Planned) | 📋 | wrappers |
@@ -137,7 +137,8 @@ ported (won't port), — = handled by stock firmware (not a porting target).
   can add equivalents via Entware (samba4, vsftpd, minidlna, rclone).
 - **NFS (35), CIFS mount (58):** Network filesystems via Entware.
 - **Download manager (37):** aria2 via Entware.
-- **Media server (38):** minidlna via Entware.
+- **Media server (38):** stock provides minidlna (`/usr/sbin/minidlna`); Franklin
+  can add/replace via Entware if needed.
 - **Disk monitoring (39), spindown (59), temperature (40):** via Entware
   (smartmontools, hdparm) and sysfs.
 - **LED control (41):** Wrappers around LED control interfaces.
