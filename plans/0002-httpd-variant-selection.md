@@ -49,7 +49,7 @@ Local build is not possible on this machine: WSL's `df` shows a 1 TB virtual dis
 but its sparse `ext4.vhdx` lives on `C:` with ~9 GB free — source (~5 GB) plus
 build (~20 GB) do not fit. Stopped and cleaned.
 
-**Recipe for later (GitHub Actions, no local disk):**
+**Recipe for later (GitHub Actions, no local disk):** see [docs/build/xt8pro/README.md](../docs/build/xt8pro/README.md) - the model files and the exact target.mak block are staged there.
 
 1. Fork `Asuswrt-Merlin/asuswrt-merlin.ng-gnuton` at tag `3004.388.11_1-gnuton1`.
 2. Add the model, using the XT9 GPL files (already extracted for reference):
