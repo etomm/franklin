@@ -20,6 +20,11 @@ version: 1
 # without it (web UI libraries live there), so the rest of the composition is
 # unaffected while it is absent.
 #  - entware
+#
+# Test-only, never part of a normal stick: unauthenticated read access to the UI
+# (see features/test-access/README.md).
+#   python tools/franklin-compose.py --add test-access
+#  - test-access
 features:
   - boot-hook
   - kernel-modules

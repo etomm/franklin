@@ -1006,6 +1006,23 @@ FEATURES = [
                   "opening quote) because sta->flags is read at the wrong offset on XT9.",
          links=["docs/build-architecture.md"]),
 
+    dict(id="test-access", title="test-access (unauthenticated read-only UI, testing only)", cat="System",
+         modes="all",
+         status="implemented",
+         what="TEST ONLY: lets a test runner fetch web UI pages without logging in.",
+         gnuton="n/a - stock httpd behaviour, reached through its first-time-setup exemption.",
+         deps="`ui-capabilities` (the page must exist in the menu/pages); runtime nvram `x_Setting`.",
+         franklin="Sets nvram `x_Setting=0` at start (the value httpd treats as 'not configured'): "
+                  "handlers flagged NOAUTH_FIRST then skip authentication, so .asp pages are "
+                  "readable. Restores the saved value on stop; never committed. POST/apply and "
+                  "login.cgi still require a session, so actions are driven via franklin-rc.",
+         tested="On the XT9: with x_Setting=0, /index.asp, /Advanced_SNMP_Content.asp, "
+                "/Main_TrafficMonitor_last24.asp and /Tools_Sysinfo.asp return their real content "
+                "without a login; /login.cgi and POST /apply.cgi still redirect to the login page.",
+         risks="SECURITY: while running, any LAN client can read the UI without a password. Opt-in "
+               "only (--add test-access), never composed by default; stop it or reboot after use.",
+         links=["docs/features/test-access.md", "features/test-access/README.md"]),
+
     dict(id="franklin-rc", title="franklin-rc (companion for missing rc actions)", cat="System",
          modes="all",
          status="implemented",
@@ -1100,6 +1117,7 @@ KIND = {
     "wifi-insight": "franklin-feature",
     "snmp": "gnuton-feature",
     "franklin-rc": "franklin-feature",
+    "test-access": "franklin-feature",
     "traffic-monitor": "franklin-feature",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
@@ -1203,6 +1221,7 @@ DEPS = {
     "temperature-monitoring": ["web-ui"],
     "snmp": ["ui-capabilities", "franklin-rc"],
     "franklin-rc": ["boot-hook"],
+    "test-access": ["ui-capabilities"],
     "tor": ["boot-hook", "firewall-custom"],
     "nfs": ["boot-hook", "kernel-modules"],
     "aidisk-nfs": ["nfs", "web-ui"],

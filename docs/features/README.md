@@ -38,7 +38,7 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | UI capabilities (rc_support tokens) — workaround | System | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [ui-capabilities](ui-capabilities.md) |
 | Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md), [franklin-mount](../features/franklin-mount.md) | [web-ui-overlay](web-ui-overlay.md) |
 
-### Franklin features (not in gnuton at all) (4)
+### Franklin features (not in gnuton at all) (5)
 
 Franklin additions. gnuton does not provide these; removing them changes nothing for any gnuton port.
 
@@ -47,6 +47,7 @@ Franklin additions. gnuton does not provide these; removing them changes nothing
 | Traffic Monitor (Franklin history) | Monitoring | all | `implemented` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [traffic-monitor](traffic-monitor.md) |
 | WiFi Insight (third-party MIT addon) | Wireless | all | `tested` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [wifi-insight](wifi-insight.md) |
 | Entware package ecosystem | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
+| test-access (unauthenticated read-only UI, testing only) | System | all | `implemented` | no | [ui-capabilities](../features/ui-capabilities.md) | [test-access](test-access.md) |
 | franklin-rc (companion for missing rc actions) | System | all | `implemented` | no | [boot-hook](../features/boot-hook.md) | [franklin-rc](franklin-rc.md) |
 
 ### Entware packages (third-party binaries Franklin integrates) (2)
@@ -196,24 +197,25 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 53. traffic-analyzer  (proprietary)
 54. ui-capabilities  (workaround)
 55. snmp  (gnuton-feature)
-56. usb-modem  (stock)
-57. vlan-iptv  (gnuton-feature)
-58. vpn-director  (gnuton-feature)
-59. vpn-killswitch  (gnuton-feature)
-60. web-ui  (gnuton-feature)
-61. aidisk-nfs  (gnuton-feature)
-62. network-tools  (gnuton-feature)
-63. qos-classification  (gnuton-feature)
-64. sysinfo  (gnuton-feature)
-65. temperature-monitoring  (gnuton-feature)
-66. web-ui-overlay  (workaround)
-67. traffic-monitor  (franklin-feature)
-68. wifi-clients  (workaround)
-69. wifi-insight  (franklin-feature)
-70. wireguard-client  (gnuton-feature)
-71. wireguard-server  (gnuton-feature)
-72. wireless-survey  (gnuton-feature)
-73. wireless-tuning  (stock)
+56. test-access  (franklin-feature)
+57. usb-modem  (stock)
+58. vlan-iptv  (gnuton-feature)
+59. vpn-director  (gnuton-feature)
+60. vpn-killswitch  (gnuton-feature)
+61. web-ui  (gnuton-feature)
+62. aidisk-nfs  (gnuton-feature)
+63. network-tools  (gnuton-feature)
+64. qos-classification  (gnuton-feature)
+65. sysinfo  (gnuton-feature)
+66. temperature-monitoring  (gnuton-feature)
+67. web-ui-overlay  (workaround)
+68. traffic-monitor  (franklin-feature)
+69. wifi-clients  (workaround)
+70. wifi-insight  (franklin-feature)
+71. wireguard-client  (gnuton-feature)
+72. wireguard-server  (gnuton-feature)
+73. wireless-survey  (gnuton-feature)
+74. wireless-tuning  (stock)
 ```
 
 ## Dependency graph
@@ -294,6 +296,7 @@ graph TD
   franklin_mount["franklin-mount"]
   overlayfs["overlayfs"]
   wifi_clients["wifi-clients"]
+  test_access["test-access"]
   franklin_rc["franklin-rc"]
   ui_capabilities["ui-capabilities"]
   web_ui_overlay["web-ui-overlay"]
@@ -368,6 +371,7 @@ graph TD
   samba_ftp_webdav --> time_machine
   kernel_modules --> overlayfs
   web_ui_overlay --> wifi_clients
+  ui_capabilities --> test_access
   boot_hook --> franklin_rc
   boot_hook --> ui_capabilities
   web_ui --> web_ui_overlay

@@ -1,0 +1,21 @@
+id: test-access
+title: "test-access (unauthenticated read-only UI, testing only)"
+kind: franklin-feature
+required: false
+enabled_by_default: false
+requires: [ui-capabilities]
+provides:
+  - unauthenticated GET access to the web UI while the feature is running
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  TEST ONLY, never composed by default (--add test-access). Stock httpd skips
+  authentication for handlers flagged NOAUTH_FIRST while nvram x_Setting=0
+  (httpd.c: if ((mime_exception&NOAUTH_FIRST) && !x_Setting) skip auth). Setting
+  that flag therefore makes pages readable without a login, which is what a
+  test runner needs to verify rendering and data. POST/apply and login.cgi are
+  deliberately NOT covered: they still require a session, so actions are driven
+  through franklin-rc instead. The original value is saved and restored by
+  stop.sh; a reboot also restores it (never committed).

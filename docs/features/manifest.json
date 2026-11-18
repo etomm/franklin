@@ -50,6 +50,7 @@
       "traffic-monitor",
       "wifi-insight",
       "entware",
+      "test-access",
       "franklin-rc"
     ],
     "entware-package": [
@@ -909,6 +910,18 @@
       ]
     },
     {
+      "id": "test-access",
+      "title": "test-access (unauthenticated read-only UI, testing only)",
+      "category": "System",
+      "modes": "all",
+      "status": "implemented",
+      "kind": "franklin-feature",
+      "required": false,
+      "depends_on": [
+        "ui-capabilities"
+      ]
+    },
+    {
       "id": "franklin-rc",
       "title": "franklin-rc (companion for missing rc actions)",
       "category": "System",
@@ -1003,6 +1016,7 @@
     "traffic-analyzer",
     "ui-capabilities",
     "snmp",
+    "test-access",
     "usb-modem",
     "vlan-iptv",
     "vpn-director",
