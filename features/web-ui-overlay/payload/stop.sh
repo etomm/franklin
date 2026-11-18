@@ -34,6 +34,14 @@ if [ -f "$pidfile" ]; then
     rm -f "$pidfile"
 fi
 
+# The daemon runs with its cwd inside the overlay mount, which makes the mount
+# busy. Kill it first, otherwise the overlay stays mounted and start.sh reuses
+# a stale view of the payload.
+if killall gnuton-httpd 2>/dev/null; then
+    echo "web-ui-overlay: stopped gnuton-httpd"
+    sleep 1
+fi
+
 changed=0
 umount_path /www && { echo "web-ui-overlay: /www restored to stock"; changed=1; }
 umount_path /usr/sbin/httpd && { echo "web-ui-overlay: /usr/sbin/httpd restored to stock"; changed=1; }

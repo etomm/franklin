@@ -45,6 +45,9 @@ skip=0
     cd "$GNUTON_ROOTFS/www" || exit 1
     find . -type f -print | LC_ALL=C sort | while IFS= read -r f; do
         rel=${f#./}
+        case " $NO_OVERRIDE " in
+            *" $rel "*) continue ;;
+        esac
         dst="$DELTA/$rel"
         stock="$STOCK_ROOTFS/www/$rel"
         if [ -f "$stock" ] && cmp -s "$f" "$stock"; then
@@ -79,6 +82,12 @@ whiteouts=$(wc -l <"$DELTA/WHITEOUTS")
 #    copies /Main_Login.asp renders 0-8 KB or nothing at all, with gnuton's it
 #    renders ~22 KB).
 SKIP_LIBS="libwlcsm libbwdpi"
+# Files we deliberately do NOT override: the gnuton versions of these pages
+# call httpd ASP handlers compiled against XT8's sta_info layout, which the XT9
+# driver does not match — the served JS is malformed (`,"-42",AU"]`) and the
+# page dies with a SyntaxError. Serving stock's version keeps the UI consistent
+# until httpd is rebuilt from source for this model.
+NO_OVERRIDE="Main_WStatus_Content.asp ajax_wificlients.asp"
 LIB="$OUT/opt/lib/gnuton"
 libs=0
 skipped=0

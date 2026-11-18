@@ -99,17 +99,18 @@ if [ -f "$delta/WHITEOUTS" ]; then
     done <"$delta/WHITEOUTS"
 fi
 
-# Mount the overlay once, both modes use it.
-if is_mounted "$mnt"; then
-    echo "web-ui-overlay: overlay already mounted"
-else
-    mount -t overlay overlay \
-        -o "lowerdir=$delta:/www,upperdir=$upper,workdir=$work" "$mnt" 2>>"$log/overlay.log" || {
-        echo "web-ui-overlay: overlay mount failed (see $log/overlay.log)"
-        exit 1
-    }
-    echo "web-ui-overlay: overlay mounted (gnuton delta over stock /www)"
+# Mount the overlay fresh on every start: reusing a mount created from an older
+# payload silently serves stale pages (the daemon's cwd keeps the old mount
+# busy, so a stop/start cycle previously left it in place).
+if grep -q " $mnt " /proc/mounts; then
+    mnt_umount "$mnt" || { echo "web-ui-overlay: cannot detach stale overlay"; exit 1; }
 fi
+mount -t overlay overlay \
+    -o "lowerdir=$delta:/www,upperdir=$upper,workdir=$work" "$mnt" 2>>"$log/overlay.log" || {
+    echo "web-ui-overlay: overlay mount failed (see $log/overlay.log)"
+    exit 1
+}
+echo "web-ui-overlay: overlay mounted (gnuton delta over stock /www)"
 
 # ---------------------------------------------------------------- replace mode
 if [ -f "$state/web-ui-overlay.replace" ]; then
