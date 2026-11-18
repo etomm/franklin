@@ -83,6 +83,20 @@ if [ -f "$WL_PAGE" ]; then
     echo "patched wireless-log page (feeds: /ajax_wificlients.asp + embedded wl text)"
 fi
 
+# The System page builds its account list from get_all_accounts(), an ASP
+# handler that returns nothing on this model. The page then does
+#   var accounts = [[]][0];      -> accounts[0] === undefined
+# and httpApi.chpass() sends no username hash, so the change-password dialog
+# always fails with "current password is wrong" whatever you type. Fall back to
+# nvram http_username, which is what the handler should have returned.
+SYS_PAGE="$DELTA/Advanced_System_Content.asp"
+if [ -f "$SYS_PAGE" ]; then
+    sed -i "s|var accounts = \[<% get_all_accounts(); %>\]\[0\];|var accounts = ['<% nvram_get(\"http_username\"); %>'];|" "$SYS_PAGE"
+    if grep -q "nvram_get(\"http_username\")" "$SYS_PAGE"; then
+        echo "patched System page (account list for change-password)"
+    fi
+fi
+
 # AP mode hides the Traffic Analyzer section (menuTree.js), which is where the
 # Traffic Monitor tabs live. The pages work here (they use stock /update.cgi),
 # so drop that exclusion: the section then shows up with its Traffic Monitor
