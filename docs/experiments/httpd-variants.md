@@ -56,3 +56,44 @@ patch (if any) is still required.
    function each handler consults (start from `libwlcsm` exports) and hook it in
    the shim.
 3. Only then evaluate **E**, which is the strategic build project.
+
+## Results so far (variant B and C measured)
+
+Method: same overlaid `/www`, two httpd binaries, one pristine gnuton page each,
+unauthenticated read via `test-access` (x_Setting=0), throwaway port `:8089` for
+the stock binary (uploaded from `firmware/xt8/rootfs/usr/sbin/httpd`; the live
+`/usr/sbin/httpd` is the Franklin wrapper).
+
+### `Advanced_System_Content.asp` — `get_all_accounts()`
+
+```
+stock XT9 httpd  : var accounts = [[]][0];
+gnuton XT8 httpd : var accounts = [[]][0];
+```
+
+**The defect exists in both firmwares.** It is not an XT8-binary problem; the
+handler yields nothing on this node either way. A workaround is therefore
+legitimate (per the project rule), and neither B nor D changes it.
+
+### `Main_WStatus_Content.asp` — `get_wl_status()`
+
+```
+stock XT9 httpd  : no dataarray/wificlients arrays emitted
+gnuton XT8 httpd : wificlients0 = [["0C:EE:…","-44",AU"], …]   ← AU unquoted
+```
+
+The unquoted enum is produced by gnuton's *output format*, not by an input we
+can hook, and stock emits no station data at all. So:
+
+- variant B is not a win for this page (worse: empty data),
+- variant D (shims) cannot fix the quoting — it can only change inputs,
+- variant C is today's state (malformed JS) → the page patch or a response
+  rewriter is the only shape that works without a rebuilt httpd,
+- variant E (XT9 build) is the principled fix.
+
+### Consequence
+
+Plan 0002 narrows to: (a) `get_all_accounts` may be solved by an input shim
+(both firmwares agree, so the shim restores data the node lacks), (b)
+`get_wl_status` needs either a response rewriter (front proxy) or the rebuilt
+httpd — patching the page remains the documented stopgap.

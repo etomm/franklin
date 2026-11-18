@@ -19,6 +19,25 @@ Both handlers receive their data through **imported** symbols
 
 Candidates and pass criteria live in `docs/experiments/httpd-variants.md`.
 
+## Measured (2026-11-18)
+
+Variant B was run: stock XT9 httpd on `:8089`, same overlaid `/www`, pristine
+gnuton pages, unauthenticated read via `test-access`.
+
+| page | stock XT9 | gnuton XT8 | conclusion |
+|---|---|---|---|
+| System (`get_all_accounts`) | `[[]][0]` | `[[]][0]` | **defect in both** → workaround justified |
+| Wireless log (`get_wl_status`) | no station arrays | `…,"-44",AU]` (unquoted) | gnuton output defect; stock has no data |
+
+Consequences for this plan:
+
+- `get_all_accounts` is **not** an XT8 problem; a shim that supplies the missing
+  data is legitimate. Investigate what the handler reads (it returns empty on
+  both builds on this node).
+- `get_wl_status` cannot be fixed by input shims (the bad quoting is in the
+  output format). Options: a response rewriter in front of httpd, the rebuilt
+  httpd (E), or the current page patch as a documented stopgap.
+
 ## Steps
 
 ### A. Measure the current baseline (already known, record it)
