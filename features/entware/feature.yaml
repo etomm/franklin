@@ -12,6 +12,9 @@ hooks:
   start: start.sh
   stop: stop.sh
 notes: >
-  Entware installs into franklin/opt, which the composer preserves across
-  rebuilds and the boot hook exposes as /opt. Nothing of Entware is shipped in
-  this repository.
+  OPTIONAL and not part of the default composition: this feature is a separate
+  tree so it can be added only when a plan needs an Entware-only package. Enable
+  with `python tools/franklin-compose.py --add entware` (or uncomment
+  `- entware` in franklin.yaml). Nothing else depends on it, and it never
+  installs packages by itself: it only guarantees the /opt prefix layout, so
+  Entware's own bootstrap can be run once when wanted. See README.md here.

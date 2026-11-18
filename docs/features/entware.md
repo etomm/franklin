@@ -33,7 +33,7 @@ Franklin-specific provider. Packages that only exist there are tagged `entware-p
 
 ## Tested / verified
 
-Not yet installed. Verified that gnuton ships no opkg, no smartctl, no hdparm, no aria2c and no tcpdump.
+Not yet installed (and not composed by default). Verified that gnuton ships no opkg, no smartctl, no hdparm, no aria2c and no tcpdump. Enable with `--add entware` when a plan needs it.
 
 ## Risks / notes
 

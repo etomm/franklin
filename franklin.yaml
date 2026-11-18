@@ -12,6 +12,14 @@ version: 1
 
 # Features to include. Dependencies are added automatically (transitive).
 # Use `all: true` to include every feature that has a feature.yaml.
+#
+# Optional, NOT composed by default: `entware`. It is a self-contained feature
+# tree (features/entware/) and only gets on the stick when you ask for it:
+#   python tools/franklin-compose.py --add entware
+# or by adding the line below. Nothing else requires it: the /opt prefix exists
+# without it (web UI libraries live there), so the rest of the composition is
+# unaffected while it is absent.
+#  - entware
 features:
   - boot-hook
   - kernel-modules
@@ -20,7 +28,6 @@ features:
   - ipset
   - overlayfs
   - franklin-mount
-  - entware
   - web-ui
   - web-ui-overlay
   - partial-rc

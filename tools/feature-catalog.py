@@ -375,8 +375,9 @@ FEATURES = [
                   "`entware-package` (smartmontools, aria2, tcpdump, ...), never "
                   "`gnuton-feature`. It does NOT replace gnuton binaries (httpd, libwebapi, "
                   "libovpn) nor kernel modules (built from the ASUS GPL).",
-         tested="Not yet installed. Verified that gnuton ships no opkg, no smartctl, no "
-                "hdparm, no aria2c and no tcpdump.",
+         tested="Not yet installed (and not composed by default). Verified that gnuton ships no "
+                "opkg, no smartctl, no hdparm, no aria2c and no tcpdump. Enable with "
+                "`--add entware` when a plan needs it.",
          risks="Its binaries are built for its own toolchain/libc; use unset LD_LIBRARY_PATH. "
                "Cannot provide gnuton-patched binaries or kernel modules.",
          evidence="franklin-feature: `opkg`, `smartctl`, `aria2c` and `tcpdump` are in NEITHER "

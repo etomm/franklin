@@ -428,6 +428,8 @@ def main():
     ap.add_argument("--config", default=os.path.join(ROOT, "franklin.yaml"))
     ap.add_argument("--out", default=None)
     ap.add_argument("--without", default="")
+    ap.add_argument("--add", default="",
+                    help="features to add on top of the config (opt-in ones)")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--strict", action="store_true")
@@ -437,6 +439,11 @@ def main():
         cfg = load_yaml(args.config)
         feats = load_features()
         selected = set(feats) if (args.all or cfg.get("all")) else set(cfg["features"])
+        extra = {x.strip() for x in args.add.split(",") if x.strip()}
+        unknown_add = extra - set(feats)
+        if unknown_add:
+            raise Fail("unknown --add feature(s): %s" % ", ".join(sorted(unknown_add)))
+        selected |= extra
         required = {fid for fid, f in feats.items() if f.get("required")}
         without = {x.strip() for x in args.without.split(",") if x.strip()}
 
