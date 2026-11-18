@@ -988,7 +988,9 @@ FEATURES = [
                   "the first slice of a partial-rc; further slices add data producers "
                   "(wireless station lists) as they are proven.",
          tested="Verified on the XT9: tokens are absent from stock's rc_support and the hook "
-                "sets them at runtime; original string saved for rollback.",
+                "sets them at runtime. `wifiradar` was retired after checking that gnuton ships "
+                "WiFi_Insight.asp but none of the pages it links to (visindex.asp, metrics.asp, "
+                "channelcapacity.asp, configure.asp) exist in its firmware or its httpd.",
          risks="Advertising a capability whose backend is missing would show a page that "
                "cannot work, so only tokens Franklin really provides are added.",
          evidence="workaround: stock rc_support lacks wifiradar/nfsd/nwtool/usbX/cake, which "
