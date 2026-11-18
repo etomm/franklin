@@ -71,7 +71,12 @@ NO_OVERRIDE="ajax_wificlients.asp"
 WL_PAGE="$DELTA/Main_WStatus_Content.asp"
 if [ -f "$WL_PAGE" ]; then
     sed -i "s|<% get_wl_status(); %>;||" "$WL_PAGE"
-    echo "patched wireless-log page (feed served by /ajax_wificlients.asp)"
+    # The details box pulls /wl_log.asp, answered by the same broken handler,
+    # and httpd only serves its own whitelisted files without auth. The
+    # wifi-clients feed therefore embeds the dump as window.franklinWlText in
+    # the polled script; GenContent just fills the textarea from it.
+    sed -i 's|function GenContent(){|function GenContent(){ if (window.franklinWlText) { $("#wl_log").text(window.franklinWlText); } return;|' "$WL_PAGE"
+    echo "patched wireless-log page (feeds: /ajax_wificlients.asp + embedded wl text)"
 fi
 
 # The counters above run in a subshell, so recount for the summary.

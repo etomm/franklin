@@ -139,13 +139,19 @@ main() {
     } >"$TMP" 2>/dev/null
     [ -s "$TMP" ] && mv "$TMP" "$OUT"
 
-    # Second feed: the plain-text station dump the details box asks for.
-    # httpd runs /wl_log.asp through ej_dump -> the broken XT8 handler, so this
-    # file (written into the overlay) answers the request instead.
-    LOG="${WIFI_LOG_OUT:-/www/wl_log.asp}"
-    LOGTMP="$LOG.tmp"
-    { emit_log; } 2>/dev/null | tr -d '%' >"$LOGTMP"
-    [ -s "$LOGTMP" ] && mv "$LOGTMP" "$LOG"
+    # Second feed: the same station dump, embedded in the polled script as a JS
+    # string. httpd only serves its own whitelisted static files without auth,
+    # so a separate .txt/.js URL was a dead end; the poll is already
+    # authenticated and already executes our script.
+    LOGTMP="$OUT.log"
+    emit_log 2>/dev/null | tr -d '%' \
+        | awk 'BEGIN { printf "window.franklinWlText = \"" }
+               { gsub(/\\/, "\\\\"); gsub(/"/, "\\\""); printf "%s\\n", $0 }
+               END { print "\";" }' >"$LOGTMP"
+    if [ -s "$LOGTMP" ]; then
+        cat "$LOGTMP" >>"$OUT"
+    fi
+    rm -f "$LOGTMP"
 }
 
 main "$@"
