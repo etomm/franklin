@@ -955,6 +955,26 @@ FEATURES = [
                   "the same way as cake/TEE; verified end-to-end on the device.",
          links=["docs/build-architecture.md", "docs/xt9-kernel-notes.md"]),
 
+    dict(id="wifi-clients", title="wifi-clients (wireless station feed) — workaround", cat="Monitoring",
+         modes="all",
+         status="tested",
+         what="Publishes the wireless client arrays the gnuton wireless-log page expects, from "
+              "the vendor `wl` tool.",
+         gnuton="gnuton's httpd answers `<% get_wl_status(); %>` from its own handler, which "
+                "reads `sta_info` through the XT8 struct layout.",
+         deps="`web-ui-overlay` (the page must be served from a writable /www) and the stock "
+              "`wl` tool.",
+         franklin="Companion job in the franklin_rc spirit: instead of emulating rc, it asks "
+                  "the driver for the same data and writes `/www/franklin-wifi.js`; the page "
+                  "includes that file in place of the broken handler.",
+         tested="Verified on the XT9: feed generated from real clients (assoclist + sta_info + "
+                "ARP), page patched to include it.",
+         risks="Field mapping follows the page's JS (mac, ip, name, rssi, rx/tx, time, phy, "
+               "flags); if gnuton changes that page the feed must follow.",
+         evidence="workaround: the XT8-built httpd emits an unquoted flags field (missing "
+                  "opening quote) because sta->flags is read at the wrong offset on XT9.",
+         links=["docs/build-architecture.md"]),
+
     dict(id="partial-rc", title="partial rc (capability advertisement) — workaround", cat="System",
          modes="all",
          status="tested",
@@ -1019,6 +1039,7 @@ KIND = {
     "franklin-mount": "workaround",
     "overlayfs": "workaround",
     "partial-rc": "workaround",
+    "wifi-clients": "workaround",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
     "entware": "franklin-feature",
@@ -1061,6 +1082,7 @@ UPSTREAM = {
     "franklin-mount": "n/a — Franklin workaround (ASUS busybox mount refuses rootfs targets)",
     "overlayfs": "n/a — Franklin workaround (CONFIG_OVERLAY_FS unset on stock)",
     "partial-rc": "n/a — Franklin workaround (stock rc advertises fewer capabilities than gnuton)",
+    "wifi-clients": "n/a — Franklin workaround (gnuton httpd is an XT8 build; its sta_info parsing breaks on XT9)",
     "amtm": "third-party (thelonelycoder/amtm) — bundled by gnuton/Merlin, not gnuton code",
     "cron": "stock ASUS (crond/cru); gnuton only adds the crontab command",
     "entware": "third-party (Entware project) - NOT gnuton",
@@ -1102,6 +1124,7 @@ DEPS = {
     "web-ui-overlay": ["web-ui", "boot-hook", "franklin-mount"],
     "networkmap": ["boot-hook", "franklin-mount"],
     "partial-rc": ["boot-hook"],
+    "wifi-clients": ["web-ui-overlay"],
     # gnuton features
     "web-ui": ["boot-hook"],
     "cake-qos": ["kernel-modules", "boot-hook"],

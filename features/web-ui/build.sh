@@ -41,6 +41,8 @@ chmod 755 "$OUT/opt/bin/gnuton-httpd"
 # 2. /www delta: new files + files whose content differs from stock.
 copy=0
 skip=0
+# deliberately not overridden (see note below)
+NO_OVERRIDE="ajax_wificlients.asp"
 (
     cd "$GNUTON_ROOTFS/www" || exit 1
     find . -type f -print | LC_ALL=C sort | while IFS= read -r f; do
@@ -59,6 +61,17 @@ skip=0
         copy=$((copy + 1))
     done
 )
+
+# The wireless-log page calls <% get_wl_status(); %>, but gnuton's httpd is an
+# XT8 build and cannot parse the XT9 driver's sta_info: it emits an unquoted
+# flags field and the page's JS dies. Replace the call with a blocking include
+# of the feed produced by the wifi-clients job (same data, correct format).
+WL_PAGE="$DELTA/Main_WStatus_Content.asp"
+if [ -f "$WL_PAGE" ]; then
+    sed -i "s|<% get_wl_status(); %>;|document.write('<script src=\"/franklin-wifi.js\"><\\\\/script>');|" "$WL_PAGE"
+    echo "patched wireless-log page to use /franklin-wifi.js"
+fi
+
 # The counters above run in a subshell, so recount for the summary.
 delta_files=$(find "$DELTA" -type f | wc -l)
 
@@ -87,7 +100,7 @@ SKIP_LIBS="libwlcsm libbwdpi"
 # driver does not match — the served JS is malformed (`,"-42",AU"]`) and the
 # page dies with a SyntaxError. Serving stock's version keeps the UI consistent
 # until httpd is rebuilt from source for this model.
-NO_OVERRIDE="Main_WStatus_Content.asp ajax_wificlients.asp"
+NO_OVERRIDE="ajax_wificlients.asp"
 LIB="$OUT/opt/lib/gnuton"
 libs=0
 skipped=0

@@ -381,7 +381,9 @@ def compose(args, feats, order, cfg):
               os.path.join(franklin, "bin", "franklin-boot"), written, "core")
     reg = os.path.join(franklin, "registry.d")
     for i, fid in enumerate(order, 1):
-        write_file(os.path.join(reg, "%02d-%s.env" % (i * 10, fid)),
+        # 3 digits: the runtime sources registry.d/*.env with a shell glob,
+        # which sorts lexicographically ("100-" would otherwise come before "20-").
+        write_file(os.path.join(reg, "%03d-%s.env" % (i, fid)),
                    registry_entry(fid, feats[fid]), 0o644, written)
 
     # ASUS app folder: exactly the files Franklin owns there

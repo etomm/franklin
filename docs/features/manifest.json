@@ -44,6 +44,7 @@
       "kernel-modules",
       "franklin-mount",
       "overlayfs",
+      "wifi-clients",
       "partial-rc",
       "web-ui-overlay"
     ],
@@ -894,6 +895,18 @@
       ]
     },
     {
+      "id": "wifi-clients",
+      "title": "wifi-clients (wireless station feed) \u2014 workaround",
+      "category": "Monitoring",
+      "modes": "all",
+      "status": "tested",
+      "kind": "workaround",
+      "required": false,
+      "depends_on": [
+        "web-ui-overlay"
+      ]
+    },
+    {
       "id": "partial-rc",
       "title": "partial rc (capability advertisement) \u2014 workaround",
       "category": "System",
@@ -987,6 +1000,7 @@
     "temperature-monitoring",
     "traffic-monitor",
     "web-ui-overlay",
+    "wifi-clients",
     "wifi-insight",
     "wireguard-client",
     "wireguard-server",

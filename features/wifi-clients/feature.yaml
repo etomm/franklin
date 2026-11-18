@@ -1,0 +1,19 @@
+id: wifi-clients
+title: "wifi-clients (franklin_rc job: wireless station feed)"
+kind: workaround
+required: false
+enabled_by_default: true
+requires: [web-ui-overlay]
+provides:
+  - /www/franklin-wifi.js (dataarray*/wificlients* for the wireless-log page)
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  Companion job in the franklin_rc spirit: stock's httpd handler for this page
+  is fine, but gnuton's httpd is an XT8 build, and its get_wl_status() parses
+  the XT9 driver's sta_info with the wrong struct layout, emitting invalid JS
+  (,"-42",AU"]). Instead of emulating rc, this job asks the driver through the
+  vendor `wl` tool and publishes the same arrays the page consumes, so the page
+  needs one line changed from <% get_wl_status(); %> to a script include.

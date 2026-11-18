@@ -23,7 +23,7 @@ Status: `tested` = verified on the XT9; `stock` = stock-provided; `planned`/`mod
 
 ## Index by kind
 
-### Workarounds (Franklin mechanisms, only because stock is not gnuton) (7)
+### Workarounds (Franklin mechanisms, only because stock is not gnuton) (8)
 
 These are **not gnuton features**. They exist so gnuton userland can run on unmodified stock firmware.
 
@@ -34,6 +34,7 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | Kernel modules (build recipe) | Kernel | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [kernel-modules](kernel-modules.md) |
 | franklin-mount (mount(2) helper) — workaround | System | all | `tested` | no | — | [franklin-mount](franklin-mount.md) |
 | overlayfs modules (overlay.ko + exportfs.ko) — workaround | Kernel | all | `tested` | no | [kernel-modules](../features/kernel-modules.md) | [overlayfs](overlayfs.md) |
+| wifi-clients (wireless station feed) — workaround | Monitoring | all | `tested` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [wifi-clients](wifi-clients.md) |
 | partial rc (capability advertisement) — workaround | System | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [partial-rc](partial-rc.md) |
 | Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md), [franklin-mount](../features/franklin-mount.md) | [web-ui-overlay](web-ui-overlay.md) |
 
@@ -205,11 +206,12 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 64. temperature-monitoring  (gnuton-feature)
 65. traffic-monitor  (gnuton-feature)
 66. web-ui-overlay  (workaround)
-67. wifi-insight  (gnuton-feature)
-68. wireguard-client  (gnuton-feature)
-69. wireguard-server  (gnuton-feature)
-70. wireless-survey  (gnuton-feature)
-71. wireless-tuning  (stock)
+67. wifi-clients  (workaround)
+68. wifi-insight  (gnuton-feature)
+69. wireguard-client  (gnuton-feature)
+70. wireguard-server  (gnuton-feature)
+71. wireless-survey  (gnuton-feature)
+72. wireless-tuning  (stock)
 ```
 
 ## Dependency graph
@@ -289,6 +291,7 @@ graph TD
   time_machine["time-machine"]
   franklin_mount["franklin-mount"]
   overlayfs["overlayfs"]
+  wifi_clients["wifi-clients"]
   partial_rc["partial-rc"]
   web_ui_overlay["web-ui-overlay"]
   boot_hook --> web_ui
@@ -360,6 +363,7 @@ graph TD
   boot_hook --> download_manager
   samba_ftp_webdav --> time_machine
   kernel_modules --> overlayfs
+  web_ui_overlay --> wifi_clients
   boot_hook --> partial_rc
   web_ui --> web_ui_overlay
   boot_hook --> web_ui_overlay
