@@ -11,5 +11,5 @@ if [ -f "$pidfile" ]; then
     rm -f "$pidfile"
 fi
 # Remove the generated file so the page falls back cleanly.
-[ -f /www/franklin-wifi.js ] && rm -f /www/franklin-wifi.js
+[ -f /www/ajax_wificlients.asp ] && rm -f /www/ajax_wificlients.asp
 exit 0

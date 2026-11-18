@@ -62,14 +62,16 @@ NO_OVERRIDE="ajax_wificlients.asp"
     done
 )
 
-# The wireless-log page calls <% get_wl_status(); %>, but gnuton's httpd is an
-# XT8 build and cannot parse the XT9 driver's sta_info: it emits an unquoted
-# flags field and the page's JS dies. Replace the call with a blocking include
-# of the feed produced by the wifi-clients job (same data, correct format).
+# The wireless-log page has two data paths, both answered by httpd ASP
+# handlers that gnuton's XT8 build cannot satisfy on this model:
+#   * an inline <% get_wl_status(); %> on load (emits malformed JS), and
+#   * a /ajax_wificlients.asp poll every 3 s (404 here).
+# The wifi-clients job publishes /www/ajax_wificlients.asp with the same
+# variables, so the page only needs the inline call removed.
 WL_PAGE="$DELTA/Main_WStatus_Content.asp"
 if [ -f "$WL_PAGE" ]; then
-    sed -i "s|<% get_wl_status(); %>;|document.write('<script src=\"/franklin-wifi.js\"><\\\\/script>');|" "$WL_PAGE"
-    echo "patched wireless-log page to use /franklin-wifi.js"
+    sed -i "s|<% get_wl_status(); %>;||" "$WL_PAGE"
+    echo "patched wireless-log page (feed served by /ajax_wificlients.asp)"
 fi
 
 # The counters above run in a subshell, so recount for the summary.

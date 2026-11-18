@@ -12,7 +12,7 @@
 #   dataarray[N]   = [ssid, 0, 0, noise, channel, bssid, 0, mode]
 set -u
 
-OUT="${WIFI_CLIENTS_OUT:-/www/franklin-wifi.js}"
+OUT="${WIFI_CLIENTS_OUT:-/www/ajax_wificlients.asp}"
 TMP="$OUT.tmp"
 
 clean() { printf '%s' "$1" | tr -d '"\\\n\r'; }
