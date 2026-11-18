@@ -46,6 +46,26 @@ shows on this model: the bridge, the uplink and the per-radio BSS interfaces.
 Counters are sampled as deltas, so a reboot or an interface re-created under the
 same name cannot record a bogus spike — the first sample only re-baselines.
 
+## ASUS page shell (do not strip it)
+
+Stock ASUS content pages are not standalone documents: each one draws its own
+left menu, footer and tab strip. Three things are easy to get wrong here, and
+all three were bugs first:
+
+1. **`show_menu()` needs the containers.** `state.js` builds the menu into
+   `#mainMenu`, `#subMenu`, `#tabMenu` and writes the footer into `#footer`.
+   A page without `<div id="footer"></div>` throws inside `show_menu()`, which
+   aborts the inline `onload="show_menu();init();"` — no menu, and `init()`
+   never runs, so the page looks empty.
+2. **Chart.js must load before `state.js`.** `state.js` pulls in RequireJS;
+   Chart.js is a UMD bundle and, once `define` exists, registers as an AMD
+   module instead of defining `window.Chart`. The stock pages load it early for
+   this reason. Symptom: `ReferenceError: Chart is not defined`.
+3. **The page selector is our navigation here.** In AP mode ASUS renders no tab
+   strip for this section, so the page carries its own
+   Realtime / Last 24 hours / Daily / Monthly selector. It navigates to the
+   three pages this feature installs plus the stock realtime page.
+
 ## Deliberate limits
 
 * **No per-client or per-app numbers.** That needs the DPI stack (`bwdpi` +

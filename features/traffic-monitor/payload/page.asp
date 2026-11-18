@@ -15,14 +15,18 @@
 <link rel="stylesheet" type="text/css" href="menu_style.css">
 <link rel="shortcut icon" href="images/favicon.png">
 <link rel="icon" href="images/favicon.png">
+<!-- Chart.js must load before state.js: state.js pulls in RequireJS, and
+     Chart's UMD wrapper registers itself as an AMD module instead of
+     window.Chart once `define` exists. The stock pages load it in this order
+     for the same reason. -->
 <script type="text/javascript" src="/js/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="/js/httpApi.js"></script>
+<script type="text/javascript" src="/js/chart.min.js"></script>
 <script language="JavaScript" type="text/javascript" src="help.js"></script>
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
 <script language="JavaScript" type="text/javascript" src="/tmmenu.js"></script>
 <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
-<script language="JavaScript" type="text/javascript" src="/js/httpApi.js"></script>
-<script type="text/javascript" src="/js/chart.min.js"></script>
 <script type='text/javascript'>
 var AUTOLOGOUT_MAX_MINUTE = 0;
 var chart = null;
@@ -67,9 +71,11 @@ function draw(ifname) {
       vout.push(+(rows[i][2] / 1048576).toFixed(1));
     }
   }
-  document.getElementById('tm_totals').innerHTML = rows.length
-    ? 'in <b>' + human(tin) + '</b> &nbsp; out <b>' + human(tout) + '</b>'
-    : '';
+  document.getElementById('tm_totals').innerHTML = !rows.length ? ''
+    : (mode === 'live')
+      ? 'last sample: in <b>' + (rows[rows.length - 1][1] / 1000000).toFixed(2) + '</b> Mbit/s' +
+        ' &nbsp; out <b>' + (rows[rows.length - 1][2] / 1000000).toFixed(2) + '</b> Mbit/s'
+      : 'in <b>' + human(tin) + '</b> &nbsp; out <b>' + human(tout) + '</b>';
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('tm_chart'), {
     type: mode === 'live' ? 'line' : 'bar',
@@ -206,5 +212,6 @@ Live view: Mbit/s. Daily and monthly views: totals in MB.
 </td>
 </tr>
 </table>
+<div id="footer"></div>
 </body>
 </html>
