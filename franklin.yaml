@@ -38,6 +38,7 @@ features:
   - ui-capabilities
   - wifi-clients
   - wifi-insight
+  - ui-policy
   - traffic-monitor
   - snmp
   - networkmap

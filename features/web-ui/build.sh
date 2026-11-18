@@ -97,15 +97,9 @@ if [ -f "$SYS_PAGE" ]; then
     fi
 fi
 
-# AP mode hides the Traffic Analyzer section (menuTree.js), which is where the
-# Traffic Monitor tabs live. The pages work here (they use stock /update.cgi),
-# so drop that exclusion: the section then shows up with its Traffic Monitor
-# tabs. The DPI-only tab stays hidden by the separate tabs rule.
-MENU_JS="$DELTA/require/modules/menuTree.js"
-if [ -f "$MENU_JS" ]; then
-    sed -i '/retArray.push("menu_TrafficAnalyzer");/d' "$MENU_JS"
-    echo "unhid the Traffic Analyzer / Traffic Monitor menu (AP mode)"
-fi
+# UI policy (menu exposure in AP mode) lives in features/ui-policy/:
+# it is a product decision, applied at runtime to the served tree,
+# not a change to the delta.
 
 # The counters above run in a subshell, so recount for the summary.
 delta_files=$(find "$DELTA" -type f | wc -l)

@@ -1046,6 +1046,23 @@ FEATURES = [
          links=["docs/features/franklin-rc.md", "features/franklin-rc/README.md",
                 "usr/lib/libshared.so (notify_rc)"]),
 
+    dict(id="ui-policy", title="UI policy (what Franklin exposes in AP-mode UI)", cat="System",
+         modes="all",
+         status="implemented",
+         what="Deliberate, reversible changes to what the gnuton UI shows on this node.",
+         gnuton="gnuton's menuTree hides router-only sections when sw_mode=3 (AP mode).",
+         deps="`web-ui`, `web-ui-overlay` (the served /www tree).",
+         franklin="Applies the policy at runtime to the served /www, keeping a pristine copy "
+                  "for stop.sh: today it unhides the Traffic Analyzer section so the Traffic "
+                  "Monitor tabs are reachable on a node. Kept out of web-ui/build.sh because "
+                  "it is a product decision, not a vendor-file fix; also applies to an existing "
+                  "gnuton installation, not just Franklin's delta.",
+         tested="On the XT9: section appears after start, original menuTree.js restored by stop; "
+                "the file is the served (overlaid) one, so the change survives without a rebuild.",
+         risks="A policy is not a fix: if gnuton's AP rationale matters (WAN accounting), the "
+               "exposed pages will show empty data unless a producer exists.",
+         links=["docs/feature-alignment.md", "features/ui-policy/README.md"]),
+
     dict(id="ui-capabilities", title="UI capabilities (rc_support tokens) — workaround", cat="System",
          modes="all",
          status="tested",
@@ -1118,6 +1135,7 @@ KIND = {
     "snmp": "gnuton-feature",
     "franklin-rc": "franklin-feature",
     "test-access": "franklin-feature",
+    "ui-policy": "franklin-feature",
     "traffic-monitor": "franklin-feature",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
@@ -1222,6 +1240,7 @@ DEPS = {
     "snmp": ["ui-capabilities", "franklin-rc"],
     "franklin-rc": ["boot-hook"],
     "test-access": ["ui-capabilities"],
+    "ui-policy": ["web-ui", "web-ui-overlay"],
     "tor": ["boot-hook", "firewall-custom"],
     "nfs": ["boot-hook", "kernel-modules"],
     "aidisk-nfs": ["nfs", "web-ui"],

@@ -38,7 +38,7 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | UI capabilities (rc_support tokens) — workaround | System | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [ui-capabilities](ui-capabilities.md) |
 | Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md), [franklin-mount](../features/franklin-mount.md) | [web-ui-overlay](web-ui-overlay.md) |
 
-### Franklin features (not in gnuton at all) (5)
+### Franklin features (not in gnuton at all) (6)
 
 Franklin additions. gnuton does not provide these; removing them changes nothing for any gnuton port.
 
@@ -49,6 +49,7 @@ Franklin additions. gnuton does not provide these; removing them changes nothing
 | Entware package ecosystem | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
 | test-access (unauthenticated read-only UI, testing only) | System | all | `implemented` | no | [ui-capabilities](../features/ui-capabilities.md) | [test-access](test-access.md) |
 | franklin-rc (companion for missing rc actions) | System | all | `implemented` | no | [boot-hook](../features/boot-hook.md) | [franklin-rc](franklin-rc.md) |
+| UI policy (what Franklin exposes in AP-mode UI) | System | all | `implemented` | no | [web-ui](../features/web-ui.md), [web-ui-overlay](../features/web-ui-overlay.md) | [ui-policy](ui-policy.md) |
 
 ### Entware packages (third-party binaries Franklin integrates) (2)
 
@@ -210,12 +211,13 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 66. temperature-monitoring  (gnuton-feature)
 67. web-ui-overlay  (workaround)
 68. traffic-monitor  (franklin-feature)
-69. wifi-clients  (workaround)
-70. wifi-insight  (franklin-feature)
-71. wireguard-client  (gnuton-feature)
-72. wireguard-server  (gnuton-feature)
-73. wireless-survey  (gnuton-feature)
-74. wireless-tuning  (stock)
+69. ui-policy  (franklin-feature)
+70. wifi-clients  (workaround)
+71. wifi-insight  (franklin-feature)
+72. wireguard-client  (gnuton-feature)
+73. wireguard-server  (gnuton-feature)
+74. wireless-survey  (gnuton-feature)
+75. wireless-tuning  (stock)
 ```
 
 ## Dependency graph
@@ -298,6 +300,7 @@ graph TD
   wifi_clients["wifi-clients"]
   test_access["test-access"]
   franklin_rc["franklin-rc"]
+  ui_policy["ui-policy"]
   ui_capabilities["ui-capabilities"]
   web_ui_overlay["web-ui-overlay"]
   boot_hook --> web_ui
@@ -373,6 +376,8 @@ graph TD
   web_ui_overlay --> wifi_clients
   ui_capabilities --> test_access
   boot_hook --> franklin_rc
+  web_ui --> ui_policy
+  web_ui_overlay --> ui_policy
   boot_hook --> ui_capabilities
   web_ui --> web_ui_overlay
   boot_hook --> web_ui_overlay

@@ -51,29 +51,36 @@ Direction: the handler is compiled into `httpd` (closed); XT9 rebuild is the
 real fix. Until then the fallback to `nvram http_username` is the smallest
 correct patch.
 
-**#3 `menuTree.js` — PATCH (delete one line).**
-Removes the AP-mode exclusion of the Traffic Analyzer section so the Traffic
-Monitor tabs are reachable. This is a **product decision**, not a defect fix.
-Direction: keep it explicit and documented as a Franklin UI policy, or drop the
-exposure.
+**#3 `menuTree.js` — moved to its own feature (POLICY, not a patch).**
+The AP-mode exclusion is a product decision; it now lives in
+`features/ui-policy/` (requires `web-ui`, `web-ui-overlay`), applied at runtime
+to the served tree with a saved original for `stop.sh`. No longer part of the
+`web-ui` delta, and it works the same on an existing gnuton installation.
 
-**#4 `WiFi_Insight.asp` — SUBSTITUTED.**
-gnuton ships a stub whose linked sub-pages (`visindex.asp`, `metrics.asp`,
-`channelcapacity.asp`, `configure.asp`) exist nowhere in its firmware. The MIT
-addon is used instead, and it manages its own menu entry (`menuTree.js` edit).
-This is a deliberate substitute for a broken vendor artifact, not a patch of
-one.
+**#4 `WiFi_Insight.asp` — SUBSTITUTED, now with the real cause.**
+The pages gnuton links do exist — in the XT9 GPL as Broadcom's
+`.../apps/visualization/www/` (`visindex.asp`, `metrics.asp`,
+`channelcapacity.asp`, `configure.asp`, …) — and the backend is
+`httpd/vis_gui.c` (`json.cgi*`, `visdata.db*`). But **neither** stock XT9 nor
+gnuton XT8 httpd contains the string `json.cgi`: `vis_gui` is compiled out of
+both builds, and the pages' ~15 JS/CSS assets plus `visdata.db` are absent from
+the GPL. So the vendor feature is incomplete in every binary we have; the MIT
+addon is a substitute for a build-configuration omission, not for a missing
+program. Unbroken requires httpd candidate E (see experiments/httpd-variants).
 
-**#5 Traffic Monitor pages — REPLACED.**
+**#5 Traffic Monitor pages — REPLACED, with a vendor path identified.**
 `Main_TrafficMonitor_last24/daily/monthly.asp` are our pages reading our sqlite
-data. The vendor pages are fine; only their data source (`/update.cgi`) is not
-fed on an AP node.
-Direction (textbook franklin-rc workaround): keep the vendor pages, and
-produce the `/update.cgi` output they expect from our collector — a handler
-served from the shim/companion instead of a page takeover.
+data. The vendor pages are fine; their data comes from `/update.cgi`, which
+serves `/var/spool/rstats-history.js` written by the **stock `/bin/rstats`
+daemon** (nvram `rstats_*`). rstats is present in both firmwares but is not
+started in AP mode. Starting it is the intended fix; the takeover then goes
+away.
 
 ## Priority
 
-1. **#5** — largest deviation, cleanest fix (feed `/update.cgi`, delete our page).
-2. **#1/#2** — converge on the XT9 `httpd` build; both are handler defects.
-3. **#3/#4** — document as deliberate policy/substitution; no code change.
+1. **#5** — start the stock `rstats` daemon, keep the vendor pages, delete our
+   page takeover and the sqlite collector's published page.
+2. **#1/#2** — handler defects; evaluate shim (D) vs rebuilt httpd (E) using
+   `docs/experiments/httpd-variants.md`.
+3. **#3** — done: `features/ui-policy/` (policy, reversible).
+4. **#4** — substitute stands until an httpd with `vis_gui` exists.

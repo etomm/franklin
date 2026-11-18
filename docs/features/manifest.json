@@ -51,7 +51,8 @@
       "wifi-insight",
       "entware",
       "test-access",
-      "franklin-rc"
+      "franklin-rc",
+      "ui-policy"
     ],
     "entware-package": [
       "disk-monitoring",
@@ -934,6 +935,19 @@
       ]
     },
     {
+      "id": "ui-policy",
+      "title": "UI policy (what Franklin exposes in AP-mode UI)",
+      "category": "System",
+      "modes": "all",
+      "status": "implemented",
+      "kind": "franklin-feature",
+      "required": false,
+      "depends_on": [
+        "web-ui",
+        "web-ui-overlay"
+      ]
+    },
+    {
       "id": "ui-capabilities",
       "title": "UI capabilities (rc_support tokens) \u2014 workaround",
       "category": "System",
@@ -1029,6 +1043,7 @@
     "temperature-monitoring",
     "web-ui-overlay",
     "traffic-monitor",
+    "ui-policy",
     "wifi-clients",
     "wifi-insight",
     "wireguard-client",

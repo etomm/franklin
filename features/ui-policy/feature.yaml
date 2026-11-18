@@ -1,0 +1,22 @@
+id: ui-policy
+title: "UI policy (what Franklin exposes in the AP-mode UI)"
+kind: franklin-feature
+required: false
+enabled_by_default: true
+requires: [web-ui, web-ui-overlay]
+provides:
+  - menuTree.js adjustments that express Franklin's UI policy
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  Environment-specific product decisions, kept out of web-ui/build.sh so the
+  delta stays close to gnuton's files. Today it only unhides the Traffic
+  Analyzer section in AP mode (gnuton's menuTree hides it whenever sw_mode=3),
+  because the tabs it contains are the paths to the Traffic Monitor.
+  Applied at runtime to the served /www (overlaid tree), with the original file
+  saved for stop.sh; it therefore also matches an existing gnuton installation,
+  not just Franklin's delta. Every policy entry is listed in payload/policy.sh
+  with the reason, and stop.sh reverts all of them.
+  This feature does not fix a vendor defect: it states a Franklin choice.
