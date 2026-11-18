@@ -38,6 +38,37 @@ Consequences for this plan:
   output format). Options: a response rewriter in front of httpd, the rebuilt
   httpd (E), or the current page patch as a documented stopgap.
 
+## Decision (2026-11-18): parked, with a CI recipe
+
+Root cause established: the node is **XT8PRO / XT8PRO_GPY211** (`productid=XT8PRO`,
+`/proc/device-tree/model=XT8PRO_GPY211`), and gnuton publishes **no XT8PRO target**
+(their 3004 matrix tops out at RT-AX95Q/RT-AXE95Q). Every handler mismatch we
+measured is that model gap, not a bug in a page.
+
+Local build is not possible on this machine: WSL's `df` shows a 1 TB virtual disk,
+but its sparse `ext4.vhdx` lives on `C:` with ~9 GB free — source (~5 GB) plus
+build (~20 GB) do not fit. Stopped and cleaned.
+
+**Recipe for later (GitHub Actions, no local disk):**
+
+1. Fork `Asuswrt-Merlin/asuswrt-merlin.ng-gnuton` at tag `3004.388.11_1-gnuton1`.
+2. Add the model, using the XT9 GPL files (already extracted for reference):
+   - `release/src-rt-5.04axhnd.675x/targets/96756GW/96756GW.XT8PRO_GPY211`
+   - `release/src-rt-5.04axhnd.675x/targets/nvram/6756/XT8PRO_GPY211.nvm`
+   - register `xt8pro_gpy211` in `target.mak`/model list, modelled on `rt-ax95q`.
+3. Their workflow (`.github/workflows/github-actions.yml`) runs
+   `make ${MODEL}` in `gnuton/asuswrt-merlin-toolchains-docker:latest`
+   with `SDK=src-rt-5.04axhnd.675x`. Push a branch with `MODEL=xt8pro_gpy211`
+   added to the matrix; download the artifact.
+4. Extract `usr/sbin/httpd` + its libs from the image; run
+   `sh tools/lib-audit.sh <lib>` before shipping any library.
+5. Test on `:8089` with the vendor pages; if the wireless log/accounts/`json.cgi`
+   pass, ship as the web-ui delta and delete patches #1/#2 (and enable vis_gui
+   for #4).
+
+Until then the current page patches stay, documented as model-gap stopgaps
+(`docs/feature-alignment.md`).
+
 ## Steps
 
 ### A. Measure the current baseline (already known, record it)
