@@ -34,6 +34,8 @@ vendor file edited · **REPLACED** = our file served under a vendor's name ·
 | web-ui | gnuton httpd + 425-file `/www` delta + gnuton libs | build-time patches | PATCH (see #1–#3) |
 | traffic-monitor | none (our page + sqlite collector) | replaces three vendor pages | REPLACED (see #5) |
 
+Actionable plans for every item below: [plans/README.md](../plans/README.md) (0001 rstats history, 0002 httpd variant, 0003 vis_gui, 0004 ui policy).
+
 ## Deviations
 
 **#1 `Main_WStatus_Content.asp` — PATCH (2 edits).**
