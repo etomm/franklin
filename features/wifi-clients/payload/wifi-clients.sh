@@ -152,6 +152,15 @@ main() {
         cat "$LOGTMP" >>"$OUT"
     fi
     rm -f "$LOGTMP"
+
+    # The page calls GenContent() only once, at load, before this feed exists.
+    # Since this script is re-executed on every poll, refresh the textarea here
+    # whenever it is on the page.
+    {
+        echo 'if (typeof jQuery !== "undefined" && document.getElementById("wl_log") && window.franklinWlText) {'
+        echo '    jQuery("#wl_log").text(window.franklinWlText);'
+        echo '}'
+    } >>"$OUT"
 }
 
 main "$@"
