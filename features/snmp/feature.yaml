@@ -3,7 +3,7 @@ title: "SNMP agent (gnuton snmpd + gnuton page)"
 kind: gnuton-feature
 required: false
 enabled_by_default: true
-requires: [partial-rc]
+requires: [ui-capabilities, franklin-rc]
 provides:
   - /opt/sbin/snmpd
   - the net-snmp libraries it links against
@@ -19,6 +19,6 @@ notes: >
   feature ships the real gnuton binary and the libraries it needs, generates
   /tmp/snmpd.conf with the same rules gnuton's rc uses, and starts/stops the
   daemon from nvram (snmpd_enable, roCommunity, rwCommunity, sysName, ...).
-  A per-minute watcher applies changes made in the UI, since stock rc cannot
-  run the page's `restart_snmpd` action. Works in AP mode: SNMP is a local
-  daemon and needs no WAN.
+  The page's Apply sends `restart_snmpd`, which stock rc ignores; the
+  franklin-rc companion catches it and re-runs this feature's start hook
+  immediately. Works in AP mode: SNMP is a local daemon and needs no WAN.

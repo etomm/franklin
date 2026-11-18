@@ -18,9 +18,8 @@ such action (`strings rc` shows `snmpd_enable` only in the firewall rules).
 ```
 build.sh             stages gnuton snmpd + libnetsnmp{,-agent,-helpers,-mibs}.so.35
 payload/lib.sh       config writer + shared helpers
-payload/start.sh     (re)write /tmp/snmpd.conf from nvram, (re)start snmpd, add cron
-payload/watch.sh     per-minute: apply changed settings, restart a dead agent
-payload/stop.sh      stop agent + cron, leave config/nvram alone
+payload/start.sh     (re)write /tmp/snmpd.conf from nvram, (re)start snmpd
+payload/stop.sh      stop the agent, leave config/nvram alone
 ```
 
 `start.sh` also recreates the `.so.35` SONAME links: the build ships only the
@@ -45,10 +44,10 @@ The SNMPv3 user is the router's `http_username`. Generated file is
 
 ## Applying changes
 
-The stock Apply button writes nvram but cannot restart the daemon, so
-`watch.sh` runs every minute and compares a hash of the settings. Changes land
-within a minute, a disabled agent still starts when switched on, and a crashed
-agent is restarted.
+The stock Apply button writes nvram and then sends `restart_snmpd`. Stock `rc`
+ignores that action, but `franklin-rc` intercepts it in httpd and re-runs this
+feature's `start.sh`, so changes take effect immediately. The handler lives in
+`features/franklin-rc/actions/restart_snmpd.sh`.
 
 ## AP mode
 

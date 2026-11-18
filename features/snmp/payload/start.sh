@@ -26,10 +26,8 @@ mkdir -p "$state"
     exit 1
 }
 
-# Always keep the watcher scheduled: a disabled agent must still notice being
-# switched on from the UI without a reboot.
-cru d snmp_watch 2>/dev/null
-cru a snmp_watch "* * * * * $src/watch.sh" 2>/dev/null
+# No polling: the SNMP page's Apply sends `restart_snmpd`, which stock rc
+# ignores but the franklin-rc companion handles, calling this script again.
 
 if snmp_running; then
     kill "$(pidof snmpd)" 2>/dev/null

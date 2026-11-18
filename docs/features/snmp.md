@@ -9,7 +9,8 @@
 
 ## Dependencies
 
-- [partial-rc](partial-rc.md)
+- [ui-capabilities](ui-capabilities.md)
+- [franklin-rc](franklin-rc.md)
 
 ## Build / install (separable)
 

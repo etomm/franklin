@@ -8,8 +8,8 @@ fi
 orig="$FRANKLIN_ROOT/state/rc_support.orig"
 if [ -f "$orig" ]; then
     nvram set rc_support="$(cat "$orig")" 2>/dev/null
-    echo "partial-rc: restored original rc_support"
+    echo "ui-capabilities: restored original rc_support"
 else
-    echo "partial-rc: no saved original; reboot regenerates it"
+    echo "ui-capabilities: no saved original; reboot regenerates it"
 fi
 exit 0

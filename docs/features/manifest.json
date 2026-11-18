@@ -43,13 +43,14 @@
       "franklin-mount",
       "overlayfs",
       "wifi-clients",
-      "partial-rc",
+      "ui-capabilities",
       "web-ui-overlay"
     ],
     "franklin-feature": [
       "traffic-monitor",
       "wifi-insight",
-      "entware"
+      "entware",
+      "franklin-rc"
     ],
     "entware-package": [
       "disk-monitoring",
@@ -357,7 +358,8 @@
       "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
-        "partial-rc"
+        "ui-capabilities",
+        "franklin-rc"
       ]
     },
     {
@@ -907,8 +909,20 @@
       ]
     },
     {
-      "id": "partial-rc",
-      "title": "partial rc (capability advertisement) \u2014 workaround",
+      "id": "franklin-rc",
+      "title": "franklin-rc (companion for missing rc actions)",
+      "category": "System",
+      "modes": "all",
+      "status": "implemented",
+      "kind": "franklin-feature",
+      "required": false,
+      "depends_on": [
+        "boot-hook"
+      ]
+    },
+    {
+      "id": "ui-capabilities",
+      "title": "UI capabilities (rc_support tokens) \u2014 workaround",
       "category": "System",
       "modes": "all",
       "status": "tested",
@@ -955,6 +969,7 @@
     "dns-director",
     "firmware-upgrade",
     "franklin-mount",
+    "franklin-rc",
     "guest-network",
     "igmp-snooping",
     "ipsec-vpn",
@@ -977,17 +992,17 @@
     "openvpn-server",
     "overlayfs",
     "parental-controls",
-    "partial-rc",
     "port-forwarding",
     "reboot-schedule",
     "samba-ftp-webdav",
-    "snmp",
     "ssh-access",
     "syslog",
     "tee",
     "time-machine",
     "tor",
     "traffic-analyzer",
+    "ui-capabilities",
+    "snmp",
     "usb-modem",
     "vlan-iptv",
     "vpn-director",

@@ -30,7 +30,7 @@ features:
   - franklin-mount
   - web-ui
   - web-ui-overlay
-  - partial-rc
+  - ui-capabilities
   - wifi-clients
   - wifi-insight
   - traffic-monitor

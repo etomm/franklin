@@ -1,0 +1,26 @@
+id: franklin-rc
+title: "franklin-rc (companion for rc actions stock lacks)"
+kind: franklin-feature
+required: false
+enabled_by_default: true
+requires: [boot-hook]
+provides:
+  - opt/bin/franklin-rc (dispatcher: franklin-rc <action>)
+  - opt/lib/gnuton/libfranklin_rc.so (LD_PRELOAD shim over httpd's notify_rc)
+  - features/franklin-rc/actions/<action>.sh (one handler per missing rc action)
+payload: payload
+build: build.sh
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  Stock rc is pid 1 and cannot be patched or subscribed to, so a companion
+  cannot receive its action signal. The seam is the caller: the gnuton httpd we
+  run resolves notify_rc() dynamically from libshared (undefined symbol in the
+  binary), so a small LD_PRELOAD shim intercepts it. Actions Franklin provides
+  are handed to `franklin-rc <action>`; everything else is forwarded untouched
+  to the real function. All seven notify_rc variants are covered (their
+  signatures were recovered from libshared's thunks). Handlers are thin glue that reuse gnuton's own
+  binaries/sources (the SNMP handler regenerates its config and restarts the
+  agent). The shim's action table is generated from actions/*.sh at build time,
+  so adding a handler needs no C change.

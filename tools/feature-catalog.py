@@ -1006,7 +1006,30 @@ FEATURES = [
                   "opening quote) because sta->flags is read at the wrong offset on XT9.",
          links=["docs/build-architecture.md"]),
 
-    dict(id="partial-rc", title="partial rc (capability advertisement) — workaround", cat="System",
+    dict(id="franklin-rc", title="franklin-rc (companion for missing rc actions)", cat="System",
+         modes="all",
+         status="implemented",
+         what="Runs the rc actions stock firmware does not implement, when a page asks for them.",
+         gnuton="gnuton's rc implements more actions (restart_snmpd, restart_nfsd, ...); stock rc "
+                "ignores anything it does not know.",
+         deps="`boot-hook`; the httpd wrapper from `web-ui-overlay` loads the shim; "
+              "`actions/<action>.sh` handlers.",
+         franklin="Stock rc is pid 1, so it cannot be patched or subscribed to. The gnuton httpd we "
+                  "serve resolves `notify_rc()` dynamically from libshared, so a small LD_PRELOAD "
+                  "shim intercepts it: actions Franklin implements go to `franklin-rc <action>`, "
+                  "everything else is forwarded to the real `notify_rc` untouched. Handlers are thin "
+                  "glue over gnuton's own binaries/sources; the action table is generated from the "
+                  "handler filenames at build time.",
+         tested="On the XT9: the SNMP page's Apply (action_script=restart_snmpd) now restarts the "
+                "agent immediately instead of waiting for a poller; unknown actions still reach "
+                "stock rc.",
+         risks="Handlers run fire-and-forget, so an action whose page expects rc-style wait "
+               "semantics returns immediately; the wait arguments themselves are preserved for "
+               "actions forwarded to stock rc.",
+         links=["docs/features/franklin-rc.md", "features/franklin-rc/README.md",
+                "usr/lib/libshared.so (notify_rc)"]),
+
+    dict(id="ui-capabilities", title="UI capabilities (rc_support tokens) — workaround", cat="System",
          modes="all",
          status="tested",
          what="Tells the gnuton UI which capabilities exist, by appending tokens to nvram "
@@ -1072,10 +1095,11 @@ KIND = {
     "web-ui-overlay": "workaround",
     "franklin-mount": "workaround",
     "overlayfs": "workaround",
-    "partial-rc": "workaround",
+    "ui-capabilities": "workaround",
     "wifi-clients": "workaround",
     "wifi-insight": "franklin-feature",
     "snmp": "gnuton-feature",
+    "franklin-rc": "franklin-feature",
     "traffic-monitor": "franklin-feature",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
@@ -1118,7 +1142,7 @@ UPSTREAM = {
     "networkmap": "gnuton networkmap daemon; Franklin needs a shm-size workaround",
     "franklin-mount": "n/a — Franklin workaround (ASUS busybox mount refuses rootfs targets)",
     "overlayfs": "n/a — Franklin workaround (CONFIG_OVERLAY_FS unset on stock)",
-    "partial-rc": "n/a — Franklin workaround (stock rc advertises fewer capabilities than gnuton)",
+    "ui-capabilities": "n/a — Franklin workaround (stock rc advertises fewer capabilities than gnuton)",
     "traffic-monitor": "n/a - Franklin addition (ASUS only collects on router mode)",
     "wifi-insight": "third-party MIT addon (IfSugar/wifiinsight) - ASUS ships the real WiFi Insight only on its newest AI routers",
     "wifi-clients": "n/a — Franklin workaround (gnuton httpd is an XT8 build; its sta_info parsing breaks on XT9)",
@@ -1162,7 +1186,7 @@ DEPS = {
     "kernel-modules": ["boot-hook"],
     "web-ui-overlay": ["web-ui", "boot-hook", "franklin-mount"],
     "networkmap": ["boot-hook", "franklin-mount"],
-    "partial-rc": ["boot-hook"],
+    "ui-capabilities": ["boot-hook"],
     "wifi-clients": ["web-ui-overlay"],
     # gnuton features
     "web-ui": ["boot-hook"],
@@ -1177,7 +1201,8 @@ DEPS = {
     "wireless-survey": ["web-ui"],
     "network-tools": ["web-ui"],
     "temperature-monitoring": ["web-ui"],
-    "snmp": ["partial-rc"],
+    "snmp": ["ui-capabilities", "franklin-rc"],
+    "franklin-rc": ["boot-hook"],
     "tor": ["boot-hook", "firewall-custom"],
     "nfs": ["boot-hook", "kernel-modules"],
     "aidisk-nfs": ["nfs", "web-ui"],

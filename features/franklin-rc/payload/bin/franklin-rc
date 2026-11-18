@@ -1,0 +1,47 @@
+#!/bin/sh
+# franklin-rc - run rc actions that stock firmware does not implement.
+#
+# Called by libfranklin_rc.so (LD_PRELOADed into the gnuton httpd) when a page
+# sends an action_script this companion handles, and usable by hand:
+#
+#   franklin-rc restart_snmpd
+#
+# One handler per action: features/franklin-rc/actions/<action>.sh. Handlers
+# are glue over gnuton's own binaries/sources; they are not a reimplementation
+# of rc.
+set -u
+
+self=$(cd "$(dirname "$0")" && pwd -P) || exit 1
+root=$(cd "$self/.." && pwd -P) || exit 1
+FRANKLIN_ROOT="$root"
+export FRANKLIN_ROOT
+
+action="${1:-}"
+shift 2>/dev/null || true
+
+case "$action" in
+    "" )
+        echo "usage: franklin-rc <action> [args]" >&2
+        exit 64
+        ;;
+    *[!a-z0-9_]*)
+        echo "franklin-rc: invalid action name '$action'" >&2
+        exit 64
+        ;;
+esac
+
+handler="$root/features/franklin-rc/actions/$action.sh"
+if [ ! -f "$handler" ]; then
+    echo "franklin-rc: no handler for '$action'" >&2
+    exit 69
+fi
+
+log="$root/log/franklin-rc.log"
+mkdir -p "$root/log" 2>/dev/null
+printf '%s franklin-rc: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$action" >>"$log" 2>/dev/null
+
+out=$(/bin/sh "$handler" "$@" 2>&1)
+rc=$?
+printf '%s franklin-rc: %s -> %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$action" "$rc" >>"$log" 2>/dev/null
+[ -n "$out" ] && printf '%s franklin-rc: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$out" >>"$log" 2>/dev/null
+exit "$rc"

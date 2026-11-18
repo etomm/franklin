@@ -1,6 +1,10 @@
 #!/bin/sh
 # Advertise the capabilities the gnuton UI checks but stock does not claim.
 #
+# This feature is only the advertisement (one nvram string). The work behind
+# each token lives in its own feature, and runtime rc actions stock lacks are
+# handled by the `franklin-rc` companion.
+#
 # menuTree.js hides a page when httpd's get_ui_support() has no flag for it,
 # and that flag comes from nvram `rc_support`. Stock XT9 lacks tokens gnuton
 # expects, so those menus never appear.
@@ -26,7 +30,7 @@ TOKENS="nwtool usbX cake snmp"
 MANAGED="wifiradar nwtool usbX cake snmp"
 
 cur=$(nvram get rc_support 2>/dev/null)
-[ -n "$cur" ] || { echo "partial-rc: rc_support empty, nothing to do"; exit 0; }
+[ -n "$cur" ] || { echo "ui-capabilities: rc_support empty, nothing to do"; exit 0; }
 
 base=" $cur "
 for t in $MANAGED; do
@@ -45,14 +49,14 @@ for t in $TOKENS; do
 done
 
 if [ "$new" = "$cur" ]; then
-    echo "partial-rc: capabilities already advertised"
+    echo "ui-capabilities: capabilities already advertised"
     exit 0
 fi
 
 nvram set rc_support="$new" 2>/dev/null
 if [ "$(nvram get rc_support)" = "$new" ]; then
-    echo "partial-rc: rc_support = ${added:-unchanged} (managed: $TOKENS)"
+    echo "ui-capabilities: rc_support = ${added:-unchanged} (managed: $TOKENS)"
 else
-    echo "partial-rc: failed to set rc_support"
+    echo "ui-capabilities: failed to set rc_support"
     exit 1
 fi

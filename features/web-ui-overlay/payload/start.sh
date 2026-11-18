@@ -145,6 +145,12 @@ if [ -f "$state/web-ui-overlay.replace" ]; then
     {
         echo '#!/bin/sh'
         echo "export LD_LIBRARY_PATH=\"$lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}\""
+        # franklin-rc: intercept httpd's notify_rc() so rc actions stock lacks
+        # reach the companion instead of a silent no-op in init.
+        if [ -f "$lib/libfranklin_rc.so" ] && [ -x "$root/bin/franklin-rc" ]; then
+            echo "export LD_PRELOAD=\"$lib/libfranklin_rc.so\""
+            echo "export FRANKLIN_RC=\"$root/bin/franklin-rc\""
+        fi
         echo "cd \"$mnt\" || exit 1"
         # Run under the name "httpd": ASUS's watchdog checks `pidof httpd` and
         # would otherwise restart the daemon every 30 seconds.

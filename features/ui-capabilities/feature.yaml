@@ -1,5 +1,5 @@
-id: partial-rc
-title: partial rc (capability advertisement)
+id: ui-capabilities
+title: UI capabilities (rc_support tokens)
 kind: workaround
 required: false
 enabled_by_default: true
