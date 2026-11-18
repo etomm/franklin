@@ -29,7 +29,7 @@ gnuton's rc advertises more capabilities; the UI's menuTree.js hides pages when 
 
 ## Franklin approach
 
-A small shell stand-in for the rc behaviour we need: append `wifiradar`, `nwtool`, `usbX`, `cake` to rc_support at boot, restore on stop. This is the first slice of a partial-rc; further slices add data producers (wireless station lists) as they are proven.
+Appends the tokens for capabilities Franklin really provides to nvram `rc_support` at boot (`nwtool usbX cake snmp`) and restores the saved original on stop. It is only the capability advertisement: the data producers behind those pages are separate features (wifi-clients, traffic-monitor), not a reimplementation of rc.
 
 ## Tested / verified
 

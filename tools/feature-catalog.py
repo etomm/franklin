@@ -1014,10 +1014,11 @@ FEATURES = [
          gnuton="gnuton's rc advertises more capabilities; the UI's menuTree.js hides pages "
                 "when httpd's get_ui_support() reports no flag for them.",
          deps="`boot-hook`. Runtime-only nvram change (no commit).",
-         franklin="A small shell stand-in for the rc behaviour we need: append `wifiradar`, "
-                  "`nwtool`, `usbX`, `cake` to rc_support at boot, restore on stop. This is "
-                  "the first slice of a partial-rc; further slices add data producers "
-                  "(wireless station lists) as they are proven.",
+         franklin="Appends the tokens for capabilities Franklin really provides to nvram "
+                  "`rc_support` at boot (`nwtool usbX cake snmp`) and restores the saved "
+                  "original on stop. It is only the capability advertisement: the data "
+                  "producers behind those pages are separate features (wifi-clients, "
+                  "traffic-monitor), not a reimplementation of rc.",
          tested="Verified on the XT9: tokens are absent from stock's rc_support and the hook "
                 "sets them at runtime. `wifiradar` was retired after checking that gnuton ships "
                 "WiFi_Insight.asp but none of the pages it links to (visindex.asp, metrics.asp, "
