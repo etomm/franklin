@@ -38,12 +38,13 @@ These are **not gnuton features**. They exist so gnuton userland can run on unmo
 | partial rc (capability advertisement) — workaround | System | all | `tested` | no | [boot-hook](../features/boot-hook.md) | [partial-rc](partial-rc.md) |
 | Web UI overlay (gnuton httpd on :8088, optional /www bind) - workaround | UI | all | `tested` | no | [web-ui](../features/web-ui.md), [boot-hook](../features/boot-hook.md), [franklin-mount](../features/franklin-mount.md) | [web-ui-overlay](web-ui-overlay.md) |
 
-### Franklin features (not in gnuton at all) (2)
+### Franklin features (not in gnuton at all) (3)
 
 Franklin additions. gnuton does not provide these; removing them changes nothing for any gnuton port.
 
 | Feature | Category | Modes | Status | Required | Requires | Plan |
 |---|---|---|---|---|---|---|
+| Traffic Monitor | Monitoring | Router (WAN stats); AP limited | `stock+` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [traffic-monitor](traffic-monitor.md) |
 | WiFi Insight (third-party MIT addon) | Wireless | all | `tested` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [wifi-insight](wifi-insight.md) |
 | Entware package ecosystem | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
 
@@ -56,7 +57,7 @@ The tool exists **only** in Entware: neither stock nor gnuton ships it. These de
 | Disk monitoring (smartmontools) | Storage | all | `planned` | no | [entware](../features/entware.md) | [disk-monitoring](disk-monitoring.md) |
 | Download manager (aria2) | Storage | all | `planned` | no | [entware](../features/entware.md), [boot-hook](../features/boot-hook.md) | [download-manager](download-manager.md) |
 
-### gnuton / Merlin features (ported by Franklin) (35)
+### gnuton / Merlin features (ported by Franklin) (34)
 
 Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 
@@ -76,7 +77,6 @@ Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 | Custom firewall / NAT rules | Network | Router | `planned` | no | [boot-hook](../features/boot-hook.md) | [firewall-custom](firewall-custom.md) |
 | Cake QoS | QoS | Router (WAN shaping) | `tested` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md) | [cake-qos](cake-qos.md) |
 | Adaptive QoS / DPI | QoS | Router | `research` | no | [kernel-modules](../features/kernel-modules.md), [boot-hook](../features/boot-hook.md), [ipset](../features/ipset.md) | [adaptive-qos](adaptive-qos.md) |
-| Traffic Monitor | Monitoring | Router (WAN stats); AP limited | `stock+` | no | [web-ui](../features/web-ui.md) | [traffic-monitor](traffic-monitor.md) |
 | QoS Classification / Stats | QoS | Router | `research` | no | [adaptive-qos](../features/adaptive-qos.md), [web-ui](../features/web-ui.md) | [qos-classification](qos-classification.md) |
 | Tools / Sysinfo | Monitoring | all | `stock+` | no | [web-ui](../features/web-ui.md) | [sysinfo](sysinfo.md) |
 | Wireless Survey | Wireless | all | `stock+` | no | [web-ui](../features/web-ui.md) | [wireless-survey](wireless-survey.md) |
@@ -204,8 +204,8 @@ Closed components (Trend Micro DPI, ASUS cloud). Stock keeps them; Franklin must
 62. qos-classification  (gnuton-feature)
 63. sysinfo  (gnuton-feature)
 64. temperature-monitoring  (gnuton-feature)
-65. traffic-monitor  (gnuton-feature)
-66. web-ui-overlay  (workaround)
+65. web-ui-overlay  (workaround)
+66. traffic-monitor  (franklin-feature)
 67. wifi-clients  (workaround)
 68. wifi-insight  (franklin-feature)
 69. wireguard-client  (gnuton-feature)
@@ -319,7 +319,7 @@ graph TD
   kernel_modules --> adaptive_qos
   boot_hook --> adaptive_qos
   ipset --> adaptive_qos
-  web_ui --> traffic_monitor
+  web_ui_overlay --> traffic_monitor
   adaptive_qos --> qos_classification
   web_ui --> qos_classification
   web_ui --> sysinfo

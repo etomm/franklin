@@ -15,7 +15,6 @@
       "firewall-custom",
       "cake-qos",
       "adaptive-qos",
-      "traffic-monitor",
       "qos-classification",
       "sysinfo",
       "wireless-survey",
@@ -48,6 +47,7 @@
       "web-ui-overlay"
     ],
     "franklin-feature": [
+      "traffic-monitor",
       "wifi-insight",
       "entware"
     ],
@@ -281,10 +281,10 @@
       "category": "Monitoring",
       "modes": "Router (WAN stats); AP limited",
       "status": "stock+",
-      "kind": "gnuton-feature",
+      "kind": "franklin-feature",
       "required": false,
       "depends_on": [
-        "web-ui"
+        "web-ui-overlay"
       ]
     },
     {
@@ -998,8 +998,8 @@
     "qos-classification",
     "sysinfo",
     "temperature-monitoring",
-    "traffic-monitor",
     "web-ui-overlay",
+    "traffic-monitor",
     "wifi-clients",
     "wifi-insight",
     "wireguard-client",

@@ -1,0 +1,20 @@
+id: traffic-monitor
+title: "Traffic Monitor history (24h, our collector)"
+kind: franklin-feature
+required: false
+enabled_by_default: true
+requires: [web-ui-overlay]
+provides:
+  - /www/Main_TrafficMonitor_last24.asp (our page)
+  - /www/traffic-data.asp (data for the page)
+  - sqlite history on the USB
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  In AP mode ASUS hides Traffic Analyzer and never runs the accounting that
+  feeds the history tabs, so 24h/daily/monthly are empty even though the
+  realtime page works (it reads /update.cgi interface counters). This feature
+  samples /proc/net/dev into sqlite3 on the USB and replaces the 24h page with
+  one that charts that history. The stock realtime page is left untouched.

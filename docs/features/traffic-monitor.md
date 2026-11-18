@@ -3,17 +3,17 @@
 **Category:** Monitoring  
 **Modes:** Router (WAN stats); AP limited  
 **Status:** `stock+`  
-**Kind:** gnuton-feature  
+**Kind:** franklin-feature  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** n/a - Franklin addition (ASUS only collects on router mode)
 
 ## Dependencies
 
-- [web-ui](web-ui.md)
+- [web-ui-overlay](web-ui-overlay.md)
 
 ## Build / install (separable)
 
-See Franklin approach above; deploy from USB/boot hook.
+Franklin addition: install on USB and start from the boot hook.
 
 ## What it does
 
