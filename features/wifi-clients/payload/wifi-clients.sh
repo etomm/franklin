@@ -54,11 +54,16 @@ uptime_for() {
 phy_for() {
     st=$(wl -i "$1" sta_info "$2" 2>/dev/null)
     case "$st" in
-        *HE\ Capable*|*HE\ Cap*) printf 'HE' ;;
-        *VHT\ Cap*|*VHT\ Capab*) printf 'VHT' ;;
-        *HT\ Cap*|*HT\ Capab*)   printf 'HT' ;;
+        *"HE Cap"*|*"HE cap"*)     printf 'HE' ;;
+        *"VHT caps"*|*"VHT Cap"*)  printf 'VHT' ;;
+        *"HT caps"*|*"HT Cap"*)    printf 'HT' ;;
         *) printf '' ;;
     esac
+}
+
+utilization() {  # busy % from the last chanim_stats row (header is line 2)
+    u=$(wl -i "$1" chanim_stats 2>/dev/null | awk 'END {print $15}')
+    case "${u:-}" in ''|*[!0-9]*) printf '0' ;; *) printf '%s' "$u" ;; esac
 }
 
 flags_for() {
@@ -80,8 +85,9 @@ emit_unit() {  # emit_unit <unit> <ifname>
     noise=$(wl -i "$ifc" noise 2>/dev/null | awk '{print $NF}')
     [ -n "${noise:-}" ] || noise=0
 
-    printf 'dataarray%d = ["%s","0","0","%s","%s","%s","0","AP"];\n' \
-        "$u" "$ssid" "$noise" "$ch" "$bssid"
+    util=$(utilization "$ifc")
+    printf 'dataarray%d = ["%s","0","0","%s","%s","%s","%s","AP"];\n' \
+        "$u" "$ssid" "$noise" "$ch" "$bssid" "$util"
 
     printf 'wificlients%d = [' "$u"
     first=1
