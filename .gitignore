@@ -2,7 +2,7 @@
 firmware/
 vendor/
 release/
-build/
+/build/
 dist/
 # Generated feature payloads (staged by build.sh; not source)
 features/web-ui/payload/
