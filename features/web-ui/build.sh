@@ -42,7 +42,9 @@ chmod 755 "$OUT/opt/bin/gnuton-httpd"
 copy=0
 skip=0
 # deliberately not overridden (see note below)
-NO_OVERRIDE="ajax_wificlients.asp"
+# WiFi_Insight.asp: gnuton ships a stub whose sub-pages do not exist. The
+# wifi-insight feature installs a working page under the same name instead.
+NO_OVERRIDE="ajax_wificlients.asp WiFi_Insight.asp"
 (
     cd "$GNUTON_ROOTFS/www" || exit 1
     find . -type f -print | LC_ALL=C sort | while IFS= read -r f; do
@@ -107,7 +109,6 @@ SKIP_LIBS="libwlcsm libbwdpi"
 # driver does not match — the served JS is malformed (`,"-42",AU"]`) and the
 # page dies with a SyntaxError. Serving stock's version keeps the UI consistent
 # until httpd is rebuilt from source for this model.
-NO_OVERRIDE="ajax_wificlients.asp"
 LIB="$OUT/opt/lib/gnuton"
 libs=0
 skipped=0

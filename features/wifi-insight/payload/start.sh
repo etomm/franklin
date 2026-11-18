@@ -15,8 +15,7 @@ fi
 root="$FRANKLIN_ROOT"
 src="$root/features/wifi-insight/files"
 addon=/jffs/addons/wifiinsight
-page=user1.asp
-page_url=user1.asp   # page lives at the web root: it uses absolute /state.js, /js/...
+page=WiFi_Insight.asp   # take over the stock page name: no menuTree patching needed
 title="WiFi Insight"
 menutree=/www/require/modules/menuTree.js
 www_user=/www/user
@@ -35,24 +34,22 @@ done
 chmod 755 "$addon/wifiinsight.sh"
 echo "$page" >"$addon/webui_page"
 
-# 2. Page + title. The page is served from the web root because it loads
-#    absolute assets (/state.js, /js/jquery.js); the add-on's CGI output lives
-#    in /www/user/wifiinsight, which the page addresses absolutely too.
+# 2. Page: take over WiFi_Insight.asp. ASUS's menu already has that entry, it
+#    is only hidden while `wifiradar` is absent from rc_support, so no menuTree
+#    edit is needed. The page loads absolute assets (/state.js, /js/jquery.js),
+#    so it belongs at the web root.
 cp -f "$addon/wifiinsight.asp" "/www/$page"
-printf '%s' "$title" >"/www/user/${page%.asp}.title"
-mkdir -p "/www/user/wifiinsight"
-echo "wifi-insight: page restored (/$page)"
+mkdir -p /www/user/wifiinsight
+echo "wifi-insight: page installed as /$page"
 
-# 3. Menu entry (idempotent; only when the anchor is unique).
-if ! grep -q "tabName: \"$title\"" "$menutree" 2>/dev/null; then
-    if [ "$(grep -c 'url: "Advanced_WAdvanced_Content.asp"' "$menutree" 2>/dev/null)" = "1" ]; then
-        sed -i "/tabName: \"$title\"/d" "$menutree"
-        sed -i "/url: \"Advanced_WAdvanced_Content.asp\"/a {url: \"$page_url\", tabName: \"$title\"}," "$menutree"
-        echo "wifi-insight: menu entry added ($page_url)"
-    else
-        echo "wifi-insight: menuTree anchor not found; page at /$page"
-    fi
+# 3. Capability token: advertise what now actually works (runtime only).
+if ! nvram get rc_support | tr ' ' '\n' | grep -qx wifiradar; then
+    nvram set rc_support="$(nvram get rc_support) wifiradar"
+    echo "wifi-insight: advertised wifiradar"
 fi
+
+# 3b. Clean up the custom menu entry earlier versions added.
+sed -i '/tabName: "WiFi Insight"/d' /www/require/modules/menuTree.js 2>/dev/null || true
 
 # 4. Cron (RAM): same entries the add-on installs. SCAN_INTERVAL is in minutes.
 for j in collect scan trickle prune; do cru d "wifiinsight_$j" 2>/dev/null; done
