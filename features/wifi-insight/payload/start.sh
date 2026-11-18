@@ -16,6 +16,7 @@ root="$FRANKLIN_ROOT"
 src="$root/features/wifi-insight/files"
 addon=/jffs/addons/wifiinsight
 page=user1.asp
+page_url=user1.asp   # page lives at the web root: it uses absolute /state.js, /js/...
 title="WiFi Insight"
 menutree=/www/require/modules/menuTree.js
 www_user=/www/user
@@ -34,17 +35,20 @@ done
 chmod 755 "$addon/wifiinsight.sh"
 echo "$page" >"$addon/webui_page"
 
-# 2. Page + title into the RAM slot.
-cp -f "$addon/wifiinsight.asp" "$www_user/$page"
-printf '%s' "$title" >"$www_user/user1.title"
-echo "wifi-insight: page restored ($page)"
+# 2. Page + title. The page is served from the web root because it loads
+#    absolute assets (/state.js, /js/jquery.js); the add-on's CGI output lives
+#    in /www/user/wifiinsight, which the page addresses absolutely too.
+cp -f "$addon/wifiinsight.asp" "/www/$page"
+printf '%s' "$title" >"/www/user/${page%.asp}.title"
+mkdir -p "/www/user/wifiinsight"
+echo "wifi-insight: page restored (/$page)"
 
 # 3. Menu entry (idempotent; only when the anchor is unique).
 if ! grep -q "tabName: \"$title\"" "$menutree" 2>/dev/null; then
     if [ "$(grep -c 'url: "Advanced_WAdvanced_Content.asp"' "$menutree" 2>/dev/null)" = "1" ]; then
         sed -i "/tabName: \"$title\"/d" "$menutree"
-        sed -i "/url: \"Advanced_WAdvanced_Content.asp\"/a {url: \"$page\", tabName: \"$title\"}," "$menutree"
-        echo "wifi-insight: menu entry added"
+        sed -i "/url: \"Advanced_WAdvanced_Content.asp\"/a {url: \"$page_url\", tabName: \"$title\"}," "$menutree"
+        echo "wifi-insight: menu entry added ($page_url)"
     else
         echo "wifi-insight: menuTree anchor not found; page at /$page"
     fi
