@@ -180,6 +180,26 @@ def verify(feats, selected, order, strict):
             if not os.path.isfile(hook_path(feat, rel)):
                 problems.append("%s: hook '%s' missing (%s)" % (fid, hook, rel))
         payload = os.path.join(feat["_dir"], "payload")
+        if feat.get("build") and not os.path.isdir(payload):
+            # Generated payloads are gitignored: a fresh clone has no payload/
+            # until the build script runs, and composing without it silently
+            # ships a UI/data-less feature.
+            problems.append("%s: declares build '%s' but payload/ is missing "
+                            "(run features/%s/build.sh in WSL)" % (fid, feat["build"], fid))
+        elif feat.get("build") and os.path.isdir(payload):
+            want = build_stamp(feat)
+            stamp = os.path.join(payload, ".build-stamp")
+            have = ""
+            if os.path.isfile(stamp):
+                with open(stamp, encoding="utf-8") as fh:
+                    have = fh.read().strip()
+            # Only features whose build script opts in by writing a stamp get
+            # the freshness check; for the rest, a missing payload is the only
+            # detectable failure.
+            if have and have != want:
+                problems.append("%s: payload is stale (build.sh/feature.yaml changed "
+                                "since it was built); rebuild with features/%s/build.sh"
+                                % (fid, fid))
         if not os.path.isdir(payload) and not feat["hooks"]:
             warnings.append("%s: no payload and no hooks (nothing to compose)" % fid)
     check_catalog_drift(feats, strict, problems)
@@ -187,6 +207,19 @@ def verify(feats, selected, order, strict):
         problems.extend(warnings)
         warnings = []
     return problems, warnings
+
+
+def build_stamp(feat):
+    """Hash of the inputs a feature's build script consumes: its own script and
+    declaration. Stored as payload/.build-stamp so composition can detect a
+    payload that predates an edit (generated payloads are gitignored, so a
+    stale one is invisible otherwise)."""
+    h = hashlib.sha256()
+    for name in sorted([feat["build"], "feature.yaml"]):
+        path = os.path.join(feat["_dir"], name)
+        with open(path, "rb") as fh:
+            h.update(name.encode() + b"\0" + fh.read() + b"\0")
+    return h.hexdigest()
 
 
 def sha256(path):
@@ -234,9 +267,16 @@ def copy_tree(src, dst, out_files, owner):
 
 
 def split_payload(payload):
-    """Split payload entries into merged prefix dirs and private feature files."""
+    """Split payload entries into merged prefix dirs and private feature files.
+
+    Dot-files are build metadata, not payload: `.build-stamp` records the
+    build inputs so composition can detect a stale generated payload, and
+    shipping it would create a one-file feature directory on the stick.
+    """
     merged, private = [], []
     for name in sorted(os.listdir(payload)):
+        if name.startswith("."):
+            continue
         (merged if name in MERGE_DIRS else private).append(name)
     return merged, private
 

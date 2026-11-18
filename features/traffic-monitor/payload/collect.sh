@@ -1,6 +1,9 @@
 #!/bin/sh
-# Sample interface counters into sqlite, then publish the 24h series for the
-# page. Runs from cron (every 5 minutes) and once at boot.
+# Sample interface counters into sqlite, then publish the series the pages read:
+#   TM.ifaces[ifname] = [[tsSec, inBps, outBps], ...]      last 24 h
+#   TM.days[ifname]   = [[YYYY-MM-DD, inBytes, outBytes]]  last 31 days
+#   TM.months[ifname] = [[YYYY-MM, inBytes, outBytes]]     last 12 months
+# Runs from cron (every 5 minutes) and once at boot.
 set -u
 if [ -z "${FRANKLIN_ROOT:-}" ]; then
     FRANKLIN_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
@@ -41,18 +44,19 @@ for ifc in $IFACES; do
         prx=$2; ptx=$3; pts=$4
         drx=$((rx - prx)); dtx=$((tx - ptx)); secs=$((now - pts))
         [ "$secs" -gt 0 ] || secs=1
-        [ "$drx" -ge 0 ] && [ "$dtx" -ge 0 ] || { drx=0; dtx=0; }
-        "$SQLITE" "$db" "INSERT INTO samples(ts,ifname,rx,tx,secs) VALUES($now,'$ifc',$drx,$dtx,$secs);" >/dev/null 2>&1
+        # A counter reset (reboot, interface re-created) must not record a
+        # negative or absurd delta: skip the sample, keep the new baseline.
+        if [ "$drx" -ge 0 ] && [ "$dtx" -ge 0 ]; then
+            "$SQLITE" "$db" "INSERT INTO samples(ts,ifname,rx,tx,secs) VALUES($now,'$ifc',$drx,$dtx,$secs);" >/dev/null 2>&1
+        fi
     fi
     echo "$ifc $rx $tx $now" >>"$newstate"
 done
 mv -f "$newstate" "$statef"
 
-# Keep 31 days.
-"$SQLITE" "$db" "DELETE FROM samples WHERE ts < $((now - 31*86400));" >/dev/null 2>&1
+# Keep 13 months so the monthly tab has a year to show.
+"$SQLITE" "$db" "DELETE FROM samples WHERE ts < $((now - 395*86400));" >/dev/null 2>&1
 
-# Publish the last 24 h as a JS include: one array of [tsSec, inBps, outBps]
-# per interface, already reduced to 5-minute buckets by the collector cadence.
 {
     echo "var TM = { generated: $now, ifaces: {"
     first=1
@@ -66,6 +70,40 @@ mv -f "$newstate" "$statef"
         printf '"%s": [' "$ifc"
         printf '%s\n' "$rows" | awk '
             { printf "%s[%s,%s,%s]", (NR>1?",":""), $1, $2, $3 }
+        '
+        printf ']'
+    done
+    echo
+    echo "}, days: {"
+    first=1
+    for ifc in $IFACES; do
+        rows=$("$SQLITE" -separator ' ' "$db" \
+            "SELECT strftime('%Y-%m-%d', ts, 'unixepoch', 'localtime') d,
+                    SUM(rx), SUM(tx)
+               FROM samples WHERE ifname='$ifc' GROUP BY d ORDER BY d;" 2>/dev/null)
+        [ -n "$rows" ] || continue
+        [ "$first" = "1" ] || printf ',\n'
+        first=0
+        printf '"%s": [' "$ifc"
+        printf '%s\n' "$rows" | awk '
+            { printf "%s[\"%s\",%s,%s]", (NR>1?",":""), $1, $2, $3 }
+        '
+        printf ']'
+    done
+    echo
+    echo "}, months: {"
+    first=1
+    for ifc in $IFACES; do
+        rows=$("$SQLITE" -separator ' ' "$db" \
+            "SELECT strftime('%Y-%m', ts, 'unixepoch', 'localtime') m,
+                    SUM(rx), SUM(tx)
+               FROM samples WHERE ifname='$ifc' GROUP BY m ORDER BY m;" 2>/dev/null)
+        [ -n "$rows" ] || continue
+        [ "$first" = "1" ] || printf ',\n'
+        first=0
+        printf '"%s": [' "$ifc"
+        printf '%s\n' "$rows" | awk '
+            { printf "%s[\"%s\",%s,%s]", (NR>1?",":""), $1, $2, $3 }
         '
         printf ']'
     done

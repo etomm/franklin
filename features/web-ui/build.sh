@@ -21,7 +21,9 @@ STOCK_ROOTFS="${STOCK_ROOTFS:-$ROOT/firmware/xt8/rootfs}"
 GNUTON_ROOTFS="${GNUTON_ROOTFS:-$ROOT/firmware/gnuton-xt8/rootfs}"
 OUT="${OUT:-$ROOT/features/web-ui/payload}"
 
-[ -x "$GNUTON_ROOTFS/usr/sbin/httpd" ] || {
+# Presence, not the exec bit: build scripts also run on Windows (Git/MSYS sh),
+# where MSYS reports every file as non-executable and -x would fail.
+[ -f "$GNUTON_ROOTFS/usr/sbin/httpd" ] || {
     echo "missing $GNUTON_ROOTFS/usr/sbin/httpd (extract the gnuton firmware first)" >&2
     exit 1
 }
@@ -116,7 +118,7 @@ whiteouts=$(wc -l <"$DELTA/WHITEOUTS")
 SKIP_LIBS="libwlcsm libbwdpi"
 # Files we deliberately do NOT override: the gnuton versions of these pages
 # call httpd ASP handlers compiled against XT8's sta_info layout, which the XT9
-# driver does not match — the served JS is malformed (`,"-42",AU"]`) and the
+# driver does not match: the served JS is malformed (`,"-42",AU"]`) and the
 # page dies with a SyntaxError. Serving stock's version keeps the UI consistent
 # until httpd is rebuilt from source for this model.
 LIB="$OUT/opt/lib/gnuton"
@@ -147,6 +149,19 @@ done
 # 5. reproducible metadata
 find "$OUT" -exec touch -d '@0' {} + 2>/dev/null || true
 printf 'gnuton httpd + www delta + %d lib(s), %d skipped\n' "$libs" "$skipped" > "$DELTA/SOURCE"
+
+# Freshness stamp: sha256(build.sh + feature.yaml). tools/franklin-compose.py
+# compares it with the current inputs and refuses to compose a payload that
+# predates an edit to this script. Payloads are gitignored, so without this a
+# stale delta (e.g. one built before a page patch) would ship silently.
+# Must match build_stamp() in tools/franklin-compose.py: sha256 over
+# name NUL content NUL for the sorted names, i.e. build.sh then feature.yaml.
+here=$(cd "$(dirname "$0")" && pwd)
+stamp=$( {
+    printf '%s\0' build.sh;    cat "$here/build.sh";    printf '\0'
+    printf '%s\0' feature.yaml; cat "$here/feature.yaml"; printf '\0'
+} | sha256sum | cut -d' ' -f1 )
+printf '%s\n' "$stamp" > "$OUT/.build-stamp"
 echo "staged $OUT"
 echo "  www delta: $delta_files file(s) (stock fallback: the rest), $whiteouts whiteout(s)"
 echo "  libs: $libs (skipped $skipped system libs)"

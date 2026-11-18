@@ -187,10 +187,22 @@ Deployment options, best first:
    mount inside the distro, run the composer with `--out /mnt/wsl/...`) —
    keeps modes/ownership exactly.
 2. **tar over SSH** to the router:
-   `Get-Content franklin.tar -AsByteStream | ssh admin@router "cd /tmp/mnt/FRANKEN && tar xf -"`
-   (no scp needed, works with busybox tar).
+   `Get-Content franklin.tar -AsByteStream | ssh admin@router "busybox sh tools/deploy-usb.sh"`
+   (`tools/deploy-usb.sh` reads the tar from stdin; no scp needed).
 3. Docker for the build step only: `docker run --rm -v "$PWD:/src" -w /src
    python:3-slim sh -c "pip install pyyaml && python tools/franklin-compose.py"`.
+
+Do not plain-`tar xf -` over a live stick: extraction never deletes, so old
+feature directories and old `registry.d/*.env` files pile up, and
+`franklin-boot` does not de-duplicate registry entries — a stale
+`003-web-ui-overlay.env` plus a fresh `011-web-ui-overlay.env` runs the same
+start hook twice (double overlay mounts, duplicated cron lines).
+`tools/deploy-usb.sh` extracts into a staging directory on the stick, drops
+feature directories the new composition does not list, regenerates
+`registry.d` from scratch, and only then copies the tree over. Packages under
+`franklin/opt` and runtime state under `franklin/state` are never removed by
+the copy (the build ships no package files), so Entware installs and history
+databases survive a deploy.
 
 Format guidance: **ext4** (reformat — see below). Avoid exFAT/vfat: no modes, no
 symlinks, no xattrs, and overlayfs cannot use it as an upper layer.

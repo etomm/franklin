@@ -44,7 +44,7 @@ Franklin additions. gnuton does not provide these; removing them changes nothing
 
 | Feature | Category | Modes | Status | Required | Requires | Plan |
 |---|---|---|---|---|---|---|
-| Traffic Monitor | Monitoring | Router (WAN stats); AP limited | `stock+` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [traffic-monitor](traffic-monitor.md) |
+| Traffic Monitor (Franklin history) | Monitoring | all | `implemented` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [traffic-monitor](traffic-monitor.md) |
 | WiFi Insight (third-party MIT addon) | Wireless | all | `tested` | no | [web-ui-overlay](../features/web-ui-overlay.md) | [wifi-insight](wifi-insight.md) |
 | Entware package ecosystem | Packages | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [entware](entware.md) |
 

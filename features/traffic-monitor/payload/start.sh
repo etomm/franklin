@@ -1,5 +1,5 @@
 #!/bin/sh
-# Traffic Monitor history: install the page, sample once, schedule the collector.
+# Traffic Monitor history: install the pages, sample once, schedule the collector.
 set -u
 if [ -z "${FRANKLIN_ROOT:-}" ]; then
     FRANKLIN_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
@@ -7,14 +7,18 @@ if [ -z "${FRANKLIN_ROOT:-}" ]; then
 fi
 root="$FRANKLIN_ROOT"
 src="$root/features/traffic-monitor"
-data=/tmp/mnt/FRANKLIN/traffic-monitor
+data="${TRAFFIC_DATA_DIR:-/tmp/mnt/FRANKLIN/traffic-monitor}"
 
 mkdir -p "$data"
 [ -d /www ] || { echo "traffic-monitor: /www missing (web UI not mounted)"; exit 1; }
 
-# Our page takes over the stock name the menu already points at.
-cp -f "$src/page.asp" /www/Main_TrafficMonitor_last24.asp
-echo "traffic-monitor: page installed (/Main_TrafficMonitor_last24.asp)"
+# One page, three stock names: the menu already points at all of them, and the
+# page switches view by looking at its own filename.
+for page in Main_TrafficMonitor_last24.asp Main_TrafficMonitor_daily.asp \
+            Main_TrafficMonitor_monthly.asp; do
+    cp -f "$src/page.asp" "/www/$page"
+done
+echo "traffic-monitor: pages installed (last24, daily, monthly)"
 
 # Collect once now (the first run only records counters, no deltas yet).
 /bin/sh "$src/collect.sh" >/dev/null 2>&1

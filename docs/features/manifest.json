@@ -277,10 +277,10 @@
     },
     {
       "id": "traffic-monitor",
-      "title": "Traffic Monitor",
+      "title": "Traffic Monitor (Franklin history)",
       "category": "Monitoring",
-      "modes": "Router (WAN stats); AP limited",
-      "status": "stock+",
+      "modes": "all",
+      "status": "implemented",
       "kind": "franklin-feature",
       "required": false,
       "depends_on": [
