@@ -1,48 +1,49 @@
-# WiFi Insight
+# WiFi Insight (third-party MIT addon)
 
 **Category:** Wireless  
-**Modes:** all (mesh/AP)  
-**Status:** `stock+`  
-**Kind:** gnuton-feature  
+**Modes:** all  
+**Status:** `tested`  
+**Kind:** franklin-feature  
 **Required:** no  
-**Upstream:** gnuton / Asuswrt-Merlin
+**Upstream:** third-party MIT addon (IfSugar/wifiinsight) - ASUS ships the real WiFi Insight only on its newest AI routers
 
 ## Dependencies
 
-- [web-ui](web-ui.md)
+- [web-ui-overlay](web-ui-overlay.md)
 
 ## Build / install (separable)
 
-See Franklin approach above; deploy from USB/boot hook.
+Franklin addition: install on USB and start from the boot hook.
 
 ## What it does
 
-Wireless diagnostics: client RSSI, channel utilization, band info.
+Dashboard for the wireless environment: per-channel airtime, interference over time, neighbour sites and channel statistics.
 
 ## How gnuton implements it
 
-`WiFi_Insight.asp` + wireless data from drivers/daemons.
+gnuton only ships a leftover WiFi_Insight.asp stub: ASUS removed Wi-Fi Radar for security reasons and reserves the real WiFi Insight for its newest AI routers (GT-BE19000AI), so neither the pages nor a backend exist in our images.
 
 ## Requirements
 
-httpd + www; wl/dhd data.
+`web-ui-overlay` (owns /www/user and menuTree.js); stock `wl` with chanim_stats; stock sqlite3 3.42; USB storage for the history database.
 
 ## Franklin approach
 
-gnuton page via bind-mounted httpd.
+Franklin feature: vendors the MIT-licensed Merlin addon IfSugar/wifiinsight (with three stock patches: accept stock firmware, replace a BusyBox-incompatible tr range, ignore ubifs when picking the USB drive) and rebuilds at boot what Merlin's services-start would: page, menu entry and cron.
 
 ## Tested / verified
 
-Page loads (200).
+Installed on the XT9 with the addon's own installer after the patches: all health checks pass, first scans measured 13/8/11 channels with 10/4/4 networks, history on USB in ext4. Page and cron are RAM-based, hence the boot hook.
 
 ## Risks / notes
 
-Some data may be model-specific.
+Third-party script running as root; MIT and auditable (LICENSE vendored). History DB on USB only.
 
 ## Why this kind (evidence)
 
-See the parity table and dependencies above.
+franklin-feature: the MIT addon is the only working implementation; measured that neither stock nor gnuton ships the ASUS pages or backend (files and binary strings checked in both, plus a GT-AX6000 donor image).
 
 ## Links / sources
 
-- `www/WiFi_Insight.asp`
+- `LICENSE`
+- `https://github.com/IfSugar/wifiinsight`

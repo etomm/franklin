@@ -18,7 +18,6 @@
       "traffic-monitor",
       "qos-classification",
       "sysinfo",
-      "wifi-insight",
       "wireless-survey",
       "network-tools",
       "snmp",
@@ -49,6 +48,7 @@
       "web-ui-overlay"
     ],
     "franklin-feature": [
+      "wifi-insight",
       "entware"
     ],
     "entware-package": [
@@ -314,14 +314,14 @@
     },
     {
       "id": "wifi-insight",
-      "title": "WiFi Insight",
+      "title": "WiFi Insight (third-party MIT addon)",
       "category": "Wireless",
-      "modes": "all (mesh/AP)",
-      "status": "stock+",
-      "kind": "gnuton-feature",
+      "modes": "all",
+      "status": "tested",
+      "kind": "franklin-feature",
       "required": false,
       "depends_on": [
-        "web-ui"
+        "web-ui-overlay"
       ]
     },
     {

@@ -25,6 +25,7 @@ features:
   - web-ui-overlay
   - partial-rc
   - wifi-clients
+  - wifi-insight
   - networkmap
 
 # Optional per-device profile applied over the composition.

@@ -234,16 +234,29 @@ FEATURES = [
          risks="Low.",
          links=["www/Tools_Sysinfo.asp"]),
 
-    dict(id="wifi-insight", title="WiFi Insight", cat="Wireless",
-         modes="all (mesh/AP)",
-         status="stock+",
-         what="Wireless diagnostics: client RSSI, channel utilization, band info.",
-         gnuton="`WiFi_Insight.asp` + wireless data from drivers/daemons.",
-         deps="httpd + www; wl/dhd data.",
-         franklin="gnuton page via bind-mounted httpd.",
-         tested="Page loads (200).",
-         risks="Some data may be model-specific.",
-         links=["www/WiFi_Insight.asp"]),
+    dict(id="wifi-insight", title="WiFi Insight (third-party MIT addon)", cat="Wireless",
+         modes="all",
+         status="tested",
+         what="Dashboard for the wireless environment: per-channel airtime, interference over "
+              "time, neighbour sites and channel statistics.",
+         gnuton="gnuton only ships a leftover WiFi_Insight.asp stub: ASUS removed Wi-Fi Radar for "
+                "security reasons and reserves the real WiFi Insight for its newest AI routers "
+                "(GT-BE19000AI), so neither the pages nor a backend exist in our images.",
+         deps="`web-ui-overlay` (owns /www/user and menuTree.js); stock `wl` with chanim_stats; "
+              "stock sqlite3 3.42; USB storage for the history database.",
+         franklin="Franklin feature: vendors the MIT-licensed Merlin addon IfSugar/wifiinsight "
+                  "(with three stock patches: accept stock firmware, replace a BusyBox-"
+                  "incompatible tr range, ignore ubifs when picking the USB drive) and rebuilds "
+                  "at boot what Merlin's services-start would: page, menu entry and cron.",
+         tested="Installed on the XT9 with the addon's own installer after the patches: all "
+                "health checks pass, first scans measured 13/8/11 channels with 10/4/4 networks, "
+                "history on USB in ext4. Page and cron are RAM-based, hence the boot hook.",
+         risks="Third-party script running as root; MIT and auditable (LICENSE vendored). "
+               "History DB on USB only.",
+         evidence="franklin-feature: the MIT addon is the only working implementation; measured "
+                  "that neither stock nor gnuton ships the ASUS pages or backend (files and "
+                  "binary strings checked in both, plus a GT-AX6000 donor image).",
+         links=["LICENSE", "https://github.com/IfSugar/wifiinsight"]),
 
     dict(id="wireless-survey", title="Wireless Survey", cat="Wireless",
          modes="all",
@@ -1042,6 +1055,7 @@ KIND = {
     "overlayfs": "workaround",
     "partial-rc": "workaround",
     "wifi-clients": "workaround",
+    "wifi-insight": "franklin-feature",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
     "entware": "franklin-feature",
@@ -1084,6 +1098,7 @@ UPSTREAM = {
     "franklin-mount": "n/a — Franklin workaround (ASUS busybox mount refuses rootfs targets)",
     "overlayfs": "n/a — Franklin workaround (CONFIG_OVERLAY_FS unset on stock)",
     "partial-rc": "n/a — Franklin workaround (stock rc advertises fewer capabilities than gnuton)",
+    "wifi-insight": "third-party MIT addon (IfSugar/wifiinsight) - ASUS ships the real WiFi Insight only on its newest AI routers",
     "wifi-clients": "n/a — Franklin workaround (gnuton httpd is an XT8 build; its sta_info parsing breaks on XT9)",
     "amtm": "third-party (thelonelycoder/amtm) — bundled by gnuton/Merlin, not gnuton code",
     "cron": "stock ASUS (crond/cru); gnuton only adds the crontab command",
@@ -1136,7 +1151,7 @@ DEPS = {
     "qos-classification": ["adaptive-qos", "web-ui"],
     "traffic-monitor": ["web-ui"],
     "sysinfo": ["web-ui"],
-    "wifi-insight": ["web-ui"],
+    "wifi-insight": ["web-ui-overlay"],
     "wireless-survey": ["web-ui"],
     "network-tools": ["web-ui"],
     "temperature-monitoring": ["web-ui"],

@@ -1,0 +1,1821 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="-1"/>
+<link rel="shortcut icon" href="images/favicon.png"/>
+<link rel="icon" href="images/favicon.png"/>
+<title>WiFi Insight</title>
+<!-- wifiinsight-version: 2.1.0 (must match VERSION in wifiinsight.sh) -->
+<link rel="stylesheet" type="text/css" href="index_style.css"/>
+<link rel="stylesheet" type="text/css" href="form_style.css"/>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/state.js"></script>
+<script type="text/javascript" src="/general.js"></script>
+<script type="text/javascript" src="/popup.js"></script>
+<script type="text/javascript" src="/help.js"></script>
+<script type="text/javascript" src="/validator.js"></script>
+<style>
+#wi {
+	--surface: #2b3539;
+	--line: rgba(255,255,255,0.08);
+	--axis: #4a585d;
+	--ink: #f0efec;
+	--ink-2: #c3c2b7;
+	--muted: #93a9b1;
+	--sel: #4d6b75;
+	--others: #3987e5;
+	--nonwifi: #d95926;
+	--yours: #199e70;
+	--rx: #9085e9;
+	--unclass: #c98500;
+	--plcp: #d55181;
+	--fail: #e66767;
+	--accent: #ffcc00;           /* the router's channel, the open tab, focus */
+	--accent-soft: rgba(255,204,0,0.25);
+	--cur-bg: #5c4e14;           /* the router's channel in the networks table */
+	--cur-ink: #ffe27a;
+	--field: #1f282b;            /* fields, code, the quiet-hours grid */
+	--tip: #1c2427;              /* tooltips */
+	--chip: #3e4d52;             /* tags and the signal bar's track */
+	--cell: #3a474b;             /* the quiet-hours grid's cell borders */
+	--check: var(--sel);         /* ticked boxes */
+	font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+	color: var(--ink);
+	font-size: 12px;
+}
+#wi * { box-sizing: border-box; }
+#wi code { background: var(--field); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+#wi .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--axis); margin: 2px 0 12px; }
+#wi .tabs button { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--ink-2); font: inherit; font-size: 13px; padding: 8px 12px 7px; cursor: pointer; margin-bottom: -1px; }
+#wi .tabs button:hover { color: var(--ink); }
+#wi .tabs button.on { color: #fff; border-bottom-color: var(--accent); font-weight: 600; }
+#wi .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; }
+#wi .seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 2px; }
+#wi .seg button { background: none; border: 0; color: var(--ink-2); font: inherit; padding: 5px 11px; border-radius: 4px; cursor: pointer; }
+#wi .seg button:hover { color: var(--ink); background: rgba(255,255,255,0.05); }
+#wi .seg button.on { background: var(--sel); color: #fff; font-weight: 600; }
+#wi .grow { flex: 1; }
+#wi .btn { background: var(--surface); border: 1px solid var(--axis); color: var(--ink); font: inherit; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+#wi .btn:hover { border-color: var(--muted); }
+#wi .btn.primary { background: var(--sel); border-color: var(--sel); color: #fff; font-weight: 600; }
+#wi .btn[disabled] { opacity: .55; cursor: default; }
+#wi .view { display: none; }
+#wi .view.on { display: block; }
+#wi .tiles { display: grid; grid-template-columns: 1.35fr repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+#wi .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+#wi .tile .k { color: var(--muted); font-size: 11px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#wi .tile .v { font-size: 20px; font-weight: 600; line-height: 1.15; white-space: nowrap; }
+#wi .tile .v small { font-size: 12px; font-weight: 400; color: var(--ink-2); }
+#wi .tile .s { color: var(--ink-2); font-size: 11px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#wi .sw { display: inline-block; width: 10px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+#wi .sw.dash { background: repeating-linear-gradient(90deg, var(--fail) 0 3px, transparent 3px 5px) !important; }
+#wi .sq { display: inline-block; width: 9px; height: 9px; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+#wi .card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px 10px; margin-bottom: 12px; min-width: 0; }
+#wi .card h3 { margin: 0; font-size: 13px; font-weight: 600; color: var(--ink); }
+#wi .card .sub { color: var(--muted); font-size: 11px; margin-top: 2px; line-height: 1.4; }
+/* Card header: the title and its controls on the first line, the description across the whole card below them */
+#wi .head { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; margin-bottom: 8px; }
+#wi .head > .grow { display: contents; }
+#wi .head > .grow > h3 { grid-column: 1; grid-row: 1; }
+#wi .head > .grow > .sub { grid-column: 1 / -1; grid-row: 2; }
+#wi .head > .legend { grid-column: 2; grid-row: 1; }
+#wi .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+#wi .grid2 .card { margin-bottom: 0; }
+#wi .gridgap { height: 12px; }
+#wi .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+#wi .legend label, #wi .legend span.li { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); user-select: none; white-space: nowrap; }
+#wi .legend label { cursor: pointer; }
+#wi .legend input { margin: 0; accent-color: var(--check); }
+#wi .chartbox { position: relative; height: 230px; }
+#wi .chartbox.sm { height: 170px; }
+#wi .empty { color: var(--muted); text-align: center; padding: 40px 0; }
+#wi .rel { position: relative; }
+#wi canvas.full { display: block; width: 100%; }
+#wi .foot { display: flex; align-items: center; gap: 16px; margin-top: 8px; color: var(--ink-2); flex-wrap: wrap; }
+#wi .ramp { display: inline-flex; align-items: center; gap: 6px; }
+#wi .ramp i { display: inline-block; width: 120px; height: 8px; border-radius: 4px; }
+#wi .tip { position: absolute; pointer-events: none; background: var(--tip); border: 1px solid var(--axis); border-radius: 6px; padding: 7px 9px; font-size: 11px; line-height: 1.5; color: var(--ink); white-space: nowrap; z-index: 5; display: none; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+#wi .tip .m { color: var(--muted); }
+#wi table.t { width: 100%; border-collapse: collapse; }
+#wi table.t th { text-align: left; color: var(--muted); font-weight: 500; font-size: 11px; padding: 6px 8px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+#wi table.t th.sort { cursor: pointer; }
+#wi table.t th.sort:hover { color: var(--ink); }
+#wi table.t td { padding: 6px 8px; border-bottom: 1px solid var(--line); color: var(--ink); vertical-align: middle; }
+#wi table.t td.num, #wi table.t th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#wi table.t td.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: var(--ink-2); }
+#wi table.t td.dim { color: var(--muted); }
+#wi table.t tr:last-child td { border-bottom: 0; }
+#wi .tag { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 11px; background: var(--chip); color: var(--ink); white-space: nowrap; }
+#wi .tag.radar { background: #6b2b2b; }
+#wi .tag.manual { background: #2f4f6b; }
+#wi .tag.auto, #wi .tag.bandwidth { background: #2c5a49; }
+#wi .tag.restart, #wi .tag.scheduled { background: #4a4a3a; }
+#wi .pill { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 8px; font-size: 10px; background: var(--sel); color: #fff; vertical-align: 1px; white-space: nowrap; }
+#wi .pill.dfs { background: var(--chip); color: var(--ink-2); }
+#wi .pill.cur { background: var(--cur-bg); color: var(--cur-ink); }
+#wi .sig { display: inline-block; width: 42px; height: 5px; background: var(--chip); border-radius: 3px; vertical-align: middle; margin-right: 6px; overflow: hidden; }
+#wi .sig i { display: block; height: 100%; background: var(--ink-2); border-radius: 3px; }
+#wi .more { background: none; border: 0; color: var(--muted); font: inherit; cursor: pointer; padding: 6px 0 0; text-decoration: underline; }
+#wi .note { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 4px 2px 0; }
+#wi .warn { background: #4a3d22; border: 1px solid #6b5728; color: #f3e2b4; border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; display: none; }
+#wi .form { display: grid; grid-template-columns: 200px 1fr; gap: 14px 16px; align-items: start; }
+#wi .form .lbl { color: var(--ink); padding-top: 6px; }
+#wi .form .hint { color: var(--muted); font-size: 11px; margin-top: 4px; line-height: 1.4; }
+#wi select, #wi input[type=text] { background-color: var(--field); border: 1px solid var(--axis); color: var(--ink); font: inherit; padding: 6px 12px; border-radius: 6px; }
+/* Own chevron with the same 12px inset as the text, instead of the browser's arrow hugging the edge */
+#wi select { -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 34px; cursor: pointer;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2393a9b1' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat; background-position: right 12px center; background-size: 12px 8px; }
+#wi select:hover { border-color: var(--muted); }
+#wi select option { background-color: var(--field); color: var(--ink); }
+#wi input[type=text] { width: 100%; max-width: 380px; }
+#wi .saved { color: #7fd1ad; margin-left: 10px; display: none; }
+#wi .scannote { color: var(--muted); font-size: 12px; }
+#wi .scannote.bad { color: #f2b8a2; }
+#wi .warn a { color: #ffe27a; }
+#wi .seg.sm button { padding: 3px 9px; font-size: 11px; }
+#wi .legend.srcrow { justify-content: flex-start; align-items: center; margin: 0 0 8px; }
+#wi .legend.srcrow:empty { display: none; }
+/* Quiet hours: 7 rows of 48 half hours. Gaps: 1px inside an hour, 3px between hours, 6px every 6 hours. */
+#wi .qpresets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+#wi .qpresets .btn { padding: 5px 11px; }
+#wi .qgrid { display: flex; flex-direction: column; gap: 3px; touch-action: none; user-select: none; -webkit-user-select: none; }
+#wi .qrow { display: flex; align-items: center; }
+#wi .qrow.qhead { align-items: flex-end; height: 16px; }
+#wi .qday { width: 40px; flex: none; color: var(--ink-2); }
+#wi .qrow > button, #wi .qrow.qhead > span.qt { flex: 1 1 0; min-width: 0; margin: 0 1px 0 0; }
+#wi .qrow > .gh { margin-right: 3px; }
+#wi .qrow > .g6 { margin-right: 6px; }
+#wi .qrow > .gl { margin-right: 0; }
+#wi .qrow.qhead > span.qt { color: var(--muted); font-size: 10px; white-space: nowrap; overflow: visible; }
+#wi .qrow > button { height: 22px; padding: 0; border-radius: 2px; border: 1px solid var(--cell); background: var(--field); cursor: pointer; }
+#wi .qrow > button:hover { border-color: var(--muted); }
+#wi .qrow > button.on { background: var(--unclass); border-color: var(--unclass); }
+#wi .qrow > button.on:hover { border-color: #ffd27a; }
+#wi .qrow > button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+#wi .qsum { margin-top: 12px; background: var(--field); border: 1px solid var(--axis); border-radius: 6px; padding: 9px 12px; line-height: 1.6; }
+#wi .qsum .k { color: var(--muted); }
+#wi .qkey { display: inline-flex; align-items: center; gap: 6px; }
+#wi .qkey i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; box-sizing: border-box; }
+#wi .qmark { display: none; align-items: center; gap: 6px; color: #f3e2b4; white-space: nowrap; }
+#wi .qmark i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: var(--unclass); }
+#wi .qband { display: none; align-items: center; margin-bottom: 3px; }
+#wi .qband .t { flex: none; text-align: right; padding-right: 6px; color: var(--muted); font-size: 11px; }
+#wi .qband .b { flex: 1; height: 22px; margin: 0 5px 0 1px; border-radius: 3px; border: 1px dashed var(--unclass); color: #f3e2b4; font-size: 11px;
+	display: flex; align-items: center; justify-content: center; background: repeating-linear-gradient(135deg, rgba(201,133,0,0.16) 0 6px, transparent 6px 12px); }
+/* The router's own theme: ROG and TUF models' pages are black, with red or amber (the firmware says which: rog_support,
+   tuf_support, in its state.js). WiFi Insight follows, as Arteria does: its cards, controls and highlights (the router's
+   channel, the open tab). The data's colours stay: they mean the same on every router. Warnings look the same too. */
+#wi.th-rog, #wi.th-tuf { --surface: #17181a; --axis: #3d4043; --muted: #a2a6a9; --sel: #4c5054; --field: #101112; --tip: #101112;
+	--chip: #2d2f32; --cell: #2d2f32; --check: #6c7075; }
+#wi.th-rog { --accent: #ff3349; --accent-soft: rgba(255,51,73,0.25); --cur-bg: #5c1a22; --cur-ink: #ff9aa5; }
+#wi.th-tuf { --accent: #ffbb28; --accent-soft: rgba(255,187,40,0.25); --cur-bg: #5a4210; --cur-ink: #ffd88a; }
+</style>
+<script type="text/javascript">
+var custom_settings = <% get_custom_settings(); %>;
+/* Everything below is private, so nothing clashes with the firmware's globals (jQuery's $, store, ...).
+   Only initial() (called by <body onload>) and the WiFiInsight object (used by the page's buttons) are global. */
+(function () {
+var WI = {
+	base: '/ext/wifiinsight/',
+	live: null, week: null, scans: null,
+	view: 'insight', band: '5g', range: '1h',
+	charts: {}, hidden: {}, missed: {}, redraw: false, drawn: 0,
+	showMesh: false, showDfs: true, showActive: true, allEvents: false, src: 'measured',
+	sortKey: 'rssi', sortDir: -1
+};
+/* How each range is drawn. Short ranges plot every sample; longer ones plot time-bucket averages
+   (about 150 points per chart) so trends stay readable. heat: rows of the spectrum heatmap are
+   grouped into buckets of this size (0 = one row per scan). Buckets follow local time. */
+var RANGE_CFG = {
+	'10m': { secs: 600,     src: 'live',  bucket: 0,     heat: 0,     btn: '10M' },
+	'1h':  { secs: 3600,    src: 'live',  bucket: 0,     heat: 0,     btn: '1H' },
+	'12h': { secs: 43200,   src: 'live',  bucket: 300,   heat: 0,     btn: '12H' },
+	'1d':  { secs: 86400,   src: 'live',  bucket: 600,   heat: 0,     btn: '1D' },
+	'7d':  { secs: 604800,  src: 'week',  bucket: 3600,  heat: 10800, btn: '7D' },
+	'30d': { secs: 2592000, src: 'month', bucket: 14400, heat: 86400, btn: '30D' }
+};
+var RANGES = {};
+Object.keys(RANGE_CFG).forEach(function (k) { RANGES[k] = RANGE_CFG[k].secs; });
+function bucketName(b) { return b >= 86400 ? 'daily' : b >= 3600 ? (b / 3600) + '-hour' : (b / 60) + '-min'; }
+/* Start of the local-time bucket holding ts (so 1-hour and 1-day buckets follow the clock). */
+function bucketOf(ts, b) { var off = -new Date(ts * 1000).getTimezoneOffset() * 60; return Math.floor((ts + off) / b) * b - off; }
+var BAND_NAME = { '2g': '2.4 GHz', '5g': '5 GHz', '6g': '6 GHz' };
+/* A radio's key is its band (2g, 5g, 6g), or 5g2 / 6g2 for a second radio on one band (5 GHz-2 on a
+   GT-AX11000 or GT-AXE16000, 6 GHz-2 on a GT-BE98 Pro): kind() is the band, for the channel maths. */
+function kind(b) { return String(b == null ? WI.band : b).replace(/\d+$/, ''); }
+function bandName(b) {   /* as the router's own pages name it: 5 GHz, or 5 GHz-1 and 5 GHz-2 */
+	var r = (WI.live && WI.live.radios) || [];
+	for (var i = 0; i < r.length; i++) if (r[i].band === b && r[i].name) return r[i].name;
+	return BAND_NAME[kind(b)] || b;
+}
+var TAGS = {
+	initial: 'Monitoring started', restart: 'Router restarted', scheduled: 'Scheduled reboot',
+	manual: 'Manually configured', auto: 'Optimized automatically', bandwidth: 'Adaptive bandwidth',
+	radar: 'Regulatory (RADAR)', changed: 'Channel changed'
+};
+var PHY = { be: 'Wi-Fi 7', ax: 'Wi-Fi 6', ac: 'Wi-Fi 5', n: 'Wi-Fi 4', g: 'Legacy', a: 'Legacy' };
+var RAMP = ['#eff4fc', '#d8e7fd', '#c3d9fa', '#afccf5', '#9bbff0', '#88b2ea', '#75a4e3', '#6297dd', '#4e8ad5', '#397dce', '#216fc6', '#0062ba'];   /* clean (near-white) -> busy (deep blue), even OKLab lightness steps */
+var C = { others: '#3987e5', nonwifi: '#d95926', yours: '#199e70', rx: '#9085e9', unclass: '#c98500', plcp: '#d55181', fail: '#e66767', idle: '#46555a', grid: 'rgba(255,255,255,0.07)', tick: '#93a9b1', ink2: '#c3c2b7', surface: '#2b3539',
+	axis: '#4a585d', tip: '#1c2427', nodata: '#2f3a3e', accent: '#ffcc00', noise: '#5f7d87' };   /* the last five, tick, idle and surface follow the router's theme (theme()) */
+/* live sample columns / 15-minute aggregate columns */
+var FL = { obss: 1, nocat: 2, tx: 3, inbss: 4, idle: 5, glitch: 6, noise: 7, nopkt: 11, doze: 12, txop: 13, goodtx: 14, badtx: 15, badplcp: 16, knoise: 17 };
+var FW = { obss: 1, nocat: 2, yours: 3, idle: 4, glitch: 6, badplcp: 7, noise: 8, nopkt: 9, tx: 10, inbss: 11, goodtx: 12, badtx: 13 };
+
+function store(k, v) { try { if (v === undefined) return localStorage.getItem('wi_' + k); localStorage.setItem('wi_' + k, v); } catch (e) { return null; } }
+function $(id) { return document.getElementById(id); }
+function alpha(hex, a) {   /* '#rrggbb' at opacity a */
+	var n = parseInt(hex.slice(1), 16);
+	return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+/* The router's own theme: the firmware says which (rog_support, tuf_support, in its state.js). ROG and TUF pages are black
+   with red or amber: the page follows (the CSS's .th-rog, .th-tuf), and so do the charts' axes, tooltips and the router's
+   channel. */
+function theme() {
+	var t = '';
+	try { t = window.rog_support ? 'rog' : (window.tuf_support ? 'tuf' : ''); } catch (e) { /* no firmware globals: the standard theme */ }
+	if (!t) return;
+	$('wi').classList.add('th-' + t);
+	C.accent = t === 'rog' ? '#ff3349' : '#ffbb28';
+	C.tick = '#a2a6a9'; C.axis = '#3d4043'; C.tip = '#101112'; C.surface = '#17181a'; C.nodata = '#2b2d30'; C.idle = '#46494d'; C.noise = '#686c70';
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+function hm(ts) { var d = new Date(ts * 1000); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function when(ts) {
+	var d = new Date(ts * 1000), n = new Date();
+	var day0 = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime() / 1000;
+	if (ts >= day0) return 'Today ' + hm(ts);
+	if (ts >= day0 - 86400) return 'Yesterday ' + hm(ts);
+	return MONS[d.getMonth()] + ' ' + d.getDate() + ' ' + hm(ts);
+}
+function ago(sec) {
+	if (sec < 90) return Math.max(0, Math.round(sec)) + ' s ago';
+	if (sec < 5400) return Math.round(sec / 60) + ' min ago';
+	if (sec < 172800) return Math.round(sec / 3600) + ' h ago';
+	return Math.round(sec / 86400) + ' days ago';
+}
+function dur(ms) {
+	var m = Math.floor(ms / 60000), h = Math.floor(m / 60), d = Math.floor(h / 24);
+	if (d > 0) return d + 'd ' + (h % 24) + 'h';
+	if (h > 0) return h + 'h ' + pad(m % 60) + 'm';
+	return m + ' min';
+}
+function nowTs() { return WI.live ? WI.live.generated : Date.now() / 1000; }
+function radio() {
+	var r = (WI.live && WI.live.radios) || [];
+	for (var i = 0; i < r.length; i++) if (r[i].band === WI.band) return r[i];
+	return null;
+}
+function chans() { var r = radio(); return (r && r.channels && r.channels.length) ? r.channels : []; }
+function spanOf(center, width) {
+	var n = Math.max(1, Math.round(width / 20)), out = [];
+	for (var i = 0; i < n; i++) out.push(center - (n - 1) * 2 + i * 4);
+	return out;
+}
+function isDfs(ch) { return kind() === '5g' && ch >= 52 && ch <= 144; }
+/* Weather radar: 5600-5650 MHz (channels 120, 124, 128, and any wider block that includes one) is shared with
+   weather radars. Countries where Wi-Fi may use it, by the radar rules they follow, from the Linux wireless
+   regulatory database (wireless-regdb), plus every EU/EEA country. ETSI rules: a 10-minute radar check on
+   these channels instead of 1. Canada allowed them in July 2025 (RSS-247 Issue 4). Elsewhere: no marks. */
+var WX_ETSI = 'E0 EU UK AD AF AI AL AN AT AW BA BE BG BL BT BY CH CY CZ DE DK EE ES ET FI FR GB GF GL GP GR HK HR HU IE IL IS IT KH KN KZ LC LI LS LT LU LV MC MD ME MF MK MQ MR MT MW NL NO NZ OM PF PL PM PT QA RE RO RS SA SE SI SK SR TD TG TR UA VC WF WS YT ZA ZW'.split(' ');
+var WX_OTHER = 'AE AR AS BF BM BR BS CF CI CO CR CU CX DZ EC FM GD GH GU HN HT JM JP KR KY LB LK MH MN MO MP MU MX MY NI PA PE PG PH PW PY RW SG SN TC TH TT TW UG VI VN VU'.split(' ');
+var WX_DFS = 'Before using a DFS channel the router listens for radar for 1 minute';
+var WX = {
+	etsi: WX_DFS + ', or 10 minutes on the weather-radar channels 120–128.',
+	us: WX_DFS + '. 120–128 are shared with airport weather radars.',
+	ca: WX_DFS + '. Canada has allowed the weather-radar channels 120–128 only since 2025.',
+	other: WX_DFS + '. 120–128 are shared with weather radars.'
+};
+function wxRegion() {   /* from the radio's country code, else ASUS's territory code: 'etsi', 'us', 'ca', 'other' or '' */
+	var L = WI.live || {}, c = L.country || (L.territory || '').slice(0, 2);
+	return WX_ETSI.indexOf(c) >= 0 ? 'etsi' : ['US', 'Q1', 'Q2', 'PR'].indexOf(c) >= 0 ? 'us' : c === 'CA' ? 'ca' : WX_OTHER.indexOf(c) >= 0 ? 'other' : '';
+}
+function isWx(ch) { return kind() === '5g' && (ch === 120 || ch === 124 || ch === 128) && !!wxRegion(); }
+function chanTags(ch) { return isWx(ch) ? 'DFS, weather radar' : isDfs(ch) ? 'DFS' : ''; }
+/* The DFS bracket under a channel axis, with the weather-radar channels as a heavier part of it.
+   xr(c) gives a channel's [left, right] in pixels. */
+function dfsBracket(ctx, ch, xr, y) {
+	ctx.strokeStyle = alpha(C.tick, 0.6); ctx.lineWidth = 1; ctx.setLineDash([]);
+	ctx.fillStyle = C.tick; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+	var runs = [], cur = null;
+	ch.forEach(function (c) {
+		if (!isDfs(c)) { cur = null; return; }
+		if (!cur) { cur = { a: c, b: c, wa: null, wb: null }; runs.push(cur); } else cur.b = c;
+		if (isWx(c)) { if (cur.wa == null) cur.wa = c; cur.wb = c; }
+	});
+	runs.forEach(function (run) {
+		var x1 = xr(run.a)[0] + 2, x2 = xr(run.b)[1] - 2, lx = (x1 + x2) / 2, ly = y + 1;
+		ctx.beginPath(); ctx.moveTo(x1, y - 3); ctx.lineTo(x1, y); ctx.lineTo(x2, y); ctx.lineTo(x2, y - 3); ctx.stroke();
+		if (run.wa != null) {
+			var w1 = xr(run.wa)[0] + 2, w2 = xr(run.wb)[1] - 2;
+			ctx.fillStyle = alpha(C.tick, 0.9); ctx.fillRect(w1, y - 1, w2 - w1, 3); ctx.fillStyle = C.tick;
+			ctx.fillText(ctx.measureText('Weather radar').width < w2 - w1 ? 'Weather radar' : 'Weather', (w1 + w2) / 2, y + 3);
+			lx = (w1 - x1 >= x2 - w2) ? (x1 + w1) / 2 : (w2 + x2) / 2; ly = y + 3;   /* "DFS" on the wider side, level with it */
+			if (Math.abs(w1 - x1) < 30 && Math.abs(x2 - w2) < 30) return;
+		}
+		ctx.fillText('DFS', lx, ly);
+	});
+}
+function freq(ch) {
+	if (kind() === '2g') return ch === 14 ? 2484 : 2407 + 5 * ch;
+	if (kind() === '6g') return 5950 + 5 * ch;
+	return 5000 + 5 * ch;
+}
+
+function getJSON(name) {
+	return fetch(WI.base + name + '?_=' + Date.now(), { cache: 'no-store', credentials: 'same-origin' })
+		.then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+		.then(function (t) { return JSON.parse(t); });
+}
+/* The data comes from a database on the USB drive, which others may be able to write to (a guest share):
+   numbers are made numbers here, missing ones stay missing, so only text, escaped where it's shown, is left. */
+function num(x) { return x == null ? x : Number(x); }
+function numRows(o) { Object.keys(o || {}).forEach(function (b) { o[b] = (o[b] || []).map(function (r) { return Array.isArray(r) ? r.map(num) : num(r); }); }); return o; }
+function numKeys(o, keys) { keys.forEach(function (k) { if (o && k in o) o[k] = num(o[k]); }); return o; }
+function cleanLive(d) {
+	numKeys(d, ['generated', 'sample_interval', 'scan_interval', 'retain_days', 'db_bytes', 'tz_off', 'damaged']);
+	numRows(d.samples);
+	Object.keys(d.measured || {}).forEach(function (b) { d.measured[b] = num(d.measured[b]); });
+	(d.radios || []).forEach(function (r) { numKeys(r, ['radio', 'ctl', 'width', 'center', 'noise', 'dfs_ms']); r.channels = (r.channels || []).map(num); });
+	(d.events || []).forEach(function (e) { e[0] = num(e[0]); });
+	return d;
+}
+function cleanScans(d) {
+	numKeys(d, ['generated', 'scan_interval']);
+	numRows(d.scans);
+	Object.keys(d.last_scan || {}).forEach(function (b) { d.last_scan[b] = num(d.last_scan[b]); });
+	Object.keys(d.aps || {}).forEach(function (b) { (d.aps[b] || []).forEach(function (a) { numKeys(a, ['rssi', 'ctl', 'center', 'width', 'util', 'own', 'snr', 'ts']); }); });
+	return d;
+}
+function cleanAgg(d) { numKeys(d, ['generated', 'bucket', 'scan_bucket']); numRows(d.agg); numRows(d.scans); return d; }
+function loadAll(what) {
+	var jobs = [];
+	if (!what || what.live) jobs.push(getJSON('live.htm').then(function (d) { WI.live = cleanLive(d); }));
+	/* scans and week files can be missing for a minute after a reboot: keep what we have */
+	if (!what || what.scans) jobs.push(getJSON('scans.htm').then(function (d) { WI.scans = cleanScans(d); }, function () {}));
+	if (!what || what.scans) jobs.push(getJSON('scanstate.htm').then(function (d) { WI.scanState = d; }, function () {}));   /* the last scan's result per band */
+	if (!what || what.week) jobs.push(getJSON('week.htm').then(function (d) { WI.week = cleanAgg(d); }, function () {}));
+	if (what && what.month) jobs.push(getJSON('month.htm').then(function (d) { WI.month = cleanAgg(d); }, function () {}));
+	return Promise.all(jobs).then(function () { dbWarn(); render(); })
+		.catch(function () {
+			var w = $('wiWarn');
+			w.innerHTML = 'No data yet. If you just installed, give it a minute. Otherwise check that the USB drive is mounted and run <code>/jffs/addons/wifiinsight/wifiinsight.sh status</code> over SSH.';
+			w.style.display = 'block';
+		});
+}
+
+/* ---------- time series helpers ---------- */
+function rangeInfo() {
+	var cfg = RANGE_CFG[WI.range], to = nowTs();
+	return { from: to - cfg.secs, to: to, multi: cfg.secs > 86400, month: cfg.secs > 604800, cfg: cfg };
+}
+function tickFmt(R) {
+	return function (v) {
+		var d = new Date(v * 1000);
+		if (R.month) return MONS[d.getMonth()] + ' ' + d.getDate();
+		return R.multi ? DAYS[d.getDay()] + ' ' + pad(d.getHours()) + 'h' : hm(v);
+	};
+}
+function timeLabel(ts) {   // heatmap row labels
+	var d = new Date(ts * 1000), R = rangeInfo();
+	if (R.month) return MONS[d.getMonth()] + ' ' + d.getDate();
+	return R.multi ? DAYS[d.getDay()] + ' ' + pad(d.getHours()) + 'h' : hm(ts);
+}
+/* Build {x,y} arrays for the given fields over the selected range. Long ranges are averaged into
+   time buckets (RANGE_CFG); nulls are inserted across gaps so lines break instead of bridging. */
+function series(fields) {
+	var R = rangeInfo(), cfg = R.cfg, out = {}, rows, map, step;
+	fields.forEach(function (f) { out[f] = []; });
+	if (cfg.src === 'live') {
+		rows = (WI.live && WI.live.samples && WI.live.samples[WI.band]) || []; map = FL; step = (WI.live && WI.live.sample_interval) || 30;
+	} else {
+		var src = cfg.src === 'week' ? WI.week : WI.month;
+		rows = (src && src.agg && src.agg[WI.band]) || []; map = FW; step = (src && src.bucket) || 900;
+	}
+	var val = function (r, f) {
+		if (f === 'yours') return map === FW ? r[FW.yours] : (r[FL.tx] == null ? null : (r[FL.tx] || 0) + (r[FL.inbss] || 0));
+		var i = map[f]; return i === undefined || r[i] == null ? null : r[i];
+	};
+	var B = cfg.bucket > step ? cfg.bucket : 0, pts = [];
+	if (!B) {
+		for (var i = 0; i < rows.length; i++) {
+			if (rows[i][0] < R.from) continue;
+			var p = { x: rows[i][0], v: {} };
+			fields.forEach(function (f) { p.v[f] = val(rows[i], f); });
+			pts.push(p);
+		}
+	} else {
+		var cur = null, sum = {}, cnt = {};
+		var flush = function () {
+			if (cur === null) return;
+			var p = { x: cur, v: {} };
+			fields.forEach(function (f) { p.v[f] = cnt[f] ? Math.round(sum[f] / cnt[f] * 10) / 10 : null; });
+			pts.push(p);
+		};
+		for (var j = 0; j < rows.length; j++) {
+			if (rows[j][0] < R.from - B) continue;
+			var b = bucketOf(rows[j][0], B);
+			if (b !== cur) { flush(); cur = b; sum = {}; cnt = {}; }
+			fields.forEach(function (f) { var v = val(rows[j], f); if (v != null) { sum[f] = (sum[f] || 0) + v; cnt[f] = (cnt[f] || 0) + 1; } });
+		}
+		flush();
+	}
+	var gap = (B || step) * (B ? 2.5 : 4), last = null;
+	pts.forEach(function (p) {
+		if (last !== null && p.x - last > gap) fields.forEach(function (f) { out[f].push({ x: last + (B || step), y: null }); });
+		fields.forEach(function (f) { out[f].push({ x: p.x, y: p.v[f] }); });
+		last = p.x;
+	});
+	out._n = pts.length; out._R = R; out._bucket = B;
+	return out;
+}
+function latestSample() {
+	var s = (WI.live && WI.live.samples && WI.live.samples[WI.band]) || [];
+	return s.length ? s[s.length - 1] : null;
+}
+
+var eventMarkers = {
+	id: 'wiEvents',
+	afterDatasetsDraw: function (chart) {
+		var evs = chart.$wiEvents || [], x = chart.scales.x, a = chart.chartArea, ctx = chart.ctx;
+		if (!evs.length) return;
+		ctx.save();
+		ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
+		ctx.font = '10px system-ui, -apple-system, Segoe UI, sans-serif'; ctx.textBaseline = 'top';
+		var k = 0, vis = evs.filter(function (e) { var p = x.getPixelForValue(e[0]); return p >= a.left && p <= a.right; }).length;
+		for (var i = 0; i < evs.length; i++) {
+			var px = x.getPixelForValue(evs[i][0]);
+			if (px < a.left || px > a.right) continue;
+			var radar = evs[i][2] === 'radar';
+			ctx.strokeStyle = radar ? C.fail : 'rgba(240,239,236,0.45)';
+			ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke();
+			if (vis > 4 && !radar) continue;   // too many to label; the event list has them
+			ctx.fillStyle = radar ? C.fail : C.ink2;
+			var lbl = TAGS[evs[i][2]] || evs[i][2], w = ctx.measureText(lbl).width;
+			ctx.fillText(lbl, Math.min(px + 4, a.right - w), a.top + 2 + (k++ % 3) * 12);
+		}
+		ctx.restore();
+	}
+};
+
+/* Generic Chart.js wrapper: destroys and rebuilds (charts are small, animation is off). */
+function drawChart(key, boxId, type, datasets, o) {
+	o = o || {};
+	var box = $(boxId);
+	if (WI.charts[key]) { WI.charts[key].destroy(); delete WI.charts[key]; }
+	if (typeof Chart === 'undefined') { box.innerHTML = '<div class="empty">Loading chart library…</div>'; return null; }
+	if (o.empty) { box.innerHTML = '<div class="empty">' + o.empty + '</div>'; return null; }
+	box.innerHTML = '<canvas></canvas>';
+	datasets.forEach(function (d, i) {
+		if (type === 'line') {
+			d.borderWidth = d.borderWidth || 2; d.pointRadius = 0; d.pointHoverRadius = 4; d.pointHoverBorderWidth = 2;
+			d.pointHoverBorderColor = C.surface; d.tension = 0.2; d.spanGaps = false;
+			if (d.backgroundColor === undefined) d.backgroundColor = d.borderColor;
+		}
+		if (WI.hidden[key + ':' + d.label]) d.hidden = true;
+	});
+	var scales = {
+		x: o.x || { type: 'linear', grid: { color: C.grid, drawTicks: false }, border: { color: C.axis }, ticks: { color: C.tick, maxTicksLimit: 8, padding: 6, font: { size: 11 } } },
+		y: { grid: { color: C.grid, drawTicks: false }, border: { display: false }, ticks: { color: C.tick, padding: 6, font: { size: 11 } } }
+	};
+	if (o.yMin !== undefined) scales.y.min = o.yMin;
+	if (o.yMax !== undefined) scales.y.max = o.yMax;
+	if (o.yFmt) scales.y.ticks.callback = o.yFmt;
+	if (o.yStep) scales.y.ticks.stepSize = o.yStep;
+	if (o.stacked) { scales.y.stacked = true; scales.x.stacked = true; }
+	if (o.R) { scales.x.min = o.R.from; scales.x.max = o.R.to; scales.x.ticks.callback = tickFmt(o.R); }
+	var ch = new Chart(box.firstChild, {
+		type: type,
+		data: { labels: o.labels, datasets: datasets },
+		options: {
+			animation: false, responsive: true, maintainAspectRatio: false, parsing: type === 'bar', normalized: true,
+			interaction: { mode: 'index', intersect: false },
+			layout: { padding: { top: 4, right: 6, bottom: o.padBottom || 0 } },
+			scales: scales,
+			plugins: {
+				legend: { display: false },
+				tooltip: {
+					backgroundColor: C.tip, borderColor: C.axis, borderWidth: 1, titleColor: '#f0efec', bodyColor: '#f0efec',
+					padding: 9, boxWidth: 10, boxHeight: 3,
+					filter: function (it) { return it.parsed.y != null; },
+					callbacks: {
+						title: o.ttTitle || function (items) { return items.length && o.R ? when(items[0].parsed.x) + (o.bucket ? ' · ' + bucketName(o.bucket) + ' average' : '') : (items[0] ? items[0].label : ''); },
+						label: o.ttLabel || function (it) { return ' ' + it.dataset.label + ': ' + it.parsed.y + (o.unit || ''); }
+					}
+				}
+			}
+		},
+		plugins: o.plugins || []
+	});
+	if (o.events) ch.$wiEvents = o.events;
+	ch.update('none');
+	WI.charts[key] = ch;
+	return ch;
+}
+function legendHTML(key, items) {   // items: [label, color, toggleable, dashed]
+	return items.map(function (it) {
+		var sw = '<span class="sw' + (it[3] ? ' dash' : '') + '" style="background:' + it[1] + '"></span>';
+		if (!it[2]) return '<span class="li">' + sw + esc(it[0]) + '</span>';
+		var on = !WI.hidden[key + ':' + it[0]];
+		return '<label><input type="checkbox"' + (on ? ' checked' : '') + ' onchange="WiFiInsight.toggleSeries(\'' + key + '\',\'' + it[0] + '\',this.checked)"/>' + sw + esc(it[0]) + '</label>';
+	}).join('');
+}
+function toggleSeries(key, label, on) { WI.hidden[key + ':' + label] = !on; renderView(); }
+function chartEvents() {
+	var long = RANGE_CFG[WI.range].secs > 86400;
+	return bandEvents().filter(function (e) { return !(long && e[2] === 'scheduled'); });
+}
+function bandEvents() { return ((WI.live && WI.live.events) || []).filter(function (e) { return e[1] === WI.band || e[1] === 'all'; }); }
+function pctMax(sets) {
+	var m = 0;
+	sets.forEach(function (s) { if (WI.hidden[s[0]]) return; s[1].forEach(function (p) { if (p.y != null && p.y > m) m = p.y; }); });
+	return Math.min(100, Math.max(20, Math.ceil((m + 5) / 10) * 10));
+}
+function pctFmt(v) { return v + '%'; }
+
+/* =================== INSIGHT =================== */
+function renderInsight() {
+	renderTiles();
+	var s = series(['obss', 'nocat', 'yours']);
+	var yMax = pctMax([['ins:Others Wi-Fi', s.obss], ['ins:Non-Wi-Fi', s.nocat], ['ins:Your network', s.yours]]);
+	$('wiInsLegend').innerHTML = legendHTML('ins', [['Others Wi-Fi', C.others, 1], ['Non-Wi-Fi', C.nonwifi, 1], ['Your network', C.yours, 1]]);
+	drawChart('ins', 'wiInsChart', 'line', [
+		{ label: 'Others Wi-Fi', data: s.obss, borderColor: C.others },
+		{ label: 'Non-Wi-Fi', data: s.nocat, borderColor: C.nonwifi },
+		{ label: 'Your network', data: s.yours, borderColor: C.yours }
+	], { R: s._R, yMin: 0, yMax: yMax, yStep: yMax > 50 ? 20 : 10, yFmt: pctFmt, unit: '%', events: chartEvents(), bucket: s._bucket, plugins: [eventMarkers],
+		empty: s._n ? null : 'No samples in this range yet. They arrive every ' + ((WI.live && WI.live.sample_interval) || 30) + ' seconds.' });
+	renderHeat();
+	renderEvents();
+}
+function renderTiles() {
+	var r = radio(), last = latestSample(), html = '';
+	if (r) {
+		var sub = r.auto ? 'Auto' : 'Manual';
+		if (r.dfs_state && r.dfs_state.indexOf('ISM') >= 0 && r.dfs_ms) sub += ' · DFS ' + dur(r.dfs_ms);
+		else if (r.dfs_state && r.dfs_state.indexOf('CAC') >= 0) sub += ' · DFS radar check';
+		html += tile('Channel', r.ctl + ' <small>· ' + r.width + ' MHz</small>', sub);
+	} else html += tile('Channel', '–', 'Radio off');
+	if (last && nowTs() - last[0] < 600) {
+		var tot = (last[1] || 0) + (last[2] || 0);
+		html += tile('Interference', tot + '<small>%</small>', tot < 10 ? 'Low' : tot < 30 ? 'Moderate' : 'High', 'In-channel interference: others Wi-Fi + non-Wi-Fi');
+		html += tile('<span class="sw" style="background:' + C.others + '"></span>Others Wi-Fi', last[1] + '<small>%</small>', 'Neighbours', 'Airtime used by networks that are not yours');
+		html += tile('<span class="sw" style="background:' + C.nonwifi + '"></span>Non-Wi-Fi', last[2] + '<small>%</small>', (last[6] == null ? '–' : last[6]) + ' glitches', 'Energy from non-Wi-Fi devices; receive glitches in the last sample');
+		html += tile('Idle', last[5] + '<small>%</small>', '<span class="sw" style="background:' + C.yours + '"></span>Yours ' + ((last[3] || 0) + (last[4] || 0)) + '%', 'Idle airtime; your own traffic share');
+		html += tile('Noise', (r && r.noise != null ? r.noise : last[7]) + ' <small>dBm</small>', ago(nowTs() - last[0]), 'Noise floor');
+	} else {
+		['Interference', 'Others Wi-Fi', 'Non-Wi-Fi', 'Idle', 'Noise'].forEach(function (k) { html += tile(k, '–', 'No recent sample'); });
+	}
+	$('wiTiles').innerHTML = html;
+}
+function tile(k, v, s, title) { return '<div class="tile"' + (title ? ' title="' + esc(title) + '"' : '') + '><div class="k">' + k + '</div><div class="v">' + v + '</div><div class="s">' + s + '</div></div>'; }
+
+function rampColor(v) {
+	if (v <= 0.5) return RAMP[0];
+	var t = Math.min(1, v / 100) * (RAMP.length - 2);
+	return RAMP[1 + Math.min(RAMP.length - 2, Math.round(t))];
+}
+/* scans grouped by timestamp, newest first, within the range (falls back to the latest scan) */
+/* Heatmap / channel-load rows for the range: one row per scan, or (7D, 30D) one row per time
+   bucket with each channel averaged over the scans in it. 30D reads the router's 6-hour summaries. */
+function scanRows() {
+	var R = rangeInfo(), H = R.cfg.heat, agg = R.cfg.src === 'month';
+	var all = agg ? ((WI.month && WI.month.scans && WI.month.scans[WI.band]) || [])
+		: ((WI.scans && WI.scans.scans && WI.scans.scans[WI.band]) || []);
+	var byT = {}, order = [];
+	for (var i = 0; i < all.length; i++) {
+		var r = all[i], n = agg ? (r[6] || 1) : 1;   // ts,ch,score,aps,best,own[,scans]
+		var t = H ? bucketOf(r[0], H) : r[0];
+		if (!byT[t]) { byT[t] = { cells: {}, src: {} }; order.push(t); }
+		/* cell: [t, ch, estimate, networks, strongest, own, scans, measured: others, non-Wi-Fi, unclassified,
+		   noise, glitches, readings, noise readings]. Rows: [ts, ch, estimate, networks, strongest, own, scans,
+		   others, non-Wi-Fi, unclassified, noise, glitches(, readings in the 30D averages)]. */
+		var c = byT[t].cells[r[1]] || (byT[t].cells[r[1]] = [t, r[1], 0, 0, -127, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+		c[2] += r[2] * n; c[5] += r[5] * n; c[6] += n;
+		if (r[3] > c[3]) c[3] = r[3];
+		if (r[4] > c[4]) c[4] = r[4];
+		var mn = r[7] == null ? 0 : agg ? (r[12] || 1) : 1;
+		if (mn) {
+			c[7] += r[7] * mn; c[8] += (r[8] || 0) * mn; c[9] += (r[9] || 0) * mn; c[11] += (r[11] || 0) * mn; c[12] += mn;
+			if (r[10] != null) { c[10] += r[10] * mn; c[13] += mn; }
+		}
+		byT[t].src[r[0]] = n;   // scans behind this row
+	}
+	var r1 = function (v) { return Math.round(v * 10) / 10; }, measured = false;
+	order.forEach(function (t) {
+		/* measured: at least half the channels this row covers (a scan one channel at a time covers only some) */
+		var got = 0, mx = 0, need = Math.max(2, Math.ceil(Object.keys(byT[t].cells).length / 2));
+		Object.keys(byT[t].cells).forEach(function (k) {
+			var c = byT[t].cells[k]; c[2] = r1(c[2] / c[6]); c[5] = r1(c[5] / c[6]);
+			if (c[12]) { c[7] = r1(c[7] / c[12]); c[8] = r1(c[8] / c[12]); c[9] = r1(c[9] / c[12]); c[11] = Math.round(c[11] / c[12]); got++; if (c[12] > mx) mx = c[12]; }
+			else c[7] = c[8] = c[9] = c[11] = null;
+			c[10] = c[13] ? Math.round(c[10] / c[13]) : null;
+		});
+		byT[t].mscans = got >= need ? mx : 0;   /* measured scans behind this row */
+		if (got >= need) measured = true;   /* this driver reports per-channel measurements */
+	});
+	order.sort(function (a, b) { return b - a; });
+	var inRange = order.filter(function (t) { return t + (H || 0) > R.from; }), latestOnly = false;
+	if (!inRange.length && order.length && !agg) { inRange = [order[0]]; latestOnly = true; }
+	var scans = 0, mscans = 0;
+	var rows = inRange.map(function (t) {
+		var n = 0; Object.keys(byT[t].src).forEach(function (k) { n += byT[t].src[k]; }); scans += n; mscans += Math.min(n, byT[t].mscans);
+		return { ts: t, cells: byT[t].cells, n: n };
+	});
+	/* the 6 hours before the range, newest first: for channels the scans in range didn't cover */
+	var oldest = inRange.length ? inRange[inRange.length - 1] : 0;
+	var older = order.filter(function (t) { return t < oldest && t >= oldest - 21600; }).map(function (t) { return { ts: t, cells: byT[t].cells }; });
+	return { rows: rows, older: older, latestOnly: latestOnly, scans: scans, mscans: mscans, bucket: H, measured: measured };
+}
+/* Measured: what the radio recorded on each channel while scanning (wl chanim_stats all), where the
+   driver reports it. Estimated: built from the networks heard (signal, overlap, advertised load). */
+var MEAS = [['Others Wi-Fi', 7, C.others], ['Non-Wi-Fi', 8, C.nonwifi], ['Unclassified', 9, C.unclass]];
+function heatSrc(info) { return WI.src === 'estimated' || !info.measured ? 'estimated' : 'measured'; }
+function cellVal(c, src) {
+	if (!c) return null;
+	if (src === 'measured') {
+		if (!c[12]) return null;
+		var v = 0;
+		MEAS.forEach(function (m) { if (!WI.hidden['meas:' + m[0]]) v += c[m[1]] || 0; });
+		return Math.min(100, Math.round(v * 10) / 10);
+	}
+	return Math.min(100, c[2] + (WI.showMesh ? c[5] : 0));
+}
+function srcControls(info, src, meshId) {   /* the Measured / Estimated switch and the measured parts, for a card's legend */
+	$(meshId).style.display = src === 'estimated' ? '' : 'none';
+	if (!info.measured) {   /* no scan since this version yet (after one, the router reports how many channels it measured) */
+		var m = (WI.live && WI.live.measured) || {};
+		/* not while this band's scans fail: the card says why instead */
+		return m[WI.band] == null && !lastScanTrouble() ? '<span class="li" style="color:var(--muted)">Measured airtime starts with the next neighbour scan, or press Scan now.</span>' : '';
+	}
+	return '<span class="seg sm">' + [['measured', 'Measured'], ['estimated', 'Estimated']].map(function (x) {
+		return '<button type="button" class="' + (x[0] === src ? 'on' : '') + '" onclick="WiFiInsight.setSrc(\'' + x[0] + '\')" title="' +
+			(x[0] === 'measured' ? 'Airtime the radio measured on each channel while scanning' : 'Estimated from the networks heard: their signal, overlap and advertised load') + '">' + x[1] + '</button>';
+	}).join('') + '</span>' + (src === 'measured' ? legendHTML('meas', MEAS.map(function (m) { return [m[0], m[2], 1]; })) : '');
+}
+function setSrc(s) { WI.src = s; store('src', s); renderView(); }
+/* Why this band's last scan got nothing (refused, nothing heard, radio off), from scanstate.htm, as plain text; '' if it didn't fail. */
+function lastScanTrouble() {
+	var s = WI.scanState, r = s && s.state === 'done' && s.bands ? s.bands[WI.band] : null;
+	if (!r || r === 'ok') return '';
+	var note = s.notes && s.notes[WI.band] ? ' (' + s.notes[WI.band] + ')' : '', at = s.ts ? ' at ' + hm(s.ts) : '';
+	if (r === 'off') return 'The ' + bandName(WI.band) + ' radio was off at the last scan' + at + '.';
+	if (r === 'busy') return 'The radio refused the last scan' + at + note + '.' + (dfsHint() ? ' ' + dfsHint() : '');
+	return 'The last scan' + at + ' heard no networks' + note + '.';
+}
+/* Some drivers refuse full 5 GHz scans while on a DFS channel; many don't (an RT-AX86U in Europe scans
+   them fine). Only when this router's last scan of the band was refused, or had to go one channel at a
+   time, while its radio is on a DFS channel: say so, and what avoids it, with the cost. Plain text. */
+function dfsHint() {
+	var s = WI.scanState, r = radio(), res = s && s.state === 'done' && s.bands ? s.bands[WI.band] : null, note = (s && s.notes && s.notes[WI.band]) || '';
+	if (kind() !== '5g' || !r || !r.dfs_state || !/ISM|CAC/.test(r.dfs_state)) return '';
+	if (!(res === 'busy' || note.indexOf('one channel at a time') >= 0)) return '';
+	return (res === 'busy' ? 'It\'s on DFS channel ' + r.ctl + ': some routers refuse scans there, and many don\'t. '
+			: 'The radio refused full scans on DFS channel ' + r.ctl + ', so it scans one channel at a time: some routers do this on DFS channels, and many don\'t. ')
+		+ 'If you\'d rather have full scans, a channel outside 52\u2013144 avoids it (Wireless \u2192 General: un-tick "Enable 160 MHz" and "Auto select channel including DFS channels"). '
+		+ 'The cost: no 160 MHz in most regions, and the remaining channels may be busier.';
+}
+function noScansMsg() {
+	if (WI.scans && WI.scans.scan_interval === 0) return 'Neighbour scans are switched off. Turn them on in Settings, or press <b>Scan now</b>.';
+	var why = lastScanTrouble();
+	return why ? esc(why) + ' Press <b>Scan now</b> to try again, or wait for the next scheduled scan.' : 'No scans yet. Press <b>Scan now</b> or wait for the next scheduled scan.';
+}
+/* The database on the USB drive is damaged (a power cut mid-write): say so until it's repaired. And when
+   sampling has stopped (live.htm, which each sampling run writes, is over 10 minutes old while collecting),
+   say that: up to 2.1.0 a run stuck in a command kept sampling stopped for hours without a word. */
+function dbWarn() {
+	var w = $('wiWarn'), L = WI.live, d = L && L.damaged, age = L && L.generated ? Date.now() / 1000 - L.generated : 0;
+	if (!d && L && L.collection !== 'off' && age > 600) {
+		w.innerHTML = 'No new samples since ' + esc(new Date(L.generated * 1000).toLocaleString()) + ' (' + ago(age) + '): sampling looks stuck. ' +
+			'WiFi Insight stops a run stuck in a command within minutes and says so in the system log (lines from wifiinsight). If this stays, ' +
+			'run <code>/jffs/addons/wifiinsight/wifiinsight.sh status</code> over SSH, or restart the router.';
+		w.style.display = 'block';
+		return;
+	}
+	if (!d) { w.style.display = 'none'; return; }
+	w.innerHTML = 'The history database is damaged (noticed ' + new Date(d * 1000).toLocaleString() + '), so some charts may have gaps or stop updating. ' +
+		'To repair it, run <code>/jffs/addons/wifiinsight/wifiinsight.sh repair</code> over SSH.' + (WI.live.fs_note ? ' ' + esc(WI.live.fs_note) : '');
+	w.style.display = 'block';
+}
+function prepCanvas(cv, cssH) {
+	var cssW = cv.parentNode.clientWidth || 700, dpr = window.devicePixelRatio || 1;
+	cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr); cv.style.height = cssH + 'px';
+	var ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, cssW, cssH);
+	ctx.font = '11px system-ui, -apple-system, Segoe UI, sans-serif';
+	return { ctx: ctx, w: cssW, h: cssH };
+}
+function renderHeat() {
+	var cv = $('wiHeat'), r = radio(), info = scanRows(), rows = info.rows, ch = chans(), src = heatSrc(info);
+	$('wiHeatSrc').innerHTML = srcControls(info, src, 'wiMeshLbl');
+	$('wiDfsLbl').style.display = kind() === '5g' ? '' : 'none';   /* DFS channels: 5 GHz only */
+	$('wiRampNote').textContent = src === 'measured' ? ' (half the airtime or more)' : '';
+	var qs = quietState(), qband = $('wiHeatQuiet');
+	qband.style.display = 'none'; $('wiHeatQuietKey').style.display = 'none';
+	if (!rows.length || !ch.length) {
+		cv.style.display = 'none'; $('wiHeatEmpty').style.display = 'block'; $('wiHeatEmpty').innerHTML = noScansMsg(); $('wiHeatSub').textContent = '';
+		WI.heatGeo = null; return;
+	}
+	cv.style.display = 'block'; $('wiHeatEmpty').style.display = 'none';
+	var padL = rangeInfo().multi ? 56 : 46, padB = 34, padT = 4, padR = 4;
+	var qshow = qs && qs.mode === 'quiet' && !qs.all && !info.bucket;   /* a row above the newest scan, while it's quiet */
+	if (qshow) {
+		var since = qWhen(qs.start, qs.from);
+		qband.innerHTML = '<span class="t" style="width:' + padL + 'px">' + since + '</span><div class="b">Quiet hours since ' + since + ': no scheduled scans</div>';
+		qband.style.display = 'flex'; $('wiHeatQuietKey').style.display = 'inline-flex';
+	}
+	var rowH = Math.min(20, 220 / rows.length);
+	if (rowH >= 3) rowH = Math.floor(rowH);
+	var gridH = rowH * rows.length;
+	var P = prepCanvas(cv, Math.ceil(gridH) + padT + padB), ctx = P.ctx;
+	var colW = (P.w - padL - padR) / ch.length, gx = colW > 8 ? 2 : 1, gy = rowH >= 8 ? 2 : (rowH >= 5 ? 1 : 0);
+	for (var i = 0; i < rows.length; i++) for (var j = 0; j < ch.length; j++) {
+		var c = rows[i].cells[ch[j]], v = cellVal(c, src);
+		ctx.fillStyle = v == null ? C.nodata : rampColor(src === 'measured' ? Math.min(100, v * 2) : v);   /* measured: full colour at 50% of airtime */
+		if (rowH < 3) ctx.fillRect(padL + j * colW + gx / 2, padT + i * rowH, colW - gx, rowH + 0.6);
+		else roundRect(ctx, padL + j * colW + gx / 2, padT + i * rowH + gy / 2, colW - gx, rowH - gy, rowH >= 8 ? 3 : 1);
+	}
+	axisChannels(ctx, ch, padL, colW, padT + gridH);
+	ctx.fillStyle = C.tick; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+	var lblEvery = Math.max(1, Math.ceil(18 / rowH));
+	for (var k = 0; k < rows.length; k += lblEvery) {
+		if (padT + k * rowH + rowH / 2 > padT + gridH - 6 && k > 0) break;
+		var dt = new Date(rows[k].ts * 1000);
+		ctx.fillText(timeLabel(rows[k].ts), padL - 6, padT + k * rowH + rowH / 2);
+	}
+	if (WI.showActive && r) activeBox(ctx, ch, r, padL, colW, padT, gridH);
+	WI.heatGeo = { padL: padL, padT: padT, colW: colW, rowH: rowH, rows: rows, chans: ch, bucket: info.bucket, src: src };
+	/* "38 scans, newest 5 min ago, measured by the radio." (scans from before an update have no measurements) */
+	var how = src !== 'measured' ? 'estimated from the networks heard' : (info.mscans < info.scans && !info.latestOnly ? info.mscans + ' measured' : 'measured') + ' by the radio';
+	$('wiHeatSub').textContent = (info.latestOnly ? 'Latest scan, ' + ago(nowTs() - rows[0].ts)
+		: info.scans + ' scan' + (info.scans > 1 ? 's' : '') + (info.bucket ? ', shown as ' + bucketName(info.bucket) + ' averages' : ', newest ' + ago(nowTs() - rows[0].ts)))
+		+ ', ' + how + '.' + (qshow ? ' No scheduled scans in quiet hours.' : '')
+		+ (WI.scanState && WI.scanState.ts > rows[0].ts && lastScanTrouble() ? ' ' + lastScanTrouble() : dfsHint() ? ' ' + dfsHint() : '');
+}
+function axisChannels(ctx, ch, padL, colW, y0) {
+	ctx.fillStyle = C.tick; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+	var every = colW < 22 ? 2 : 1;
+	ch.forEach(function (c, j) { if (j % every === 0) ctx.fillText(c, padL + (j + 0.5) * colW, y0 + 5); });
+	if (!WI.showDfs || kind() !== '5g') return;
+	dfsBracket(ctx, ch, function (c) { var j = ch.indexOf(c); return [padL + j * colW, padL + (j + 1) * colW]; }, y0 + 22);
+}
+function activeBox(ctx, ch, r, padL, colW, top, h) {
+	var sp = spanOf(r.center, r.width).filter(function (c) { return ch.indexOf(c) >= 0; });
+	if (!sp.length && ch.indexOf(r.ctl) >= 0) sp = [r.ctl];
+	if (!sp.length) return;
+	var a = ch.indexOf(sp[0]), b = ch.indexOf(sp[sp.length - 1]);
+	ctx.strokeStyle = C.accent; ctx.lineWidth = 2; ctx.setLineDash([]);
+	ctx.strokeRect(padL + a * colW + 1, top, (b - a + 1) * colW - 2, h);
+}
+function roundRect(ctx, x, y, w, h, r) {
+	if (w <= 0 || h <= 0) return;
+	r = Math.min(r, w / 2, h / 2);
+	ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+	ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h);
+	ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); ctx.fill();
+}
+function placeTip(tip, host, x, y) {
+	tip.style.display = 'block';
+	var tx = x + 14, ty = y + 12;
+	if (tx + tip.offsetWidth > host.clientWidth) tx = x - tip.offsetWidth - 10;
+	tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+}
+function heatHover(ev) {
+	var g = WI.heatGeo, tip = $('wiTip');
+	if (!g) return;
+	var rect = ev.target.getBoundingClientRect(), x = ev.clientX - rect.left, y = ev.clientY - rect.top;
+	var j = Math.floor((x - g.padL) / g.colW), i = Math.floor((y - g.padT) / g.rowH);
+	if (j < 0 || j >= g.chans.length || i < 0 || i >= g.rows.length) { tip.style.display = 'none'; return; }
+	var ch = g.chans[j], row = g.rows[i], c = row.cells[ch];
+	var h = '<b>Channel ' + ch + '</b>' + (isDfs(ch) ? ' <span class="m">' + chanTags(ch) + '</span>' : '') + '<br><span class="m">'
+		+ (g.bucket ? timeLabel(row.ts) + ', ' + bucketName(g.bucket) + ' average of ' + row.n + ' scan' + (row.n > 1 ? 's' : '') : when(row.ts)) + '</span><br>';
+	var nets = function (c) { return c[3] ? ((g.bucket ? 'Up to ' : '') + c[3] + ' network' + (c[3] > 1 ? 's' : '') + ' overlapping, strongest ' + c[4] + ' dBm') : 'No other networks heard'; };
+	if (c && g.src === 'measured' && c[12]) {
+		h += 'Measured: <b>' + Math.round(cellVal(c, 'measured')) + '%</b> of airtime busy<br>';
+		h += MEAS.map(function (m) { return m[0] + ' ' + c[m[1]] + '%'; }).join(' · ') + '<br>';
+		h += '<span class="m">' + (c[10] != null ? 'Noise ' + c[10] + ' dBm · ' : '') + 'glitches ' + c[11] + (g.bucket ? ' (average)' : '') + '<br>' + nets(c) + '</span>';
+	} else if (c) {
+		if (g.src === 'measured') h += '<span class="m">Not measured in this scan</span><br>';
+		h += 'Interference estimate: <b>' + Math.round(c[2]) + '%</b><br>' + nets(c);
+		if (c[5] > 0) h += '<br><span class="m">Your mesh adds ' + Math.round(c[5]) + '%</span>';
+	} else h += 'Not scanned';
+	tip.innerHTML = h; placeTip(tip, ev.target.parentNode, x, y);
+}
+function renderEvents() {
+	$('wiEvSub').textContent = kind() === '5g' ? 'Channel and bandwidth changes, radar detections and restarts.' : 'Channel and bandwidth changes and restarts.';   /* radar: 5 GHz only */
+	var evs = bandEvents(), shown = WI.allEvents ? evs : evs.slice(0, 10);
+	if (!evs.length) { $('wiEvents').innerHTML = '<div class="empty" style="padding:16px 0">No events yet.</div>'; return; }
+	var h = '<table class="t"><tr><th style="width:130px">Time</th><th style="width:190px">Event</th><th>Change</th></tr>';
+	shown.forEach(function (e) {
+		var detail = (e[5] && e[5] !== TAGS[e[2]]) ? e[5] : '';
+		var change = (e[3] || e[4]) ? esc(e[3] || '') + (e[3] && e[4] ? ' → ' : '') + esc(e[4] || '') : '<span style="color:var(--muted)">' + (esc(detail).slice(0, 90) || '–') + '</span>';
+		if (e[2] === 'initial') change = esc(e[4]);
+		h += '<tr><td>' + when(e[0]) + '</td><td><span class="tag ' + esc(e[2]) + '">' + esc(TAGS[e[2]] || e[2]) + '</span>' + (e[1] === 'all' ? ' <span style="color:var(--muted)">all bands</span>' : '') + '</td><td>' + change + '</td></tr>';
+	});
+	h += '</table>';
+	if (evs.length > 10) h += '<button type="button" class="more" onclick="WiFiInsight.toggleEvents()">' + (WI.allEvents ? 'Show fewer' : 'Show all ' + evs.length + ' events') + '</button>';
+	$('wiEvents').innerHTML = h;
+}
+
+/* =================== SITE SURVEY =================== */
+function aps() { return ((WI.scans && WI.scans.aps && WI.scans.aps[WI.band]) || []).slice(); }
+function renderSurvey() {
+	var list = aps(), last = WI.scans && WI.scans.last_scan && WI.scans.last_scan[WI.band];
+	var others = list.filter(function (a) { return !a.own; }).length;
+	/* networks from earlier scans fill in channels the latest didn't cover (one channel at a time, or stopped early) */
+	var older = list.filter(function (a) { return a.ts && last && a.ts < last; }).length;
+	$('wiSurveySub').textContent = list.length ? (others + ' other network' + (others === 1 ? '' : 's') + ' and ' + (list.length - others) + ' of yours, from the scan ' + ago(nowTs() - last)
+		+ (older ? ' (' + older + ' from earlier scans, on channels it didn\'t cover)' : '') + '.') : '';
+	renderSignalMap(list);
+	renderApTable(list);
+}
+function mapGeo(w, h) {
+	var ch = chans(), padL = 44, padR = 8, padT = 10, padB = 36, gw = w - padL - padR;
+	var g = { padL: padL, padT: padT, padB: padB, gh: h - padT - padB, ch: ch, w: w };
+	g.yOf = function (dbm) { var v = Math.max(-100, Math.min(-20, dbm)); return padT + (1 - (v + 100) / 80) * g.gh; };
+	if (kind() === '2g') {
+		var f0 = freq(ch[0]) - 12, f1 = freq(ch[ch.length - 1]) + 12;
+		g.xOf = function (f) { return padL + (f - f0) / (f1 - f0) * gw; };
+		g.xCh = function (c) { return g.xOf(freq(c)); };
+		g.edges = function (a) { var fc = freq(a.center); return [g.xOf(fc - a.width / 2), g.xOf(fc + a.width / 2)]; };
+	} else {
+		var slot = gw / ch.length;
+		g.xCh = function (c) { var i = ch.indexOf(c); return i < 0 ? null : padL + (i + 0.5) * slot; };
+		g.edges = function (a) {
+			var sp = spanOf(a.center, a.width).filter(function (c) { return ch.indexOf(c) >= 0; });
+			if (!sp.length) { if (ch.indexOf(a.ctl) < 0) return null; sp = [a.ctl]; }
+			return [g.xCh(sp[0]) - slot / 2 + 2, g.xCh(sp[sp.length - 1]) + slot / 2 - 2];
+		};
+		g.slot = slot;
+	}
+	return g;
+}
+function renderSignalMap(list) {
+	var cv = $('wiMap');
+	if (!list.length || !chans().length) { cv.style.display = 'none'; $('wiMapEmpty').style.display = 'block'; $('wiMapEmpty').innerHTML = noScansMsg(); WI.mapShapes = null; return; }
+	cv.style.display = 'block'; $('wiMapEmpty').style.display = 'none';
+	var P = prepCanvas(cv, 270), ctx = P.ctx, g = mapGeo(P.w, 270), r = radio();
+	// grid
+	ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.fillStyle = C.tick; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+	for (var d = -90; d <= -30; d += 10) { var y = g.yOf(d); ctx.beginPath(); ctx.moveTo(g.padL, y); ctx.lineTo(P.w - 8, y); ctx.stroke(); ctx.fillText(d, g.padL - 6, y); }
+	ctx.save(); ctx.translate(10, g.padT + g.gh / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText('dBm', 0, 0); ctx.restore();
+	// router's channel band
+	if (r) {
+		var e = g.edges({ center: r.center, width: r.width, ctl: r.ctl });
+		if (e) { ctx.fillStyle = alpha(C.accent, 0.07); ctx.fillRect(e[0], g.padT, e[1] - e[0], g.gh); ctx.strokeStyle = alpha(C.accent, 0.6); ctx.setLineDash([4, 3]); ctx.strokeRect(e[0], g.padT, e[1] - e[0], g.gh); ctx.setLineDash([]); }
+	}
+	// shapes: weakest first so strong ones sit on top
+	var shapes = [];
+	list.slice().sort(function (a, b) { return a.rssi - b.rssi; }).forEach(function (a) {
+		var e = g.edges(a); if (!e) return;
+		shapes.push({ a: a, x0: e[0], x1: e[1], yp: g.yOf(a.rssi), base: g.padT + g.gh });
+	});
+	shapes.forEach(function (s) { drawShape(ctx, s, s === WI.mapHover); });
+	// direct labels for the strongest few, skipping collisions
+	var placed = [];
+	ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = '11px system-ui, -apple-system, Segoe UI, sans-serif';
+	shapes.slice().sort(function (a, b) { return b.a.rssi - a.a.rssi; }).slice(0, 8).forEach(function (s) {
+		var label = s.a.ssid || '(hidden)', w = ctx.measureText(label).width, cx = (s.x0 + s.x1) / 2, y = s.yp - 4;
+		var box = [cx - w / 2 - 3, y - 13, cx + w / 2 + 3, y];
+		if (box[0] < g.padL || box[2] > P.w || box[1] < 0) return;
+		for (var i = 0; i < placed.length; i++) { var p = placed[i]; if (!(box[2] < p[0] || box[0] > p[2] || box[3] < p[1] || box[1] > p[3])) return; }
+		placed.push(box);
+		ctx.fillStyle = s.a.own ? '#bfe9d6' : C.ink2;
+		ctx.fillText(label, cx, y);
+	});
+	// channel axis
+	ctx.fillStyle = C.tick; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+	var y0 = g.padT + g.gh, every = (g.slot && g.slot < 22) ? 2 : 1;
+	g.ch.forEach(function (c, j) { if (j % every === 0) ctx.fillText(c, g.xCh(c), y0 + 6); });
+	if (kind() === '5g') dfsBracket(ctx, g.ch, function (c) { return [g.xCh(c) - g.slot / 2, g.xCh(c) + g.slot / 2]; }, y0 + 23);
+	WI.mapShapes = shapes; WI.mapGeo = g;
+}
+function drawShape(ctx, s, hot) {
+	var col = s.a.own ? C.yours : C.others, w = s.x1 - s.x0, ramp = Math.min(w * 0.22, 18);
+	ctx.beginPath();
+	ctx.moveTo(s.x0, s.base);
+	ctx.bezierCurveTo(s.x0 + ramp * 0.4, s.yp, s.x0 + ramp * 0.6, s.yp, s.x0 + ramp, s.yp);
+	ctx.lineTo(s.x1 - ramp, s.yp);
+	ctx.bezierCurveTo(s.x1 - ramp * 0.6, s.yp, s.x1 - ramp * 0.4, s.yp, s.x1, s.base);
+	ctx.globalAlpha = hot ? 0.38 : (s.a.own ? 0.22 : 0.13); ctx.fillStyle = col; ctx.fill();
+	ctx.globalAlpha = 1; ctx.lineWidth = hot ? 2.5 : 2; ctx.strokeStyle = col; ctx.setLineDash(s.a.own ? [] : []); ctx.stroke();
+}
+function mapHover(ev) {
+	var shapes = WI.mapShapes, tip = $('wiMapTip');
+	if (!shapes) return;
+	var rect = ev.target.getBoundingClientRect(), x = ev.clientX - rect.left, y = ev.clientY - rect.top, hit = null;
+	for (var i = shapes.length - 1; i >= 0; i--) { var s = shapes[i]; if (x >= s.x0 && x <= s.x1 && y >= s.yp - 3 && y <= s.base) { hit = s; break; } }
+	if (hit !== WI.mapHover) { WI.mapHover = hit; renderSignalMap(aps()); }
+	if (!hit) { tip.style.display = 'none'; return; }
+	var a = hit.a;
+	tip.innerHTML = '<b>' + (a.ssid ? esc(a.ssid) : '(hidden)') + '</b>' + (a.own ? ' <span class="m">your network</span>' : '') + '<br><span class="m">' + esc(a.bssid) + '</span><br>' +
+		'Channel ' + a.ctl + ' · ' + a.width + ' MHz' + (isDfs(a.ctl) ? ' · ' + chanTags(a.ctl) : '') + '<br>Signal <b>' + a.rssi + ' dBm</b>' + (a.snr >= 0 ? ' · SNR ' + a.snr + ' dB' : '') + '<br>' +
+		(PHY[a.phy] || '') + (a.sec ? ' · ' + esc(a.sec) : '') + (a.util >= 0 ? '<br>Reports ' + a.util + '% channel load' : '');
+	placeTip(tip, ev.target.parentNode, x, y);
+}
+function renderApTable(list) {
+	if (!list.length) { $('wiNets').innerHTML = '<div class="empty" style="padding:16px 0">No scan results yet.</div>'; return; }
+	var k = WI.sortKey, d = WI.sortDir;
+	list.sort(function (a, b) {
+		var x = a[k], y = b[k];
+		if (typeof x === 'string') return d * x.localeCompare(y);
+		return d * ((x == null ? -999 : x) - (y == null ? -999 : y));
+	});
+	var col = function (key, label, cls) { return '<th class="sort' + (cls ? ' ' + cls : '') + '" onclick="WiFiInsight.sortBy(\'' + key + '\')">' + label + (k === key ? (d > 0 ? ' ▲' : ' ▼') : '') + '</th>'; };
+	var h = '<table class="t"><tr>' + col('ssid', 'Network') + col('bssid', 'BSSID') + col('ctl', 'Ch', 'num') + col('width', 'Width', 'num') + col('phy', 'Standard') + col('sec', 'Security') + col('rssi', 'Signal') + col('util', 'Load', 'num') + '</tr>';
+	list.forEach(function (a) {
+		var pct = Math.max(4, Math.min(100, (a.rssi + 95) / 55 * 100));
+		h += '<tr><td>' + (a.ssid ? esc(a.ssid) : '<span style="color:var(--muted)">(hidden)</span>') + (a.own ? '<span class="pill">Yours</span>' : '') + '</td>' +
+			'<td class="mono">' + esc(a.bssid) + '</td><td class="num">' + a.ctl + (isDfs(a.ctl) ? '<span class="pill dfs">' + (isWx(a.ctl) ? 'DFS · weather radar' : 'DFS') + '</span>' : '') + '</td><td class="num">' + a.width + '</td>' +
+			'<td>' + esc(PHY[a.phy] || '–') + '</td><td>' + esc(a.sec || '–') + '</td>' +
+			'<td style="white-space:nowrap"><span class="sig"><i style="width:' + pct + '%"></i></span>' + a.rssi + ' dBm</td>' +
+			'<td class="num">' + (a.util >= 0 ? a.util + '%' : '<span style="color:var(--muted)">–</span>') + '</td></tr>';
+	});
+	$('wiNets').innerHTML = h + '</table>';
+}
+function sortBy(k) { if (WI.sortKey === k) WI.sortDir = -WI.sortDir; else { WI.sortKey = k; WI.sortDir = (k === 'ssid' || k === 'bssid' || k === 'sec' || k === 'phy' || k === 'ctl') ? 1 : -1; } renderApTable(aps()); }
+
+/* =================== CHANNEL STATISTICS =================== */
+function channelLoads() {   // average and peak load per channel across scans in range (measured or estimated)
+	var info = scanRows(), ch = chans(), src = heatSrc(info), avg = {}, peak = {}, comp = {}, noise = {}, filled = 0;
+	MEAS.forEach(function (m) { comp[m[0]] = {}; });
+	ch.forEach(function (c) {
+		var sum = 0, n = 0, pk = 0, parts = [0, 0, 0], nz = 0, nzn = 0;
+		info.rows.forEach(function (r) {
+			var x = r.cells[c], v = cellVal(x, src);
+			if (x && x[10] != null) { nz += x[10] * x[13]; nzn += x[13]; }
+			if (v == null) return;
+			var w = src === 'measured' ? x[12] : (x[6] || 1);
+			sum += v * w; n += w; if (v > pk) pk = v;
+			if (src === 'measured') MEAS.forEach(function (m, i) { parts[i] += (x[m[1]] || 0) * w; });
+		});
+		if (!n) {   /* not covered by the scans in range (one channel at a time, or stopped early): the newest scan before that did */
+			var o = (info.older || []).filter(function (r) { return cellVal(r.cells[c], src) != null; })[0];
+			if (o) {
+				var x = o.cells[c]; sum = pk = cellVal(x, src); n = 1; filled++;
+				if (src === 'measured') MEAS.forEach(function (m, i) { parts[i] = x[m[1]] || 0; });
+				if (x[10] != null && !nzn) { nz = x[10]; nzn = 1; }
+			}
+		}
+		avg[c] = n ? Math.round(sum / n * 10) / 10 : null; peak[c] = n ? Math.round(pk) : null;
+		MEAS.forEach(function (m, i) { comp[m[0]][c] = n ? Math.round(parts[i] / n * 10) / 10 : null; });
+		noise[c] = nzn ? Math.round(nz / nzn) : null;
+	});
+	return { avg: avg, peak: peak, comp: comp, noise: noise, src: src, info: info, n: info.scans, latestOnly: info.latestOnly, filled: filled };
+}
+function renderChannels() {
+	$('wiBestSub').textContent = 'Best channel for each width, based on the load above.' + (kind() === '5g' ? ' DFS channels can be forced to change if radar is detected.' : '');
+	var ch = chans(), list = aps(), r = radio(), cur = r ? spanOf(r.center, r.width) : [];
+	if (!ch.length || !list.length && !(WI.scans && WI.scans.scans && (WI.scans.scans[WI.band] || []).length)) {
+		drawChart('cnt', 'wiCntChart', 'bar', [], { empty: noScansMsg() });
+		drawChart('load', 'wiLoadChart', 'bar', [], { empty: noScansMsg() });
+		$('wiNzChCard').style.display = 'none'; $('wiLoadSrc').innerHTML = '';
+		$('wiBest').innerHTML = ''; return;
+	}
+	var labels = ch.map(String), others = ch.map(function () { return 0; }), mine = ch.map(function () { return 0; });
+	list.forEach(function (a) { var i = ch.indexOf(a.ctl); if (i < 0) return; if (a.own) mine[i]++; else others[i]++; });
+	/* A router doesn't hear its own networks when it scans: "Yours" counts mesh nodes and other access points of yours. */
+	var anyMine = mine.some(function (n) { return n > 0; });
+	$('wiCntLegend').innerHTML = legendHTML('cnt', anyMine ? [['Other networks', C.others, 0], ['Yours', C.yours, 0]] : [['Other networks', C.others, 0]]);
+	var lastTs = WI.scans && WI.scans.last_scan && WI.scans.last_scan[WI.band], olderN = list.filter(function (a) { return a.ts && lastTs && a.ts < lastTs; }).length;
+	$('wiCntSub').textContent = 'Counted by primary channel in the latest scan' + (olderN ? ', and in earlier scans for channels it didn\'t cover' : '') + '.'
+		+ (anyMine ? '' : ' Your router doesn\'t hear its own network; the shaded area is its channel.');
+	var barBase = { borderRadius: { topLeft: 4, topRight: 4 }, borderSkipped: 'bottom', categoryPercentage: 0.72, barPercentage: 0.9, borderWidth: { top: 2 }, borderColor: C.surface };
+	var xCat = { type: 'category', grid: { display: false }, border: { color: C.axis }, ticks: { color: C.tick, font: { size: 11 }, autoSkip: ch.length > 30, autoSkipPadding: 6, maxRotation: 0 } };   /* 6 GHz has 59 channels */
+	drawChart('cnt', 'wiCntChart', 'bar', [
+		Object.assign({ label: 'Other networks', data: others, backgroundColor: C.others }, barBase),
+		Object.assign({ label: 'Yours', data: mine, backgroundColor: C.yours }, barBase)
+	], { labels: labels, x: xCat, stacked: true, yMin: 0, yStep: 1, plugins: [curBand(ch.map(function (c, i) { return cur.indexOf(c) >= 0 ? i : -1; }).filter(function (i) { return i >= 0; })), dfsAxis(ch)], padBottom: kind() === '5g' ? 22 : 0, yFmt: function (v) { return Number.isInteger(v) ? v : ''; },
+		ttTitle: function (it) { return 'Channel ' + it[0].label + (isDfs(+it[0].label) ? ' (' + chanTags(+it[0].label) + ')' : ''); } });
+
+	var L = channelLoads(), meas = L.src === 'measured';
+	$('wiLoadSrc').innerHTML = srcControls(L.info, L.src, 'wiMeshLbl2');
+	$('wiLoadTitle').textContent = meas ? 'Load per channel' : 'Estimated load per channel';
+	var mn = L.info.mscans, part = meas && !L.latestOnly && mn < L.n;   /* scans from before the update have no measurements */
+	var sc = function (n) { return n + ' scan' + (n === 1 ? '' : 's'); };
+	$('wiLoadSub').textContent = (meas ? 'Measured by the radio' : 'Estimated from the networks heard')
+		+ (L.latestOnly ? ' in the latest scan' : part ? ' in ' + mn + ' of the ' + sc(L.n) + ' in range' : ', averaged over ' + sc(L.n)) + '. Lower is better.'
+		+ (L.filled ? ' ' + L.filled + ' channel' + (L.filled === 1 ? '' : 's') + ' the ' + (L.latestOnly || L.n === 1 ? 'scan' : 'scans') + ' didn\'t cover: from the newest earlier scan that did.' : '');
+	var data = ch.map(function (c) { return L.avg[c]; });
+	var maxV = Math.max.apply(null, data.map(function (v) { return v || 0; }));
+	var curIdx = ch.map(function (c, i) { return cur.indexOf(c) >= 0 ? i : -1; }).filter(function (i) { return i >= 0; });
+	var title = function (it) { return 'Channel ' + it[0].label + (isDfs(+it[0].label) ? ' (' + chanTags(+it[0].label) + ')' : '') + (cur.indexOf(+it[0].label) >= 0 ? ' · in use' : ''); };
+	var bar = { borderSkipped: 'bottom', categoryPercentage: 0.72, barPercentage: 0.9 };
+	var yMax = Math.min(100, Math.max(20, Math.ceil((maxV + 5) / 10) * 10));
+	if (meas) {   /* stacked: the measured parts that are switched on */
+		var sets = MEAS.filter(function (m) { return !WI.hidden['meas:' + m[0]]; }).map(function (m) {
+			return Object.assign({ label: m[0], data: ch.map(function (c) { return L.comp[m[0]][c]; }), backgroundColor: m[2], borderWidth: { top: 1 }, borderColor: C.surface }, bar);
+		});
+		drawChart('load', 'wiLoadChart', 'bar', sets, { labels: labels, x: xCat, stacked: true, yMin: 0, plugins: [curBand(curIdx), dfsAxis(ch)], padBottom: kind() === '5g' ? 22 : 0, yMax: yMax, yFmt: pctFmt, ttTitle: title,
+			ttLabel: function (it) { return ' ' + it.dataset.label + ': ' + (it.parsed.y == null ? '–' : it.parsed.y + '%'); } });
+	} else {
+		var colors = data.map(function (v) { return rampColor(v == null ? 0 : Math.max(8, v)); });
+		drawChart('load', 'wiLoadChart', 'bar', [Object.assign({ label: 'Estimated load', data: data, backgroundColor: colors, borderRadius: { topLeft: 4, topRight: 4 } }, bar)],
+			{ labels: labels, x: xCat, yMin: 0, plugins: [curBand(curIdx), dfsAxis(ch)], padBottom: kind() === '5g' ? 22 : 0, yMax: yMax, yFmt: pctFmt, ttTitle: title,
+				ttLabel: function (it) { var c = +it.label; return [' Average: ' + (it.parsed.y == null ? '–' : it.parsed.y + '%'), ' Peak: ' + (L.peak[c] == null ? '–' : L.peak[c] + '%')]; } });
+	}
+	/* Noise floor of every channel, where the radio measures it while scanning */
+	var nz = ch.map(function (c) { return L.noise[c]; }), anyNz = nz.some(function (v) { return v != null; });
+	$('wiNzChCard').style.display = anyNz ? '' : 'none';
+	if (anyNz) {
+		var nzMin = Math.min.apply(null, nz.filter(function (v) { return v != null; })), nzMax = Math.max.apply(null, nz.filter(function (v) { return v != null; }));
+		drawChart('nzch', 'wiNzChChart', 'bar', [Object.assign({ label: 'Noise floor', data: nz.map(function (v) { return v == null ? null : [-110, v]; }), backgroundColor: C.noise,
+			borderRadius: { topLeft: 4, topRight: 4 } }, bar)],
+			{ labels: labels, x: xCat, yMin: Math.max(-110, Math.floor((nzMin - 5) / 5) * 5), yMax: Math.min(-40, Math.ceil((nzMax + 5) / 5) * 5), plugins: [curBand(curIdx), dfsAxis(ch)], padBottom: kind() === '5g' ? 22 : 0,
+				yStep: 5, yFmt: function (v) { return v + ' dBm'; }, ttTitle: title, ttLabel: function (it) { return ' Noise floor: ' + nz[it.dataIndex] + ' dBm'; } });
+	}
+	renderBest(L, ch, r);
+}
+function dfsAxis(ch) {   // the Spectrum's DFS / weather-radar bracket, under a channel chart's labels (5 GHz)
+	return { id: 'wiDfs', afterDraw: function (chart) {
+		if (kind() !== '5g') return;
+		var x = chart.scales.x, half = (x.getPixelForValue(1) - x.getPixelForValue(0)) / 2, ctx = chart.ctx;
+		ctx.save(); ctx.font = '11px system-ui, -apple-system, Segoe UI, sans-serif';
+		dfsBracket(ctx, ch, function (c) { var p = x.getPixelForValue(ch.indexOf(c)); return [p - half, p + half]; }, x.bottom + 6);
+		ctx.restore();
+	} };
+}
+function curBand(idx) {   // translucent band behind the router's channel(s), like the signal map
+	return { id: 'wiCur', beforeDatasetsDraw: function (chart) {
+		if (!idx.length) return;
+		var x = chart.scales.x, a = chart.chartArea, ctx = chart.ctx, half = (x.getPixelForValue(1) - x.getPixelForValue(0)) / 2;
+		var x0 = x.getPixelForValue(idx[0]) - half, x1 = x.getPixelForValue(idx[idx.length - 1]) + half;
+		ctx.save(); ctx.fillStyle = alpha(C.accent, 0.08); ctx.fillRect(x0, a.top, x1 - x0, a.bottom - a.top);
+		ctx.strokeStyle = alpha(C.accent, 0.6); ctx.setLineDash([4, 3]); ctx.strokeRect(x0, a.top, x1 - x0, a.bottom - a.top); ctx.restore();
+	} };
+}
+var BLOCKS = {
+	'5g': { 40: [[36, 40], [44, 48], [52, 56], [60, 64], [100, 104], [108, 112], [116, 120], [124, 128], [132, 136], [140, 144], [149, 153], [157, 161]],
+		80: [[36, 40, 44, 48], [52, 56, 60, 64], [100, 104, 108, 112], [116, 120, 124, 128], [132, 136, 140, 144], [149, 153, 157, 161]],
+		160: [[36, 40, 44, 48, 52, 56, 60, 64], [100, 104, 108, 112, 116, 120, 124, 128]] },
+	'6g': (function () {   /* 6 GHz: channels 1-233 in steps of 4; 320 MHz blocks come in two overlapping sets */
+		var b = {}, w, s, n, i, blk;
+		[[40, 2, [1]], [80, 4, [1]], [160, 8, [1]], [320, 16, [1, 33]]].forEach(function (d) {
+			w = d[0]; n = d[1]; b[w] = [];
+			d[2].forEach(function (first) {
+				for (s = first; s + (n - 1) * 4 <= 233; s += n * 4) { blk = []; for (i = 0; i < n; i++) blk.push(s + i * 4); b[w].push(blk); }
+			});
+		});
+		return b;
+	})()
+};
+function renderBest(L, ch, r) {
+	var widths = kind() === '2g' ? [20] : kind() === '6g' ? [20, 40, 80, 160, 320] : [20, 40, 80, 160];
+	if (r && widths.indexOf(r.width) < 0) widths.push(r.width);
+	var rows = [];
+	widths.forEach(function (w) {
+		var cands = [];
+		if (w === 20) {
+			(kind() === '2g' ? [1, 6, 11] : ch).forEach(function (c) { if (L.avg[c] != null) cands.push([c]); });
+		} else ((BLOCKS[kind()] || {})[w] || []).forEach(function (b) { if (b.every(function (c) { return L.avg[c] != null; })) cands.push(b); });
+		if (!cands.length) return;
+		var scored = cands.map(function (b) {
+			var s = b.reduce(function (t, c) { return t + L.avg[c]; }, 0) / b.length, pk = Math.max.apply(null, b.map(function (c) { return L.peak[c]; }));
+			return { b: b, s: Math.round(s * 10) / 10, pk: pk, dfs: b.some(isDfs), wx: b.some(isWx) };
+		}).sort(function (a, b) { return a.s - b.s || a.pk - b.pk || (a.dfs - b.dfs); });
+		var best = scored[0], nonDfs = scored.filter(function (x) { return !x.dfs; })[0];
+		/* Weather-radar channels need a much longer radar check (10 minutes in Europe): when a block
+		   without one is about as quiet (within half a percentage point), suggest that instead. */
+		if (best.wx) best = scored.filter(function (x) { return !x.wx && x.s <= best.s + 0.5; })[0] || best;
+		var curBlk = null;
+		if (r && r.width === w) { var sp = spanOf(r.center, r.width); curBlk = scored.filter(function (x) { return x.b[0] === sp[0]; })[0] || null; }
+		rows.push({ w: w, best: best, nonDfs: nonDfs, cur: curBlk });
+	});
+	if (!rows.length) { $('wiBest').innerHTML = ''; return; }
+	var name = function (x) { return x.b.length > 1 ? x.b[0] + '–' + x.b[x.b.length - 1] : String(x.b[0]); };
+	var lh = L.src === 'measured' ? 'Load' : 'Est. load', reg = wxRegion(), anyWx = false, anyDfs = false;
+	var tag = function (x) {   /* DFS, or DFS · weather radar with what that means here */
+		if (x.wx) { anyWx = anyDfs = true; return '<span class="pill dfs" title="' + esc(WX[reg]) + '">DFS · weather radar</span>'; }
+		if (x.dfs) { anyDfs = true; return '<span class="pill dfs" title="' + WX_DFS + '.">DFS</span>'; }
+		return '';
+	};
+	var dfsBand = kind() === '5g';   /* 2.4 and 6 GHz have no DFS channels: no "without DFS" columns */
+	var h = '<table class="t"><tr><th style="width:80px">Width</th><th>Quietest channel</th><th class="num">' + lh + '</th>' + (dfsBand ? '<th>Quietest without DFS</th><th class="num">' + lh + '</th>' : '') + '<th>Your current</th></tr>';
+	rows.forEach(function (x) {
+		h += '<tr><td>' + x.w + ' MHz</td><td>' + name(x.best) + tag(x.best) + '</td><td class="num">' + x.best.s + '%</td>' +
+			(dfsBand ? '<td>' + (x.nonDfs ? name(x.nonDfs) : '<span style="color:var(--muted)">–</span>') + '</td><td class="num">' + (x.nonDfs ? x.nonDfs.s + '%' : '') + '</td>' : '') +
+			'<td>' + (x.cur ? name(x.cur) + ' · ' + x.cur.s + '%' + (x.cur.wx ? tag(x.cur) : '') + '<span class="pill cur">in use</span>' : '<span style="color:var(--muted)">–</span>') + '</td></tr>';
+	});
+	$('wiBest').innerHTML = h + '</table>' + (anyDfs ? '<div class="sub" style="margin:8px 8px 0">' + esc(anyWx ? WX[reg] : WX_DFS + '.') + '</div>' : '');
+}
+
+/* =================== TROUBLESHOOTING =================== */
+function renderTrouble() {
+	var s = series(['tx', 'inbss', 'nocat', 'obss', 'nopkt', 'idle', 'doze', 'glitch', 'badplcp', 'goodtx', 'badtx', 'noise']);
+	var empty = s._n ? null : 'No samples in this range yet.';
+
+	/* The driver measures each share separately and rounds each to a whole percent, so they add up
+	   to roughly 97-105%. Scale every sample to exactly 100% so the stack is flat on top. Doze
+	   (radio power save, ~0 on a router) counts as idle. The counters table keeps the raw values. */
+	var AIR = [['Your TX', 'tx', C.yours], ['Your RX', 'inbss', C.rx], ['Non-Wi-Fi', 'nocat', C.nonwifi],
+		['Others Wi-Fi', 'obss', C.others], ['Unclassified', 'nopkt', C.unclass], ['Idle', 'idle', C.idle]];
+	var air = AIR.map(function () { return []; }), visMax = 0, allOn = true;
+	AIR.forEach(function (a) { if (WI.hidden['air:' + a[0]]) allOn = false; });
+	for (var i = 0; i < s.tx.length; i++) {
+		var raw = AIR.map(function (a) { var v = s[a[1]][i].y; return v == null ? null : v; });
+		var doze = s.doze[i] && s.doze[i].y ? s.doze[i].y : 0;
+		if (raw[5] != null) raw[5] += doze;
+		var known = raw.filter(function (v) { return v != null; }), sum = known.reduce(function (t, v) { return t + v; }, 0);
+		var vis = 0, ys = raw.map(function (v) { return (known.length && sum > 0 && v != null) ? Math.round(v * 1000 / sum) / 10 : null; });
+		if (known.length === raw.length) {   // idle takes the rounding remainder, so the total is exactly 100.0
+			var rest = 100; for (var k5 = 0; k5 < 5; k5++) rest -= ys[k5];
+			ys[5] = Math.max(0, Math.round(rest * 10) / 10);
+		}
+		ys.forEach(function (y, k) {
+			air[k].push({ x: s.tx[i].x, y: y });
+			if (y != null && !WI.hidden['air:' + AIR[k][0]]) vis += y;
+		});
+		if (vis > visMax) visMax = vis;
+	}
+	var yMax = allOn ? 100 : Math.min(100, Math.max(10, Math.ceil(visMax / 10) * 10));
+	$('wiAirLegend').innerHTML = legendHTML('air', AIR.map(function (a) { return [a[0], a[2], 1]; }));
+	drawChart('air', 'wiAirChart', 'line', AIR.map(function (a, k) {
+		/* fill: 'stack' fills down to the next visible layer, so hiding a series doesn't leave gaps */
+		return { label: a[0], data: air[k], borderColor: a[2], backgroundColor: a[2] + 'cc', fill: 'stack', borderWidth: 1 };
+	}), { R: s._R, stacked: true, yMin: 0, yMax: yMax, yStep: yMax === 100 ? 20 : undefined, yFmt: function (v) { return v + '%'; },
+		ttLabel: function (it) { return ' ' + it.dataset.label + ': ' + it.parsed.y.toFixed(1) + '%'; },
+		events: chartEvents(), bucket: s._bucket, plugins: [eventMarkers], empty: empty });
+
+	$('wiGlLegend').innerHTML = legendHTML('gl', [['Rx glitches', C.unclass, 1], ['Bad PLCP', C.plcp, 1]]);
+	drawChart('gl', 'wiGlChart', 'line', [
+		{ label: 'Rx glitches', data: s.glitch, borderColor: C.unclass },
+		{ label: 'Bad PLCP', data: s.badplcp, borderColor: C.plcp }
+	], { R: s._R, bucket: s._bucket, yMin: 0, unit: '', empty: empty });
+
+	$('wiTxLegend').innerHTML = legendHTML('txq', [['Successful', C.yours, 1], ['Failed', C.fail, 1, 1]]);
+	drawChart('txq', 'wiTxChart', 'line', [
+		{ label: 'Successful', data: s.goodtx, borderColor: C.yours },
+		{ label: 'Failed', data: s.badtx, borderColor: C.fail, borderDash: [5, 3] }
+	], { R: s._R, bucket: s._bucket, yMin: 0, yFmt: pctFmt, unit: '%', empty: empty });
+
+	var nz = s.noise.filter(function (p) { return p.y != null; }).map(function (p) { return p.y; });
+	var nMin = nz.length ? Math.floor((Math.min.apply(null, nz) - 3) / 5) * 5 : -100, nMax = nz.length ? Math.ceil((Math.max.apply(null, nz) + 3) / 5) * 5 : -60;
+	drawChart('nz', 'wiNzChart', 'line', [{ label: 'Noise floor', data: s.noise, borderColor: C.ink2 }],
+		{ R: s._R, bucket: s._bucket, yMin: nMin, yMax: nMax, yFmt: function (v) { return v + ' dBm'; }, unit: ' dBm', empty: empty });
+	renderCounters();
+}
+function renderCounters() {
+	var l = latestSample();
+	if (!l) { $('wiCounters').innerHTML = '<div class="empty" style="padding:16px 0">No samples yet.</div>'; return; }
+	var rows = [
+		['tx', l[3], '%', 'Airtime spent transmitting'], ['inbss', l[4], '%', 'Receiving from your own clients'], ['obss', l[1], '%', 'Other networks on this channel'],
+		['nocat', l[2], '%', 'Uncategorised energy (non-Wi-Fi)'], ['nopkt', l[11], '%', 'Busy, no packet decoded'], ['doze', l[12], '%', 'Radio in power save'],
+		['txop', l[13], '%', 'Transmit opportunity available'], ['goodtx', l[14], '%', 'Successful transmissions'], ['badtx', l[15], '%', 'Failed transmissions'],
+		['glitch', l[6], '', 'Receive glitches in the sample'], ['badplcp', l[16], '', 'Corrupted frame headers'], ['knoise', l[17], ' dBm', 'Noise estimate'], ['idle', l[5], '%', 'Channel idle']
+	];
+	var h = '<table class="t"><tr><th>Counter</th><th class="num">Value</th><th>Meaning</th></tr>';
+	rows.forEach(function (r) { h += '<tr><td class="mono">' + r[0] + '</td><td class="num">' + (r[1] == null ? '–' : r[1] + r[2]) + '</td><td class="dim">' + r[3] + '</td></tr>'; });
+	$('wiCounters').innerHTML = h + '</table>';
+	$('wiCountersSub').innerHTML = 'Raw values from <code>wl chanim_stats</code>, ' + ago(nowTs() - l[0]) + '.';
+}
+
+/* =================== QUIET HOURS =================== */
+/* The router keeps quiet hours as 84 hex digits: 336 half hours, Monday 00:00 first, four to a digit,
+   high bit first (so 12 digits a day). Times are the router's local time: the page works out the
+   router's clock from tz_off, whatever time zone the browser is in. */
+var QD = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+var QDL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+var MODES = [
+	['on', 'On', 'Samples every 30 seconds and scans on schedule, outside quiet hours.'],
+	['paused', 'Scans paused', 'Keeps sampling (it doesn’t affect Wi-Fi), but runs no scheduled scans until you switch back. Scan now still works.'],
+	['off', 'Off', 'Stops sampling and scanning. The page, settings and history stay as they are, so you can switch it back on any time.']
+];
+var QPRESETS = [
+	['Evenings, 18:00–24:00 every day', function (d, s) { return s >= 36; }],
+	['Work hours, Mon–Fri 09:00–17:00', function (d, s) { return d < 5 && s >= 18 && s < 34; }],
+	['Weekends, all day', function (d) { return d >= 5; }],
+	['Clear', function () { return false; }]
+];
+function qDecode(hex) {
+	var a = [], ok = /^[0-9a-f]{84}$/.test(hex || '');
+	for (var i = 0; i < 336; i++) a.push(ok && ((parseInt(hex.charAt(i >> 2), 16) >> (3 - (i & 3))) & 1) === 1);
+	return a;
+}
+function qEncode(a) {
+	var h = '';
+	for (var i = 0; i < 84; i++) { var d = 0; for (var b = 0; b < 4; b++) if (a[i * 4 + b]) d |= 8 >> b; h += d.toString(16); }
+	return h;
+}
+function qCount(a) { var n = 0; for (var i = 0; i < 336; i++) if (a[i]) n++; return n; }
+function slotHm(s) { return pad(Math.floor(s / 2)) + ':' + (s % 2 ? '30' : '00'); }   /* 0..48; 48 = 24:00 */
+function routerNow() {   /* the router's local time, to read with getUTC* */
+	var off = WI.live && typeof WI.live.tz_off === 'number' ? WI.live.tz_off : -new Date().getTimezoneOffset() * 60;
+	return new Date(Date.now() + off * 1000);
+}
+function weekMinute(d) { return ((d.getUTCDay() + 6) % 7) * 1440 + d.getUTCHours() * 60 + d.getUTCMinutes(); }
+/* A minute counted from this Monday 00:00 (it can be before or after this week) as {day, time}.
+   end: a boundary at midnight reads as 24:00 of the day before. */
+function wmAt(x, end) {
+	var d = Math.floor((end ? x - 1 : x) / 1440), t = x - d * 1440;
+	return { day: ((d % 7) + 7) % 7, rel: d, time: pad(Math.floor(t / 60)) + ':' + pad(t % 60) };
+}
+/* The scan job's schedule, as cron_add in the script sets it: every N minutes, or minute 7 of every Nth hour. */
+function scanFires(t, iv) {
+	if (!(iv > 0)) return false;
+	var m = t % 60, h = Math.floor(t / 60) % 24;
+	return iv < 60 ? m % iv === 0 : m === 7 && h % (iv / 60) === 0;
+}
+function nextScan(a, iv, from) {   /* minutes until the next scheduled scan outside quiet hours, or -1 */
+	for (var k = 1; k <= 10080; k++) { var t = (from + k) % 10080; if (scanFires(t, iv) && !a[Math.floor(t / 30)]) return k; }
+	return -1;
+}
+function everyText(iv) { return iv < 60 ? 'every ' + iv + ' minutes' : iv === 60 ? 'every hour' : 'every ' + (iv / 60) + ' hours'; }
+function qDayRanges(a, d) {
+	var out = [], st = -1;
+	for (var s = 0; s <= 48; s++) {
+		var on = s < 48 && a[d * 48 + s];
+		if (on && st < 0) st = s;
+		if (!on && st >= 0) { out.push(slotHm(st) + '–' + slotHm(s)); st = -1; }
+	}
+	return out.join(', ');
+}
+function qText(a) {   /* "Mon–Fri 18:00–24:00 · Sat–Sun 09:00–24:00" */
+	var per = [], parts = [], d;
+	for (d = 0; d < 7; d++) per.push(qDayRanges(a, d));
+	for (d = 0; d < 7; ) {
+		var e = d;
+		while (e < 6 && per[e + 1] === per[d]) e++;
+		if (per[d]) parts.push((e > d ? QD[d] + '–' + QD[e] : QD[d]) + ' ' + per[d]);
+		d = e + 1;
+	}
+	return parts.join(' · ');
+}
+/* The quiet stretch the router is in now, from the saved settings, or null. */
+function quietState() {
+	var L = WI.live;
+	if (!L) return null;
+	if (L.collection === 'off' || L.collection === 'paused') return { mode: L.collection };
+	if (!(L.scan_interval > 0) || !L.quiet) return null;
+	var a = qDecode(L.quiet), from = weekMinute(routerNow()), s = Math.floor(from / 30), b = 0, e = 0;
+	if (!a[s]) return null;
+	if (qCount(a) === 336) return { mode: 'quiet', all: true };
+	while (a[(s - b - 1 + 336) % 336]) b++;
+	while (a[(s + e + 1) % 336]) e++;
+	return { mode: 'quiet', from: from, start: (s - b) * 30, end: (s + e + 1) * 30 };
+}
+function qWhen(x, from, end) {   /* "18:00", or "Wed 22:00" when it isn't today */
+	var w = wmAt(x, end), today = Math.floor(from / 1440);
+	return (w.rel === today ? '' : QD[w.day] + ' ') + w.time;
+}
+function renderQuietMarks() {
+	var q = quietState(), mark = $('wiQuietMark'), note = $('wiQuiet'), L = WI.live, v = WI.view;
+	var where = v === 'insight' || v === 'survey' || v === 'channels' || (v === 'trouble' && q && q.mode === 'off');
+	var link = function (t) { return ' <a href="#settings" onclick="WiFiInsight.setView(\'settings\');return false;">' + t + '</a>'; };
+	if (!q) { mark.style.display = 'none'; note.style.display = 'none'; return; }
+	var m = '', n = '', every = (L.sample_interval || 30) + ' seconds';
+	if (q.mode === 'off') {
+		m = 'Collection off';
+		n = 'Collection is off: no samples or scheduled scans are recorded, so the charts stop where it was switched off. Scan now still works.' + link('Switch it back on in Settings');
+	} else if (q.mode === 'paused') {
+		m = 'Scans paused';
+		n = 'Scheduled scans are paused, so the spectrum, site survey and channel statistics show the last scan. Interference keeps updating every ' + every + ', and Scan now still works.' + link('Change in Settings');
+	} else if (q.all) {
+		m = 'Quiet hours all week';
+		n = 'Every half hour of the week is marked quiet, so only Scan now runs a neighbour scan. Interference keeps updating every ' + every + '.' + link('Change quiet hours');
+	} else {
+		var st = wmAt(q.start), en = wmAt(q.end, true), today = Math.floor(q.from / 1440);
+		var later = wmAt(q.end);   /* past tomorrow: name the day, and midnight reads as 00:00 of the next one */
+		m = 'Quiet until ' + (q.end - q.from <= 1440 ? en.time : QD[later.day] + ' ' + later.time);
+		var range = st.rel === en.rel ? QDL[st.day] + ' ' + st.time + '–' + en.time : QDL[st.day] + ' ' + st.time + ' to ' + QDL[en.day] + ' ' + en.time;
+		n = 'Quiet hours (' + range + '): scheduled scans are skipped, so the spectrum, site survey and channel statistics show the last scan before ' + qWhen(q.start, q.from) + '. Interference keeps updating every ' + every + '.' + link('Change quiet hours');
+	}
+	mark.innerHTML = '<i></i>' + esc(m); mark.style.display = 'inline-flex';
+	note.innerHTML = n; note.style.display = where ? 'block' : 'none';
+}
+
+/* =================== SETTINGS =================== */
+function qCellCls(s) { return s === 47 ? 'gl' : (s + 1) % 12 === 0 ? 'g6' : (s + 1) % 2 === 0 ? 'gh' : ''; }
+function qLabel(i) { return QDL[Math.floor(i / 48)] + ' ' + slotHm(i % 48) + ' to ' + slotHm(i % 48 + 1) + (WI.qEdit[i] ? ', quiet' : ', scans allowed'); }
+function renderQuietGrid() {
+	var a = WI.qEdit, h = '<div class="qrow qhead"><span class="qday"></span>', s, d;
+	for (s = 0; s < 48; s++) h += '<span class="qt ' + qCellCls(s) + '">' + (s % 6 === 0 ? pad(s / 2) : '') + '</span>';
+	h += '</div>';
+	for (d = 0; d < 7; d++) {
+		h += '<div class="qrow"><span class="qday">' + QD[d] + '</span>';
+		for (s = 0; s < 48; s++) {
+			var i = d * 48 + s;
+			h += '<button type="button" data-s="' + i + '" class="' + qCellCls(s) + (a[i] ? ' on' : '') + '" aria-pressed="' + a[i] + '" aria-label="' + qLabel(i) + '"></button>';
+		}
+		h += '</div>';
+	}
+	$('qGrid').innerHTML = h;
+	renderQuietSum();
+}
+function qSet(i, v) {
+	if (WI.qEdit[i] === v) return;
+	WI.qEdit[i] = v;
+	var b = $('qGrid').querySelector('[data-s="' + i + '"]');
+	if (b) { b.className = qCellCls(i % 48) + (v ? ' on' : ''); b.setAttribute('aria-pressed', v); b.setAttribute('aria-label', qLabel(i)); }
+	renderQuietSum();
+}
+function qCellOf(el) { var v = el && el.getAttribute && el.getAttribute('data-s'); return v == null ? -1 : +v; }
+function qPreset(n) {
+	for (var i = 0; i < 336; i++) WI.qEdit[i] = !!QPRESETS[n][1](Math.floor(i / 48), i % 48);
+	renderQuietGrid();
+}
+function renderQuietSum() {
+	var a = WI.qEdit, iv = +$('setScan').value, mode = WI.modeEdit, all = 0, run = 0, t;
+	for (t = 0; t < 10080; t++) if (scanFires(t, iv)) { all++; if (!a[Math.floor(t / 30)]) run++; }
+	var q = qText(a), from = weekMinute(routerNow()), now = wmAt(from), rows = [];
+	rows.push(['Quiet', q || 'none, so scheduled scans run around the clock']);
+	if (mode === 'off') rows.push(['Scheduled scans', 'none while collection is off']);
+	else if (mode === 'paused') rows.push(['Scheduled scans', 'none while scans are paused']);
+	else if (!(iv > 0)) rows.push(['Scheduled scans', 'none: neighbour scans are set to Off']);
+	else {
+		rows.push(['Scheduled scans', run + ' of ' + all + ' a week (' + everyText(iv) + (q ? ' outside quiet hours' : '') + ')']);
+		var k = nextScan(a, iv, from);
+		rows.push(['Now, ' + QDL[now.day] + ' ' + now.time, (a[Math.floor(from / 30)] ? 'quiet' : 'scans allowed') + '; '
+			+ (k < 0 ? 'every half hour is quiet, so only Scan now runs a scan' : 'the next scheduled scan runs ' + (function () {
+				var w = wmAt(from + k), dd = w.rel - Math.floor(from / 1440);
+				return (dd === 0 ? 'today' : dd === 1 ? 'tomorrow' : 'on ' + QDL[w.day]) + ' at ' + w.time;
+			})())]);
+	}
+	$('qSum').innerHTML = rows.map(function (r) { return '<div><span class="k">' + esc(r[0]) + ':</span> ' + esc(r[1]) + '</div>'; }).join('');
+}
+function renderMode() {
+	$('setMode').innerHTML = MODES.map(function (m) {
+		return '<button type="button" class="' + (m[0] === WI.modeEdit ? 'on' : '') + '" aria-pressed="' + (m[0] === WI.modeEdit) + '" onclick="WiFiInsight.setMode(\'' + m[0] + '\')">' + m[1] + '</button>';
+	}).join('');
+	var hint = MODES.filter(function (m) { return m[0] === WI.modeEdit; })[0][2];
+	$('setModeHint').textContent = hint.replace('30 seconds', $('setSample').value === '60' ? 'minute' : '30 seconds');
+}
+function setMode(m) { WI.modeEdit = m; renderMode(); renderQuietSum(); }
+function quietBoot() {
+	/* Click or drag to paint: the first half hour sets whether the drag marks or clears.
+	   elementFromPoint, so touch drags paint too (a touch keeps sending events to where it started). */
+	var g = $('qGrid'), end = function () { WI.qPaint = null; };
+	g.addEventListener('pointerdown', function (e) {
+		var i = qCellOf(e.target);
+		if (i < 0 || (e.pointerType === 'mouse' && e.button !== 0)) return;
+		e.preventDefault();
+		WI.qPaint = !WI.qEdit[i]; qSet(i, WI.qPaint);
+	});
+	document.addEventListener('pointermove', function (e) {
+		if (WI.qPaint == null) return;
+		var i = qCellOf(document.elementFromPoint(e.clientX, e.clientY));
+		if (i >= 0) qSet(i, WI.qPaint);
+	});
+	document.addEventListener('pointerup', end);
+	document.addEventListener('pointercancel', end);
+	g.addEventListener('click', function (e) {   /* the keyboard (Enter / Space); pointer clicks were handled on pointerdown */
+		if (e.detail !== 0) return;
+		var i = qCellOf(e.target);
+		if (i >= 0) qSet(i, !WI.qEdit[i]);
+	});
+	$('setScan').addEventListener('change', renderQuietSum);
+	$('setSample').addEventListener('change', renderMode);
+}
+function renderSettings() {
+	var L = WI.live;
+	if (!L) return;
+	if (WI.setLoaded) return;   /* keep unsaved edits when the page redraws (a resize, a data refresh) */
+	WI.setLoaded = true;
+	$('setSample').value = String(L.sample_interval);
+	$('setScan').value = String(L.scan_interval);
+	$('setRetain').value = String(L.retain_days);
+	WI.modeEdit = L.collection === 'paused' || L.collection === 'off' ? L.collection : 'on';
+	WI.qEdit = qDecode(L.quiet);
+	renderMode();
+	$('qPresets').innerHTML = QPRESETS.map(function (p, n) { return '<button type="button" class="btn" onclick="WiFiInsight.qPreset(' + n + ')">' + p[0] + '</button>'; }).join('');
+	renderQuietGrid();
+	if (document.activeElement !== $('setOwn')) $('setOwn').value = L.extra_own || '';
+	$('setOwnAuto').innerHTML = (L.own_ssids || []).length ? 'Detected automatically: ' + L.own_ssids.map(function (s) { return '<code>' + esc(s) + '</code>'; }).join(' ') : '';
+	var mb = L.db_bytes ? (L.db_bytes / 1048576).toFixed(1) + ' MB' : '–';
+	$('setStorage').innerHTML = '<code>' + esc(L.data_dir) + '</code> · ' + mb + (L.fs ? ' · ' + esc(L.fs) : '')
+		+ (L.fs_note ? '<br><span style="color:var(--unclass)">' + esc(L.fs_note) + '</span>' : '');
+}
+function saveSettings() {
+	var own = $('setOwn').value.replace(/["$`\\]/g, '').trim();
+	custom_settings.wifiinsight_sample = $('setSample').value;
+	custom_settings.wifiinsight_scan = $('setScan').value;
+	custom_settings.wifiinsight_retain = $('setRetain').value;
+	custom_settings.wifiinsight_ownssids = own;
+	custom_settings.wifiinsight_mode = WI.modeEdit || 'on';
+	custom_settings.wifiinsight_quiet = qEncode(WI.qEdit || []);   /* always 84 digits: all zeros = no quiet hours */
+	document.form.amng_custom.value = JSON.stringify(custom_settings);
+	document.form.action_script.value = 'start_wifiinsightconfig';
+	document.form.action_wait.value = '3';
+	document.form.submit();
+	var btns = [$('setSave'), $('qSave')], marks = [$('setSaved'), $('qSaved')];
+	btns.forEach(function (b) { b.disabled = true; b.textContent = 'Saving…'; });
+	setTimeout(function () {
+		WI.setLoaded = false;   /* show what the router saved */
+		loadAll().then(function () {
+			btns.forEach(function (b) { b.disabled = false; b.textContent = 'Save'; });
+			marks.forEach(function (m) { m.style.display = 'inline'; });
+			setTimeout(function () { marks.forEach(function (m) { m.style.display = 'none'; }); }, 4000);
+		});
+	}, 4000);
+}
+
+/* =================== shell =================== */
+var VIEWS = [['insight', 'Insight'], ['survey', 'Site Survey'], ['channels', 'Channel Statistics'], ['trouble', 'Troubleshooting'], ['settings', 'Settings']];
+/* While the tab is hidden (another tab, a minimised window), browsers throttle its timers and painting,
+   and Firefox can leave a chart drawn then blank until it's hovered. So nothing is drawn while hidden:
+   render() just notes that it's due, and the timed refreshes note what they skipped. When the tab shows
+   again it's drawn at once and the skipped data is fetched, so what you see is never older than it would
+   have been with the tab open (see boot). */
+function tabHidden() { return document.visibilityState === 'hidden'; }
+function render() {
+	if (tabHidden()) { WI.redraw = true; return; }
+	WI.redraw = false; WI.drawn = (WI.drawn || 0) + 1;
+	var bands = ((WI.live && WI.live.radios) || []).map(function (r) { return r.band; });
+	if (bands.length && bands.indexOf(WI.band) < 0) WI.band = bands[0];
+	$('wiTabs').innerHTML = VIEWS.map(function (v) { return '<button type="button" class="' + (v[0] === WI.view ? 'on' : '') + '" onclick="WiFiInsight.setView(\'' + v[0] + '\')">' + v[1] + '</button>'; }).join('');
+	$('wiBands').innerHTML = bands.map(function (b) { return '<button type="button" class="' + (b === WI.band ? 'on' : '') + '" onclick="WiFiInsight.setBand(\'' + b + '\')">' + bandName(b) + '</button>'; }).join('');
+	$('wiRanges').innerHTML = Object.keys(RANGE_CFG).map(function (k) { return [k, RANGE_CFG[k].btn]; }).map(function (x) { return '<button type="button" class="' + (x[0] === WI.range ? 'on' : '') + '" onclick="WiFiInsight.setRange(\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('');
+	var timed = WI.view === 'insight' || WI.view === 'trouble' || WI.view === 'channels';
+	$('wiRanges').style.display = timed ? '' : 'none';
+	$('wiBar').style.display = WI.view === 'settings' ? 'none' : '';
+	VIEWS.forEach(function (v) { $('v-' + v[0]).className = 'view' + (v[0] === WI.view ? ' on' : ''); });
+	renderView();
+	if (WI.live) {
+		var r = radio();
+		var L = WI.live, scans = L.collection === 'off' ? 'collection off' : L.collection === 'paused' ? 'neighbour scans paused'
+			: 'neighbour scans ' + (L.scan_interval > 0 ? 'every ' + L.scan_interval + ' min' + (L.quiet ? ' outside quiet hours' : '') : 'off');
+		$('wiFoot').innerHTML = 'Updated ' + hm(L.generated) + ' · samples every ' + L.sample_interval + ' s · ' + scans
+			+ ' · history kept ' + L.retain_days + ' days · v' + esc(L.version) + (L.build ? ' (development: ' + esc(L.build) + ')' : '') + (r ? ' · ' + esc(r.iface) : '');
+	}
+	renderQuietMarks();
+}
+function renderView() {
+	if (tabHidden()) { WI.redraw = true; return; }
+	Object.keys(WI.charts).forEach(function (k) { WI.charts[k].destroy(); delete WI.charts[k]; });
+	if (WI.view === 'insight') renderInsight();
+	else if (WI.view === 'survey') renderSurvey();
+	else if (WI.view === 'channels') renderChannels();
+	else if (WI.view === 'trouble') renderTrouble();
+	else renderSettings();
+}
+function setView(v) { if (v === 'settings' && WI.view !== 'settings') WI.setLoaded = false; WI.view = v; store('view', v); try { history.replaceState(null, '', '#' + v); } catch (e) {} render(); }
+function setBand(b) { WI.band = b; store('band', b); WI.allEvents = false; WI.mapHover = null; render(); }
+function setRange(r) {
+	WI.range = r; store('range', r);
+	var src = RANGE_CFG[r].src;
+	if (src === 'week' && !WI.week) loadAll({ week: 1 });
+	else if (src === 'month' && !WI.month) loadAll({ month: 1 });
+	else render();
+}
+function scanNow() {
+	/* The router writes scanstate.htm: {state: running|done|error, seq, bands: {2g: ok|busy|empty|off}}.
+	   seq goes up by one per scan, so we can tell our scan from an earlier one. */
+	var btn = $('wiScanBtn'), note = $('wiScanNote'), t0 = Date.now(), s0 = null, poll = null;
+	var say = function (msg, bad) { note.textContent = msg || ''; note.className = 'scannote' + (bad ? ' bad' : ''); };
+	var finish = function (msg, bad) {
+		if (poll) clearInterval(poll);
+		btn.disabled = false; btn.textContent = 'Scan now'; say(msg, bad);
+		if (msg && !bad) setTimeout(function () { if (note.textContent === msg) say(''); }, 8000);
+	};
+	var problems = function (bands, notes) {
+		var why = { busy: 'radio was busy', empty: 'no results', off: 'radio is off' }, out = [];
+		Object.keys(bands || {}).forEach(function (b) {
+			if (bands[b] !== 'ok') out.push(bandName(b) + ': ' + (why[bands[b]] || bands[b]) + (notes && notes[b] && bands[b] !== 'off' ? ' (' + notes[b] + ')' : ''));
+		});
+		return out.length ? out.join('; ') + '. Kept the previous scan.' : '';
+	};
+	btn.disabled = true; btn.textContent = 'Scanning…'; say('About 15 seconds; up to a few minutes on routers that scan one channel at a time');
+	getJSON('scanstate.htm').then(function (s) { s0 = s; }, function () { s0 = { seq: -1, state: 'none' }; }).then(function () {
+		document.formScriptActions.action_script.value = 'start_wifiinsightscan';
+		document.formScriptActions.submit();
+		poll = setInterval(function () {
+			var waited = Date.now() - t0;
+			getJSON('scanstate.htm').then(function (s) {
+				var ours = s.seq !== s0.seq || s0.state === 'running';   // a scan that was already running counts too
+				if (!ours || (s.state !== 'running' && s.seq === s0.seq && s0.state !== 'running')) {
+					if (waited > 15000) finish('The router didn\'t start the scan. Check that WiFi Insight is installed (wifiinsight.sh status).', true);
+					return;
+				}
+				if (s.state === 'running') { if (waited > 420000) finish('The scan is taking longer than expected. Results will appear when it finishes.', true); return; }
+				if (s.state === 'error') { finish(s.msg || 'The scan failed.', true); return; }
+				loadAll({ scans: 1, live: 1 }).then(function () { var p = problems(s.bands, s.notes); finish(p || 'Scan complete', !!p); });   /* live too: the channel may have changed */
+			}, function () { if (waited > 15000) finish('The router didn\'t start the scan.', true); });
+		}, 2000);
+	});
+}
+function boot() {
+	theme();
+	var hash = (location.hash || '').replace('#', '');
+	WI.view = VIEWS.some(function (v) { return v[0] === hash; }) ? hash : (store('view') || 'insight');
+	if (!VIEWS.some(function (v) { return v[0] === WI.view; })) WI.view = 'insight';
+	WI.band = store('band') || WI.band;
+	WI.range = store('range') || WI.range;
+	if (!RANGES[WI.range]) WI.range = '1h';
+	if (RANGE_CFG[WI.range].src === 'month') loadAll({ month: 1 });
+	WI.showMesh = store('mesh') === '1';
+	WI.src = store('src') === 'estimated' ? 'estimated' : 'measured';
+	$('wiMesh').checked = WI.showMesh; $('wiMesh2').checked = WI.showMesh;
+	$('wiHeat').addEventListener('mousemove', heatHover);
+	$('wiHeat').addEventListener('mouseleave', function () { $('wiTip').style.display = 'none'; });
+	$('wiMap').addEventListener('mousemove', mapHover);
+	$('wiMap').addEventListener('mouseleave', function () { $('wiMapTip').style.display = 'none'; if (WI.mapHover) { WI.mapHover = null; renderSignalMap(aps()); } });
+	var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(renderView, 150); });
+	$('wiRamp').style.background = 'linear-gradient(90deg,' + RAMP.join(',') + ')';
+	quietBoot();
+	render();
+	loadAll();
+	var refresh = function (m) {
+		var src = RANGE_CFG[WI.range].src;
+		return loadAll({ live: m.live ? 1 : 0, scans: m.scans ? 1 : 0, week: m.scans && src === 'week' ? 1 : 0, month: m.scans && src === 'month' ? 1 : 0 });
+	};
+	setInterval(function () { if (WI.view === 'settings') return; if (tabHidden()) WI.missed.live = 1; else refresh({ live: 1 }); }, 60000);
+	setInterval(function () { if (tabHidden()) WI.missed.scans = 1; else refresh({ scans: 1 }); }, 300000);
+	document.addEventListener('visibilitychange', function () {
+		if (tabHidden()) return;
+		var m = WI.missed, n = WI.drawn; WI.missed = {};
+		/* a refresh it skipped: fetched first and drawn when it's in, so figures from before never show; if
+		   it can't be fetched, what there is gets drawn (with the warning). Nothing skipped: redrawn at once
+		   all the same, as a browser may have dropped a canvas while the tab was hidden. */
+		if (m.live && WI.view !== 'settings' || m.scans) refresh(m).then(function () { if (WI.drawn === n) render(); });
+		else if (WI.redraw) render(); else renderView();
+	});
+}
+function setMesh(on) { WI.showMesh = on; store('mesh', on ? '1' : '0'); $('wiMesh').checked = on; $('wiMesh2').checked = on; renderView(); }
+function initial() {
+	/* The firmware draws its menu here. If that ever fails, still show our page. */
+	try { if (typeof show_menu === 'function') show_menu(); }
+	catch (e) { if (window.console) console.error('WiFi Insight: show_menu() failed', e); }
+	var page = window.location.pathname.substring(1);
+	document.form.current_page.value = page; document.form.next_page.value = page;
+	document.formScriptActions.current_page.value = page; document.formScriptActions.next_page.value = page;
+	loadChart(function () { renderView(); });
+	boot();
+}
+
+/* Chart.js is a UMD bundle: when RequireJS is on the page (the firmware loads it), it registers
+   itself as an anonymous AMD module instead of setting window.Chart, and RequireJS throws
+   "Mismatched anonymous define()". So fetch the code and run it with `define` hidden for that one
+   synchronous step. The local copy is checked at install; the CDN copy is checked by SRI. */
+function loadChart(done) {
+	if (typeof Chart !== 'undefined') { done(); return; }
+	var sources = [
+		['/ext/wifiinsight/chart.umd.min.js', null],
+		['https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js', 'sha384-Emf5ZVIUiarAdhkgtqK+5/Z5qIvM6QoVrS+qAVtfyZVuD5lIHrac0me485+Antp0']
+	];
+	(function next(i) {
+		if (i >= sources.length) {
+			var w = $('wiWarn');
+			if (w) { w.innerHTML = 'Couldn\'t load the chart library. Run <code>/jffs/addons/wifiinsight/wifiinsight.sh install</code> again over SSH.'; w.style.display = 'block'; }
+			return;
+		}
+		var opts = sources[i][1] ? { integrity: sources[i][1], mode: 'cors' } : { cache: 'no-cache', credentials: 'same-origin' };
+		fetch(sources[i][0], opts)
+			.then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+			.then(function (code) {
+				var amd = window.define;
+				window.define = undefined;
+				try { (0, eval)(code); } finally { window.define = amd; }
+				if (typeof Chart === 'undefined') throw new Error('Chart.js did not load');
+				done();
+			})
+			.catch(function () { next(i + 1); });
+	})(0);
+}
+
+window.initial = initial;
+window.WiFiInsight = {
+	setView: setView, setBand: setBand, setRange: setRange, scanNow: scanNow, setMesh: setMesh,
+	saveSettings: saveSettings, sortBy: sortBy, toggleSeries: toggleSeries, setMode: setMode, qPreset: qPreset, setSrc: setSrc,
+	toggleEvents: function () { WI.allEvents = !WI.allEvents; renderEvents(); },
+	heatOption: function (key, on) { WI[key] = on; renderHeat(); },
+	state: WI
+};
+})();
+</script>
+</head>
+<body onload="initial();" class="bg">
+<div id="TopBanner"></div>
+<div id="Loading" class="popup_bg"></div>
+<iframe name="hidden_frame" id="hidden_frame" src="" width="0" height="0" frameborder="0"></iframe>
+<form method="post" name="form" action="/start_apply.htm" target="hidden_frame">
+<input type="hidden" name="current_page" value=""/>
+<input type="hidden" name="next_page" value=""/>
+<input type="hidden" name="group_id" value=""/>
+<input type="hidden" name="modified" value="0"/>
+<input type="hidden" name="action_mode" value="apply"/>
+<input type="hidden" name="action_wait" value="3"/>
+<input type="hidden" name="first_time" value=""/>
+<input type="hidden" name="action_script" value=""/>
+<input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>"/>
+<input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>"/>
+<input type="hidden" name="amng_custom" id="amng_custom" value=""/>
+<table class="content" align="center" cellpadding="0" cellspacing="0">
+<tr>
+<td width="17">&nbsp;</td>
+<td valign="top" width="202">
+<div id="mainMenu"></div>
+<div id="subMenu"></div>
+</td>
+<td valign="top">
+<div id="tabMenu" class="submenuBlock"></div>
+<table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
+<tr>
+<td align="left" valign="top">
+<table width="760px" border="0" cellpadding="5" cellspacing="0" class="FormTitle" id="FormTitle">
+<tr>
+<td bgcolor="#4D595D" colspan="3" valign="top">
+<div>&nbsp;</div>
+<div class="formfonttitle">Wireless - WiFi Insight</div>
+<div style="margin:10px 0 10px 5px;" class="splitLine"></div>
+<div class="formfontdesc">Interference on your router's channel, why the channel changed, and how busy every channel around you is.</div>
+
+<div id="wi">
+	<div class="warn" id="wiWarn"></div>
+	<div class="tabs" id="wiTabs"></div>
+	<div class="bar" id="wiBar">
+		<div class="seg" id="wiBands"></div>
+		<div class="seg" id="wiRanges"></div>
+		<div class="grow"></div>
+		<span class="qmark" id="wiQuietMark"></span>
+		<span class="scannote" id="wiScanNote"></span>
+		<button type="button" class="btn" id="wiScanBtn" onclick="WiFiInsight.scanNow()" title="Scans every channel on every radio now (about 15 seconds, up to a minute on some routers). Wi-Fi may pause for about a second on each radio.">Scan now</button>
+	</div>
+	<div class="warn" id="wiQuiet"></div>
+
+	<!-- ============ INSIGHT ============ -->
+	<div class="view" id="v-insight">
+		<div class="tiles" id="wiTiles"></div>
+		<div class="card">
+			<div class="head">
+				<div class="grow"><h3>In-channel interference</h3><div class="sub">Share of airtime on the router's own channel. Dashed lines mark channel events.</div></div>
+				<div class="legend" id="wiInsLegend"></div>
+			</div>
+			<div class="chartbox" id="wiInsChart"></div>
+		</div>
+		<div class="card">
+			<div class="head">
+				<div class="grow"><h3>Spectrum</h3><div class="sub" id="wiHeatSub"></div></div>
+				<div class="legend">
+					<label id="wiMeshLbl"><input type="checkbox" id="wiMesh" onchange="WiFiInsight.setMesh(this.checked)"/>Include my mesh</label>
+					<label><input type="checkbox" checked onchange="WiFiInsight.heatOption('showActive',this.checked)"/>Active channel</label>
+					<label id="wiDfsLbl"><input type="checkbox" checked onchange="WiFiInsight.heatOption('showDfs',this.checked)"/>DFS</label>
+				</div>
+			</div>
+			<div class="legend srcrow" id="wiHeatSrc"></div>
+			<div class="qband" id="wiHeatQuiet"></div>
+			<div class="rel">
+				<canvas class="full" id="wiHeat"></canvas>
+				<div class="empty" id="wiHeatEmpty" style="display:none"></div>
+				<div class="tip" id="wiTip"></div>
+			</div>
+			<div class="foot">
+				<span class="ramp">Clean <i id="wiRamp"></i> Busy<span id="wiRampNote"></span></span>
+				<span><span style="display:inline-block;width:14px;height:10px;border:2px solid var(--accent);border-radius:2px;vertical-align:-1px;margin-right:5px"></span>Router's channel</span>
+				<span class="qkey" id="wiHeatQuietKey" style="display:none"><i style="border:1px dashed #c98500"></i>Quiet hours</span>
+			</div>
+		</div>
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Channel events</h3><div class="sub" id="wiEvSub">Channel and bandwidth changes and restarts.</div></div></div>
+			<div id="wiEvents"></div>
+		</div>
+	</div>
+
+	<!-- ============ SITE SURVEY ============ -->
+	<div class="view" id="v-survey">
+		<div class="card">
+			<div class="head">
+				<div class="grow"><h3>Signal map</h3><div class="sub" id="wiSurveySub"></div></div>
+				<div class="legend"><span class="li"><span class="sq" style="background:var(--others)"></span>Other networks</span><span class="li"><span class="sq" style="background:var(--yours)"></span>Your network</span><span class="li"><span class="sq" style="background:var(--accent-soft);border:1px dashed var(--accent)"></span>Router's channel</span></div>
+			</div>
+			<div class="rel">
+				<canvas class="full" id="wiMap"></canvas>
+				<div class="empty" id="wiMapEmpty" style="display:none"></div>
+				<div class="tip" id="wiMapTip"></div>
+			</div>
+		</div>
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Networks</h3><div class="sub">Click a column to sort.</div></div></div>
+			<div id="wiNets"></div>
+		</div>
+	</div>
+
+	<!-- ============ CHANNEL STATISTICS ============ -->
+	<div class="view" id="v-channels">
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Networks per channel</h3><div class="sub" id="wiCntSub">Counted by primary channel in the latest scan.</div></div><div class="legend" id="wiCntLegend"></div></div>
+			<div class="chartbox sm" id="wiCntChart"></div>
+		</div>
+		<div class="card">
+			<div class="head">
+				<div class="grow"><h3 id="wiLoadTitle">Estimated load per channel</h3><div class="sub" id="wiLoadSub"></div></div>
+				<div class="legend"><label id="wiMeshLbl2"><input type="checkbox" id="wiMesh2" onchange="WiFiInsight.setMesh(this.checked)"/>Include my mesh</label><span class="li"><span class="sq" style="background:var(--accent-soft);border:1px dashed var(--accent)"></span>Router's channel</span></div>
+			</div>
+			<div class="legend srcrow" id="wiLoadSrc"></div>
+			<div class="chartbox sm" id="wiLoadChart"></div>
+		</div>
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Quietest options</h3><div class="sub" id="wiBestSub">Best channel for each width, based on the load above.</div></div></div>
+			<div id="wiBest"></div>
+		</div>
+		<div class="card" id="wiNzChCard" style="display:none">
+			<div class="head"><div class="grow"><h3>Noise floor per channel</h3><div class="sub">Measured by the radio while scanning, averaged over the range. Lower (more negative) is better.</div></div></div>
+			<div class="chartbox sm" id="wiNzChChart"></div>
+		</div>
+	</div>
+
+	<!-- ============ TROUBLESHOOTING ============ -->
+	<div class="view" id="v-trouble">
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Airtime breakdown</h3><div class="sub">Where the router's channel time goes, stacked and scaled to 100%. Click a name to show or hide it; raw counters are in the table below.</div></div></div>
+			<div class="legend" id="wiAirLegend" style="justify-content:flex-start;margin-bottom:6px"></div>
+			<div class="chartbox" id="wiAirChart"></div>
+		</div>
+		<div class="grid2">
+			<div class="card">
+				<div class="head"><div class="grow"><h3>Glitch counter</h3><div class="sub">Receive errors per sample.</div></div></div>
+				<div class="legend" id="wiGlLegend" style="justify-content:flex-start;margin-bottom:6px"></div>
+				<div class="chartbox sm" id="wiGlChart"></div>
+			</div>
+			<div class="card">
+				<div class="head"><div class="grow"><h3>Transmit quality</h3><div class="sub">Airtime of successful vs failed transmissions.</div></div></div>
+				<div class="legend" id="wiTxLegend" style="justify-content:flex-start;margin-bottom:6px"></div>
+				<div class="chartbox sm" id="wiTxChart"></div>
+			</div>
+		</div>
+		<div class="gridgap"></div>
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Noise floor</h3><div class="sub">Lower (more negative) is better.</div></div></div>
+			<div class="chartbox sm" id="wiNzChart"></div>
+		</div>
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Latest counters</h3><div class="sub" id="wiCountersSub"></div></div></div>
+			<div id="wiCounters"></div>
+		</div>
+	</div>
+
+	<!-- ============ SETTINGS ============ -->
+	<div class="view" id="v-settings">
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Data collection</h3></div></div>
+			<div class="form">
+				<div class="lbl">Collection</div>
+				<div><div class="seg" id="setMode" role="group" aria-label="Collection"></div>
+					<div class="hint" id="setModeHint"></div></div>
+				<div class="lbl">Sample interval</div>
+				<div><select id="setSample"><option value="30">Every 30 seconds</option><option value="60">Every minute</option></select>
+					<div class="hint">How often the router's own channel is measured. Reading these counters doesn't affect Wi-Fi.</div></div>
+				<div class="lbl">Neighbour scans</div>
+				<div><select id="setScan"><option value="0">Off</option><option value="15">Every 15 minutes</option><option value="30">Every 30 minutes</option><option value="60">Every hour</option><option value="120">Every 2 hours</option><option value="180">Every 3 hours</option><option value="360">Every 6 hours</option></select>
+					<div class="hint">Feeds the spectrum map, site survey and channel statistics. Each scan pauses Wi-Fi for about a second; quiet hours below skip scheduled scans.</div></div>
+				<div class="lbl">Keep history for</div>
+				<div><select id="setRetain"><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="60">60 days</option><option value="90">90 days</option><option value="180">180 days</option></select>
+					<div class="hint">Channel events are kept for a year.</div></div>
+				<div class="lbl">Also treat as mine</div>
+				<div><input type="text" id="setOwn" placeholder="SSID one|SSID two" maxlength="200"/>
+					<div class="hint">Networks listed here are shown as yours and left out of the interference estimate. Separate names with <code>|</code>. <span id="setOwnAuto"></span></div></div>
+				<div class="lbl">Storage</div>
+				<div style="padding-top:6px" id="setStorage"></div>
+				<div></div>
+				<div><button type="button" class="btn primary" id="setSave" onclick="WiFiInsight.saveSettings()">Save</button><span class="saved" id="setSaved">Saved</span></div>
+			</div>
+		</div>
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Quiet hours</h3><div class="sub">No scheduled scans in the marked half hours, so no Wi-Fi blips. Sampling and Scan now still work. Click or drag to mark or clear.</div></div></div>
+			<div class="qpresets" id="qPresets"></div>
+			<div class="qgrid" id="qGrid"></div>
+			<div class="foot" style="margin-top:10px">
+				<span class="qkey"><i style="background:#c98500"></i>Quiet: no scheduled scans</span>
+				<span class="qkey"><i style="background:var(--field);border:1px solid var(--axis)"></i>Scans allowed</span>
+				<span style="color:var(--muted)">Times are the router's local time.</span>
+			</div>
+			<div class="qsum" id="qSum"></div>
+			<div style="margin-top:12px"><button type="button" class="btn primary" id="qSave" onclick="WiFiInsight.saveSettings()">Save</button><span class="saved" id="qSaved">Saved</span></div>
+		</div>
+		<div class="card">
+			<div class="head"><div class="grow"><h3>Command line</h3></div></div>
+			<div class="sub" style="line-height:1.8">
+				Status: <code>/jffs/addons/wifiinsight/wifiinsight.sh status</code> (shows the quiet hours and whether it's quiet now)<br/>
+				Uninstall: <code>/jffs/addons/wifiinsight/wifiinsight.sh uninstall</code> (add <code>--keep-data</code> to keep history)
+			</div>
+		</div>
+	</div>
+
+	<div class="note" id="wiFoot"></div>
+</div>
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+<td width="10" align="center" valign="top">&nbsp;</td>
+</tr>
+</table>
+</form>
+<form method="post" name="formScriptActions" action="/start_apply.htm" target="hidden_frame">
+<input type="hidden" name="productid" value="<% nvram_get("productid"); %>"/>
+<input type="hidden" name="current_page" value=""/>
+<input type="hidden" name="next_page" value=""/>
+<input type="hidden" name="action_mode" value="apply"/>
+<input type="hidden" name="action_script" value=""/>
+<input type="hidden" name="action_wait" value=""/>
+</form>
+<div id="footer"></div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+id: wifi-insight
+title: "WiFi Insight (third-party addon, MIT)"
+kind: franklin-feature
+required: false
+enabled_by_default: true
+requires: [web-ui-overlay]
+provides:
+  - /www/user/user1.asp (the page)
+  - menu entry under Wireless
+  - cron collector (chanim_stats sampling + neighbour scans)
+payload: payload
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  Vendored from the MIT-licensed Merlin addon IfSugar/wifiinsight (WiFi Insight
+  2.x): ASUS removed Wi-Fi Radar for security reasons and only ships the real
+  WiFi Insight on its newest AI routers, so this is the community
+  implementation, not a gnuton page. Three stock-specific patches are applied
+  in-tree: accept stock firmware (FRANKLIN=1), replace a BusyBox-incompatible
+  `tr -d '\000-\037'`, and treat ubifs/jffs2 as "not a USB drive" when picking
+  the history folder. On stock, the page (tmpfs) and the cron entries (RAM) are
+  rebuilt by this hook at every boot, because Merlin's services-start does not
+  exist here.
