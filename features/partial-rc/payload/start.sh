@@ -20,10 +20,10 @@ root="$FRANKLIN_ROOT"
 state="$root/state"
 mkdir -p "$state"
 
-TOKENS="nwtool usbX cake"
+TOKENS="nwtool usbX cake snmp"
 # Tokens this feature may have added in the past; always stripped before
 # re-adding, so editing TOKENS (or retiring one) takes effect on the next start.
-MANAGED="wifiradar nwtool usbX cake"
+MANAGED="wifiradar nwtool usbX cake snmp"
 
 cur=$(nvram get rc_support 2>/dev/null)
 [ -n "$cur" ] || { echo "partial-rc: rc_support empty, nothing to do"; exit 0; }

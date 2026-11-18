@@ -8,6 +8,7 @@ dist/
 features/web-ui/payload/
 features/franklin-mount/payload/
 features/overlayfs/payload/
+features/snmp/payload/opt/
 features/*/payload/*.ko
 features/*/payload/*.so
 *.log

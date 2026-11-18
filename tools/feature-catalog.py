@@ -285,16 +285,28 @@ FEATURES = [
          risks="Low.",
          links=["www/Main_Netstat_Content.asp", "www/Main_WOL_Content.asp"]),
 
-    dict(id="snmp", title="SNMP", cat="Services",
+    dict(id="snmp", title="SNMP agent", cat="Services",
          modes="all",
-         status="planned",
-         what="SNMP agent for monitoring (net-snmp).",
-         gnuton="`snmpd` (net-snmp) + `Advanced_SNMP_Content.asp`.",
-         deps="`snmpd` binary (in gnuton /usr/sbin; not stock), config, boot hook.",
-         franklin="Copy gnuton `snmpd` + deps, run from boot hook, expose page.",
-         tested="gnuton has `snmpd`; not yet run.",
-         risks="Library deps; low risk.",
-         links=["usr/sbin/snmpd", "www/Advanced_SNMP_Content.asp"]),
+         status="implemented",
+         what="net-snmp agent exposing the router over SNMP v1/v2c/v3.",
+         gnuton="`snmpd` + net-snmp libraries + `Advanced_SNMP_Content.asp`.",
+         deps="`snmpd` and libnetsnmp*.so.35 (gnuton only), the `snmp` rc_support "
+              "token for the page, a config file and a start hook.",
+         franklin="Ships gnuton `snmpd` + its four net-snmp libraries, recreates the "
+                  "SONAME links, generates /tmp/snmpd.conf with the same rules gnuton's "
+                  "rc uses (agentAddress, createUser/rwuser for the admin user, "
+                  "ro/rw communities, sysName/sysLocation/sysContact) and runs the "
+                  "agent from nvram. A per-minute watcher applies UI changes because "
+                  "stock rc has no `restart_snmpd` action.",
+         tested="On the XT9 (AP-mode node): page visible once `snmp` is advertised, "
+                "apply.cgi writes the nvram settings, snmpd starts and answers a GET "
+                "on udp/161; disabling stops it; settings changed in the page are "
+                "picked up within a minute.",
+         risks="Stock rc cannot honour the page's restart action, so changes are "
+               "applied by the watcher (up to ~60 s delay). snmpd_wan only matters on "
+               "router-mode firewalls.",
+         links=["docs/features/snmp.md", "features/snmp/README.md",
+                "www/Advanced_SNMP_Content.asp", "usr/sbin/snmpd"]),
 
     dict(id="tor", title="Tor", cat="Services",
          modes="Router",
@@ -1062,6 +1074,7 @@ KIND = {
     "partial-rc": "workaround",
     "wifi-clients": "workaround",
     "wifi-insight": "franklin-feature",
+    "snmp": "gnuton-feature",
     "traffic-monitor": "franklin-feature",
     "networkmap": "workaround",
     # Franklin additions (not gnuton)
@@ -1163,7 +1176,7 @@ DEPS = {
     "wireless-survey": ["web-ui"],
     "network-tools": ["web-ui"],
     "temperature-monitoring": ["web-ui"],
-    "snmp": ["boot-hook"],
+    "snmp": ["partial-rc"],
     "tor": ["boot-hook", "firewall-custom"],
     "nfs": ["boot-hook", "kernel-modules"],
     "aidisk-nfs": ["nfs", "web-ui"],

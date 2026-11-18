@@ -1,0 +1,24 @@
+id: snmp
+title: "SNMP agent (gnuton snmpd + gnuton page)"
+kind: gnuton-feature
+required: false
+enabled_by_default: true
+requires: [partial-rc]
+provides:
+  - /opt/sbin/snmpd
+  - the net-snmp libraries it links against
+  - the SNMP page (Advanced_SNMP_Content.asp, shipped by web-ui) made visible via the `snmp` rc_support token
+payload: payload
+build: build.sh
+hooks:
+  start: start.sh
+  stop: stop.sh
+notes: >
+  gnuton ships an SNMP agent plus its configuration page, but stock rc has no
+  `restart_snmpd`, so the page would save settings and start nothing. This
+  feature ships the real gnuton binary and the libraries it needs, generates
+  /tmp/snmpd.conf with the same rules gnuton's rc uses, and starts/stops the
+  daemon from nvram (snmpd_enable, roCommunity, rwCommunity, sysName, ...).
+  A per-minute watcher applies changes made in the UI, since stock rc cannot
+  run the page's `restart_snmpd` action. Works in AP mode: SNMP is a local
+  daemon and needs no WAN.

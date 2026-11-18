@@ -350,14 +350,14 @@
     },
     {
       "id": "snmp",
-      "title": "SNMP",
+      "title": "SNMP agent",
       "category": "Services",
       "modes": "all",
-      "status": "planned",
+      "status": "implemented",
       "kind": "gnuton-feature",
       "required": false,
       "depends_on": [
-        "boot-hook"
+        "partial-rc"
       ]
     },
     {

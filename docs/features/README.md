@@ -81,7 +81,7 @@ Implemented upstream by gnuton/Asuswrt-Merlin; Franklin recreates or runs them.
 | Tools / Sysinfo | Monitoring | all | `stock+` | no | [web-ui](../features/web-ui.md) | [sysinfo](sysinfo.md) |
 | Wireless Survey | Wireless | all | `stock+` | no | [web-ui](../features/web-ui.md) | [wireless-survey](wireless-survey.md) |
 | Network Tools | Diagnostics | all | `stock+` | no | [web-ui](../features/web-ui.md) | [network-tools](network-tools.md) |
-| SNMP | Services | all | `planned` | no | [boot-hook](../features/boot-hook.md) | [snmp](snmp.md) |
+| SNMP agent | Services | all | `implemented` | no | [partial-rc](../features/partial-rc.md) | [snmp](snmp.md) |
 | Tor | Services | Router | `planned` | no | [boot-hook](../features/boot-hook.md), [firewall-custom](../features/firewall-custom.md) | [tor](tor.md) |
 | NFS server | Storage | all | `planned` | no | [boot-hook](../features/boot-hook.md), [kernel-modules](../features/kernel-modules.md) | [nfs](nfs.md) |
 | AiDisk NFS | Storage | all | `planned` | no | [nfs](../features/nfs.md), [web-ui](../features/web-ui.md) | [aidisk-nfs](aidisk-nfs.md) |
@@ -326,7 +326,7 @@ graph TD
   web_ui_overlay --> wifi_insight
   web_ui --> wireless_survey
   web_ui --> network_tools
-  boot_hook --> snmp
+  partial_rc --> snmp
   boot_hook --> tor
   firewall_custom --> tor
   boot_hook --> nfs

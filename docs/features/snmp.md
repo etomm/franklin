@@ -1,15 +1,15 @@
-# SNMP
+# SNMP agent
 
 **Category:** Services  
 **Modes:** all  
-**Status:** `planned`  
+**Status:** `implemented`  
 **Kind:** gnuton-feature  
 **Required:** no  
 **Upstream:** gnuton / Asuswrt-Merlin
 
 ## Dependencies
 
-- [boot-hook](boot-hook.md)
+- [partial-rc](partial-rc.md)
 
 ## Build / install (separable)
 
@@ -17,27 +17,27 @@ See Franklin approach above; deploy from USB/boot hook.
 
 ## What it does
 
-SNMP agent for monitoring (net-snmp).
+net-snmp agent exposing the router over SNMP v1/v2c/v3.
 
 ## How gnuton implements it
 
-`snmpd` (net-snmp) + `Advanced_SNMP_Content.asp`.
+`snmpd` + net-snmp libraries + `Advanced_SNMP_Content.asp`.
 
 ## Requirements
 
-`snmpd` binary (in gnuton /usr/sbin; not stock), config, boot hook.
+`snmpd` and libnetsnmp*.so.35 (gnuton only), the `snmp` rc_support token for the page, a config file and a start hook.
 
 ## Franklin approach
 
-Copy gnuton `snmpd` + deps, run from boot hook, expose page.
+Ships gnuton `snmpd` + its four net-snmp libraries, recreates the SONAME links, generates /tmp/snmpd.conf with the same rules gnuton's rc uses (agentAddress, createUser/rwuser for the admin user, ro/rw communities, sysName/sysLocation/sysContact) and runs the agent from nvram. A per-minute watcher applies UI changes because stock rc has no `restart_snmpd` action.
 
 ## Tested / verified
 
-gnuton has `snmpd`; not yet run.
+On the XT9 (AP-mode node): page visible once `snmp` is advertised, apply.cgi writes the nvram settings, snmpd starts and answers a GET on udp/161; disabling stops it; settings changed in the page are picked up within a minute.
 
 ## Risks / notes
 
-Library deps; low risk.
+Stock rc cannot honour the page's restart action, so changes are applied by the watcher (up to ~60 s delay). snmpd_wan only matters on router-mode firewalls.
 
 ## Why this kind (evidence)
 
@@ -45,5 +45,7 @@ See the parity table and dependencies above.
 
 ## Links / sources
 
-- `usr/sbin/snmpd`
+- `docs/features/snmp.md`
+- `features/snmp/README.md`
 - `www/Advanced_SNMP_Content.asp`
+- `usr/sbin/snmpd`

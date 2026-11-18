@@ -34,6 +34,7 @@ features:
   - wifi-clients
   - wifi-insight
   - traffic-monitor
+  - snmp
   - networkmap
 
 # Optional per-device profile applied over the composition.
