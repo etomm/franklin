@@ -106,6 +106,27 @@ emit_unit() {  # emit_unit <unit> <ifname>
     printf ',"-1"];\n'
 }
 
+emit_log() {  # plain-text station dump for the "low level details" box
+    for ifc in $(nvram get wl_ifnames 2>/dev/null); do
+        echo "=== $ifc  SSID: $(nvram get "$(unit_prefix "$ifc")ssid" 2>/dev/null) ==="
+        for mac in $(wl -i "$ifc" assoclist 2>/dev/null | awk '{print $2}'); do
+            [ -n "$mac" ] || continue
+            wl -i "$ifc" sta_info "$mac" 2>/dev/null
+            echo
+        done
+    done
+}
+
+unit_prefix() {  # unit_prefix <ifname> -> "wlN_"
+    for i in 0 1 2 3; do
+        if [ "$(nvram get "wl${i}_ifname")" = "$1" ]; then
+            printf 'wl%d_' "$i"
+            return
+        fi
+    done
+    printf 'wl0_'
+}
+
 main() {
     {
         for ifc in $(nvram get wl_ifnames 2>/dev/null); do
@@ -117,6 +138,14 @@ main() {
         done
     } >"$TMP" 2>/dev/null
     [ -s "$TMP" ] && mv "$TMP" "$OUT"
+
+    # Second feed: the plain-text station dump the details box asks for.
+    # httpd runs /wl_log.asp through ej_dump -> the broken XT8 handler, so this
+    # file (written into the overlay) answers the request instead.
+    LOG="${WIFI_LOG_OUT:-/www/wl_log.asp}"
+    LOGTMP="$LOG.tmp"
+    { emit_log; } 2>/dev/null | tr -d '%' >"$LOGTMP"
+    [ -s "$LOGTMP" ] && mv "$LOGTMP" "$LOG"
 }
 
 main "$@"
