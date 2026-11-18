@@ -145,7 +145,13 @@ if [ -f "$state/web-ui-overlay.replace" ]; then
         echo '#!/bin/sh'
         echo "export LD_LIBRARY_PATH=\"$lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}\""
         echo "cd \"$mnt\" || exit 1"
-        echo "exec \"$httpd\" \"\$@\""
+        # Run under the name "httpd": ASUS's watchdog checks `pidof httpd` and
+        # would otherwise restart the daemon every 30 seconds.
+        if [ -x "$root/opt/bin/franklin-exec" ]; then
+            echo "exec \"$root/opt/bin/franklin-exec\" httpd \"$httpd\" \"\$@\""
+        else
+            echo "exec \"$httpd\" \"\$@\""
+        fi
     } >"$wrapper"
     chmod 755 "$wrapper"
 
