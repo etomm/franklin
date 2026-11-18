@@ -207,6 +207,22 @@ databases survive a deploy.
 Format guidance: **ext4** (reformat — see below). Avoid exFAT/vfat: no modes, no
 symlinks, no xattrs, and overlayfs cannot use it as an upper layer.
 
+## Library overrides
+
+Replacing a library is a risk, so it follows a written rule: stock's copy is
+kept unless gnuton exports a symbol stock lacks (or stock has none at all).
+Code-level differences alone are not enough — both firmwares compile the same
+sources with different flags.
+
+```sh
+sh tools/lib-audit.sh libwebapi    # one
+sh tools/lib-audit.sh --all        # everything gnuton ships
+```
+
+Current exceptions live in `SKIP_LIBS` in `features/web-ui/build.sh`
+(`libwlcsm libbwdpi libwebapi`). Details and the worked example:
+[library-overrides.md](library-overrides.md).
+
 ## Filesystem: switch the stick to ext4
 
 Checked on the XT9: the stock kernel has `CONFIG_EXT4_FS=y` (ext4 is built in),

@@ -129,7 +129,12 @@ whiteouts=$(wc -l <"$DELTA/WHITEOUTS")
 #    libshared: gnuton's httpd is ABI-coupled to them (measured: with stock
 #    copies /Main_Login.asp renders 0-8 KB or nothing at all, with gnuton's it
 #    renders ~22 KB).
-SKIP_LIBS="libwlcsm libbwdpi"
+# libwebapi: its password/API logic lives in a *prebuilt* object
+# (priv_webapi.o, ASUS does not publish it). Stock and gnuton export the
+# same 101 symbols, and the compiled do_chpass/check_chpass_auth are the
+# same instruction stream in both. There is nothing to gain by shipping
+# gnuton's build, so keep stock's - fewer closed blobs to mismatch.
+SKIP_LIBS="libwlcsm libbwdpi libwebapi"
 # Files we deliberately do NOT override: the gnuton versions of these pages
 # call httpd ASP handlers compiled against XT8's sta_info layout, which the XT9
 # driver does not match: the served JS is malformed (`,"-42",AU"]`) and the
