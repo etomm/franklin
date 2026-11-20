@@ -58,6 +58,39 @@ Actions → Images → the run for your branch. Expect 1–2 h. The job uploads
 `release-xt8pro-default`; inside is `XT8PRO_3004_388.11_1-gnuton1_puresqubi.w`
 (~50 MB).
 
+
+## Model artefacts: generated from this device's GPL, not borrowed
+
+The comparison that justifies it (XT9 GPL `router-sysdep/` vs gnuton's
+`router-sysdep.rt-ax58u_v2`, same `HND-96756` platform):
+
+| | XT9 GPL | gnuton rt-ax58u_v2 |
+|---|---|---|
+| files | 790 (24 MB) | 855 (28 MB) |
+| DSL/MDM trees | present (`mdm*`) | stripped |
+| TEE bits | absent | added (`libp11`, `opensc`, `teec_*`, `tee_supplicant`) |
+| shared entries | 85 | 85 |
+| content differences | 137 — mostly per-model prebuilt `.so`/`.o` | |
+
+Our firmware has **no** `tee_supplicant`/`libteec`, and its boot config has
+`SECURE_BOOT` unset / `SECURE_OS` unset, so gnuton's TEE directories are for
+other models and must not be carried. Conversely the GPL's `router-sysdep`
+contains *this board's* prebuilt binaries, which is exactly what a build for
+this board should link against.
+
+Therefore the graft uses only GPL artefacts:
+
+```
+targets/96756GW/96756GW.XT8PRO*        from the GPL
+targets/nvram/6756/XT8PRO*.nvm         from the GPL
+target.mak XT8PRO block                from the GPL
+router-sysdep.xt8pro/                  copy of the GPL router-sysdep/ (790 files)
+```
+
+Nothing is copied from another model. `router-sysdep.xt8pro` is named that way
+only because the Makefile's `xt8pro` target insists on a per-model path; its
+content is this device's own tree.
+
 ## 5. What we do with it
 
 ```sh
